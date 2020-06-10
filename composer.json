@@ -10,6 +10,7 @@
     },
     "require-dev": {
         "fzaninotto/faker": "^1.9.1",
+        "goods-service/goods.graphql-models": "dev-master",
         "mockery/mockery": "^1.3.1",
         "phpunit/phpunit": "^8.5"
     },
@@ -38,5 +39,15 @@
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ]
-    }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "ssh://git@gitlab.rozetka.company/goods-service/goods.graphql-models.git"
+        },
+        {
+            "type": "vcs",
+            "url": "ssh://git@gitlab.rozetka.company/goods-service/goods.graphql-client-boroda.git"
+        }
+    ]
 }
