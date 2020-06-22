@@ -4,61 +4,103 @@ namespace App\Services;
 
 use goods\graphqlmodels\models\Goods;
 
-
 class GoodsService
 {
+    /**
+     * @var Goods
+     */
+    protected $model;
+
+    public function __construct()
+    {
+        $this->model = new Goods();
+    }
+
+    public function reloadModel()
+    {
+        $this->model = new Goods();
+    }
+
+    /**
+     * Список полей для good
+     *
+     * @return string[]
+     */
     public function getSelectFields()
     {
         return [
             'id',
-            'name',
             'title',
-            'mpath',
             'price',
-            'href',
-            'name',
-            'docket',
-            'is_group_primary',
-            'status',
-            'sell_status',
-            'promo_title_part',
             'old_price',
             'price_pcs',
+            'href',
             'comments_amount',
-            'comments_mark',
+            'sell_status',
+            'category_id',
             'seller_id',
             'merchant_id',
+            'group_id',
             'state',
+            'docket',
+            'mpath',
+            'is_group_primary',
+            'status',
+            'promo_title_part',
+            'comments_mark',
+            'order',
+            'is_deleted'
         ];
     }
 
+    /**
+     * Получение данных по одному good по id
+     *
+     * @param $id
+     * @return \goods\graphqlmodels\RemoteError|object|null
+     */
     public function getById($id)
     {
-        $id = 200775625;
-        $id = 97653;
+        $this->model
+            ->selectFields($this->getSelectFields())
+            ->selectUk(['title', 'docket', 'promo_title_part'])
+            ->selectMpathCategories(['id', 'title', 'name'])
+            ->selectCategory(['id', 'title'])
+            ->selectProducer(['id', 'title'])
+            ->selectTags(['id', 'title', 'name', 'priority'])
+            ->selectAttachments(['url', 'order', 'variant', 'group_name']);
 
-        $model = new Goods();
-        $model->selectFields($this->getSelectFields());
-        $model->selectCategory(['id', 'title']);
-        $model->selectProducer(['id', 'title']);
-        $model->selectTags(['title']);
-//        $model->selectAttachments(['id', 'url']);
-        $model->selectOptions(['option_id', 'details' => ['title'], 'value', 'values' => ['title'], 'type']);
+        $data = $this->model->getById($id);
 
-        $result = $model->getById($id);
-
-        if ($model->hasRemoteErrors()) {
-            return $model->getRemoteErrors();
+        if ($this->model->hasRemoteErrors()) {
+            return $this->model->getRemoteErrors();
         }
+
+        $result = $this->getResult($data);
+
+        $this->reloadModel();
+
+        $this->model->selectOptions(['option_id', 'values' => ['id']]);
+
+        $data = $this->model->getById($id);
+
+        if ($this->model->hasRemoteErrors()) {
+            return $this->model->getRemoteErrors();
+        }
+
+        $result = array_merge($result, $this->getResult($data));
 
         return $result;
     }
 
-    public function getByIds($ids)
+    /**
+     * transform object to array
+     *
+     * @param $result
+     * @return mixed
+     */
+    public function getResult($result)
     {
-        $this->model->selectFields(['id', 'name', 'title']);
-        $result = $this->model->getByIds([200775625, 200828737]);
+        return json_decode(json_encode($result), true);
     }
-
-
 }
