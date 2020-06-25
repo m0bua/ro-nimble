@@ -23,13 +23,13 @@ $app = new Laravel\Lumen\Application(
     dirname(__DIR__)
 );
 
-// $app->withFacades();
+//$app->withFacades();
 
 $app->withFacades(true, [
     'Bschmitt\Amqp\Facades\Amqp' => 'Amqp',
 ]);
 
-// $app->withEloquent();
+ $app->withEloquent();
 
 /*
 |--------------------------------------------------------------------------
@@ -65,6 +65,7 @@ $app->singleton(
 
 $app->configure('app');
 $app->configure('amqp');
+$app->configure('database');
 
 /*
 |--------------------------------------------------------------------------
@@ -100,6 +101,8 @@ $app->configure('amqp');
 // $app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
 $app->register(Bschmitt\Amqp\LumenServiceProvider::class);
+$app->register(Illuminate\Redis\RedisServiceProvider::class);
+
 /*
 |--------------------------------------------------------------------------
 | Load The Application Routes
