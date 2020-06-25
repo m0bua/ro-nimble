@@ -2,6 +2,14 @@
 
 namespace App\Console;
 
+use App\Console\Commands\{
+    ChangePromotionConstructorGoodsCommand,
+    ChangePromotionConstructorGroupsCommand,
+    ChangePromotionConstructorCommand,
+    DeletePromotionConstructorCommand,
+    DeletePromotionConstructorGoodsCommand,
+    DeletePromotionConstructorGroupsCommand
+};
 use Illuminate\Console\Scheduling\Schedule;
 use Laravel\Lumen\Console\Kernel as ConsoleKernel;
 
@@ -13,7 +21,12 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        ChangePromotionConstructorCommand::class,
+        ChangePromotionConstructorGoodsCommand::class,
+        ChangePromotionConstructorGroupsCommand::class,
+        DeletePromotionConstructorCommand::class,
+        DeletePromotionConstructorGoodsCommand::class,
+        DeletePromotionConstructorGroupsCommand::class,
     ];
 
     /**
