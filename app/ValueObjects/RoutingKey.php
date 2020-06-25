@@ -9,7 +9,7 @@ class RoutingKey
     /**
      * @var string
      */
-    private $routingKey = '';
+    private $routingKey;
 
     /**
      * RoutingKey constructor.
