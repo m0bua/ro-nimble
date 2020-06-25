@@ -34,7 +34,7 @@ class ChangePromotionConstructorCommand extends Command
     {
         (new PromoGoodsConsumer())->consume(function ($amqpMessage, $resolver) {
             try {
-                $message = (new Message($amqpMessage));
+                $message = new Message($amqpMessage);
                 app('redis')->set(
                     $message->getField('fields_data.id'),
                     $message->getField('fields_data.promotion_id')
