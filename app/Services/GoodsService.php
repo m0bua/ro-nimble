@@ -13,7 +13,7 @@ class GoodsService
 
     public function __construct()
     {
-        $this->model = new Goods();
+        $this->reloadModel();
     }
 
     public function reloadModel()
