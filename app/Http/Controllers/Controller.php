@@ -13,6 +13,7 @@ class Controller extends BaseController
         $id = 200775625;
         $id = 97653;
         $id = 198516121;
+        $id = 108521;
 
         $good = $goodsService->getById($id);
 

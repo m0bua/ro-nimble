@@ -30,15 +30,18 @@ class GoodsService
     {
         return [
             'id',
+            'category_id',
             'title',
             'price',
             'old_price',
             'price_pcs',
             'href',
             'comments_amount',
+            'comments_mark',
             'sell_status',
             'category_id',
             'seller_id',
+            'series_id',
             'merchant_id',
             'group_id',
             'state',
@@ -49,7 +52,8 @@ class GoodsService
             'promo_title_part',
             'comments_mark',
             'order',
-            'is_deleted'
+            'is_deleted',
+            'status_inherited',
         ];
     }
 
@@ -64,8 +68,8 @@ class GoodsService
         $this->model
             ->selectFields($this->getSelectFields())
             ->selectUk(['title', 'docket', 'promo_title_part'])
-            ->selectMpathCategories(['id', 'title', 'name'])
-            ->selectCategory(['id', 'title'])
+            ->selectMpathCategories(['id', 'title', 'name', 'titles_mode'])
+//            ->selectCategory(['id', 'title'])
             ->selectProducer(['id', 'title'])
             ->selectTags(['id', 'title', 'name', 'priority'])
             ->selectAttachments(['url', 'order', 'variant', 'group_name']);
