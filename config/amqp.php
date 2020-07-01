@@ -27,8 +27,8 @@ return [
             'connect_options'       => [],
             'ssl_options'           => [],
 
-            'exchange'              => 'promo.goods',
-            'exchange_type'         => 'direct',
+            'exchange'              => env('AMQP_EXCHANGE', 'promo.goods'),
+            'exchange_type'         => 'topic',
             'exchange_passive'      => false,
             'exchange_durable'      => true,
             'exchange_auto_delete'  => false,

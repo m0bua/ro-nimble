@@ -48,8 +48,8 @@ class Message
         $result = $this->body;
         $routes = explode('.', $fieldRoute);
         foreach ($routes as $route) {
-            if (!isset($result->$route)) {
-                throw new Exception("Field $route does not exists.");
+            if (!property_exists($result, $route)) {
+                throw new Exception("Field \"$route\" does not exists.");
             }
             $result = $result->$route;
         }

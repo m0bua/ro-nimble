@@ -7,7 +7,6 @@ use App\ValueObjects\Message;
 use App\ValueObjects\RoutingKey;
 use Bschmitt\Amqp\Exception\Configuration;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 
 class DeletePromotionConstructorCommand extends Command
 {
@@ -33,12 +32,8 @@ class DeletePromotionConstructorCommand extends Command
     public function handle()
     {
         (new PromoGoodsConsumer())->consume(function ($amqpMessage, $resolver) {
-            try {
-                $message = new Message($amqpMessage);
-                app('redis')->unlink($message->getField('id'));
-            } catch (\Throwable $t) {
-                Log::error($t->getMessage());
-            }
+            $message = new Message($amqpMessage);
+            app('redis')->unlink($message->getField('fields_data.id'));
 //            $resolver->acknowledge($amqpMessage);
         }, new RoutingKey($this->routingKey));
     }
