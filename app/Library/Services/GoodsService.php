@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Library\Services;
 
 use goods\graphqlmodels\models\Goods;
 
@@ -57,7 +57,7 @@ class GoodsService
      * Получение данных по одному good по id
      *
      * @param $id
-     * @return \goods\graphqlmodels\RemoteError|object|null
+     * @return array|\goods\graphqlmodels\RemoteError|null
      */
     public function getById($id)
     {

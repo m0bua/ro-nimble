@@ -2,33 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\ElasticsearchService;
-use App\Services\GoodsService;
+use App\Models\Elastic\Promotions\GoodsModel;
+use App\Library\Services\GoodsService;
 use Laravel\Lumen\Routing\Controller as BaseController;
 
 class Controller extends BaseController
 {
-    public function goods(GoodsService $goodsService, ElasticsearchService $elasticsearchService)
+    public function goods(GoodsService $goodsService, GoodsModel $elasticGoodsModel)
     {
         $id = 200775625;
         $id = 97653;
         $id = 198516121;
 
-        $good = $goodsService->getById($id);
+        $goods = $goodsService->getById($id);
 
         dump(
-            $good
+            $goods
         );
         die;
 
-        $response = $elasticsearchService->setGood($good);
-
+        $response = $elasticGoodsModel->save($goods);
         dump(
             $response
         );
         die;
 
-        $search = $elasticsearchService->searchGood($id);
+        $search = $elasticGoodsModel->searchById($id);
 
         dump(
             $search
