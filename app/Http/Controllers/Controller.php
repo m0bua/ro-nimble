@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Elastic\Promotions\GoodsModel;
-use App\Library\Services\GoodsService;
+use App\Models\Elastic\Promotions\GoodsModel as ElasticGoodsModel;
+use App\Models\GraphQL\GoodsModel as GraphGoodsModel;
 use Laravel\Lumen\Routing\Controller as BaseController;
 
 class Controller extends BaseController
 {
-    public function goods(GoodsService $goodsService, GoodsModel $elasticGoodsModel)
+    public function goods(GraphGoodsModel $graphGoodsModel, ElasticGoodsModel $elasticGoodsModel)
     {
         $id = 200775625;
         $id = 97653;
         $id = 198516121;
 
-        $goods = $goodsService->getById($id);
+        $goods = $graphGoodsModel->getOneById($id);
 
         dump(
             $goods

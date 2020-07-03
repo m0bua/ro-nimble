@@ -86,7 +86,7 @@ abstract class Elastic
      */
     public function delete(array $params = [])
     {
-        return $this->prepareParams($params)->client->index($this->params);
+        return $this->prepareParams($params)->client->delete($this->params);
     }
 
     /**

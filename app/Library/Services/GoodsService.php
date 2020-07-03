@@ -2,27 +2,21 @@
 
 namespace App\Library\Services;
 
-use goods\graphqlmodels\models\Goods;
+use App\Models\GraphQL\GoodsModel;
+use GraphQL\InlineFragment;
+use GraphQL\Query;
+use GraphQL\RawObject;
 
+/**
+ * @deprecated
+ *
+ * Class GoodsService
+ * @package App\Library\Services
+ */
 class GoodsService
 {
     /**
-     * @var Goods
-     */
-    protected $model;
-
-    public function __construct()
-    {
-        $this->reloadModel();
-    }
-
-    public function reloadModel()
-    {
-        $this->model = new Goods();
-    }
-
-    /**
-     * Список полей для good
+     * Список полей для goods
      *
      * @return string[]
      */
@@ -54,53 +48,81 @@ class GoodsService
     }
 
     /**
-     * Получение данных по одному good по id
+     * Получение данных по одному goods по id
      *
      * @param $id
-     * @return array|\goods\graphqlmodels\RemoteError|null
+     * @return array|object
      */
     public function getById($id)
     {
-        $this->model
-            ->selectFields($this->getSelectFields())
-            ->selectUk(['title', 'docket', 'promo_title_part'])
-            ->selectMpathCategories(['id', 'title', 'name'])
-            ->selectCategory(['id', 'title'])
-            ->selectProducer(['id', 'title'])
-            ->selectTags(['id', 'title', 'name', 'priority'])
-            ->selectAttachments(['url', 'order', 'variant', 'group_name']);
 
-        $data = $this->model->getById($id);
+//        $basicQuery = (new Query('goodsOne'))
+//            ->setArguments(['where' => new RawObject('{id_eq: 198516121}')])
+//            ->setSelectionSet(
+//                array_merge(
+//                    $this->getSelectFields(),
+//                    [
+//                        (new Query('options'))
+//                            ->setSelectionSet([
+//                                (new Query('details'))
+//                                    ->setSelectionSet([
+//                                        'id',
+//                                        'title',
+//                                        'name',
+//                                        'type',
+//                                    ]),
+//                                (new InlineFragment('GoodsOptionSingle'))->setSelectionSet(['value']),
+//                                (new InlineFragment('GoodsOptionPlural'))
+//                                    ->setSelectionSet(
+//                                        [
+//                                            (new Query('values'))
+//                                            ->setSelectionSet(
+//                                                [
+//                                                    'id',
+//                                                    'title',
+//                                                ]
+//                                            ),
+//                                        ]
+//                                    ),
+//                                (new Query('settings'))->setSelectionSet(['status']),
+//                            ]),
+//                    ]
+//                )
+//            );
 
-        if ($this->model->hasRemoteErrors()) {
-            return $this->model->getRemoteErrors();
-        }
+//        $results = (new GoodsModel())->getClient()->runQuery($basicQuery, true);
 
-        $result = $this->getResult($data);
+//        dump($results->getResults());die;
 
-        $this->reloadModel();
+//        $this->model
+//            ->selectFields($this->getSelectFields())
+//            ->selectUk(['title', 'docket', 'promo_title_part'])
+//            ->selectMpathCategories(['id', 'title', 'name'])
+//            ->selectCategory(['id', 'title'])
+//            ->selectProducer(['id', 'title'])
+//            ->selectTags(['id', 'title', 'name', 'priority'])
+//            ->selectAttachments(['url', 'order', 'variant', 'group_name'])
+//            ->selectOptions(['option_id', 'values' => ['id'], 'type']);
 
-        $this->model->selectOptions(['option_id', 'values' => ['id']]);
+//        $data = $this->model->getById($id);
 
-        $data = $this->model->getById($id);
+//        if ($this->model->hasRemoteErrors()) {
+//            return $this->model->getRemoteErrors();
+//        }
+//
+//        $result = $this->getResult($data);
+//        $this->reloadModel();
+//
+//        $this->model->selectOptions(['option_id', 'values' => ['id']]);
+//
+//        $data = $this->model->getById($id);
+//
+//        if ($this->model->hasRemoteErrors()) {
+//            return $this->model->getRemoteErrors();
+//        }
+//
+//        $result = array_merge($result, $this->getResult($data));
 
-        if ($this->model->hasRemoteErrors()) {
-            return $this->model->getRemoteErrors();
-        }
-
-        $result = array_merge($result, $this->getResult($data));
-
-        return $result;
-    }
-
-    /**
-     * transform object to array
-     *
-     * @param $result
-     * @return mixed
-     */
-    public function getResult($result)
-    {
-        return json_decode(json_encode($result), true);
+//        return $results->getResults();
     }
 }

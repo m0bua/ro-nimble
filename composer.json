@@ -10,10 +10,10 @@
         "bschmitt/laravel-amqp": "^2.0",
         "elasticsearch/elasticsearch": "^7.7",
         "fxp/composer-asset-plugin": "dev-master",
-        "psr/log": "^1.1",
+        "gmostafa/php-graphql-client": "^1.6",
+        "illuminate/redis": "^7.17",
         "laravel/lumen-framework": "^7.0",
-        "goods-service/goods.graphql-models": "dev-master",
-        "illuminate/redis": "^7.17"
+        "psr/log": "^1.1"
     },
     "require-dev": {
         "fzaninotto/faker": "^1.9.1",
