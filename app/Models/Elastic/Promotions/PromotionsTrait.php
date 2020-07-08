@@ -1,12 +1,8 @@
 <?php
-
-
 namespace App\Models\Elastic\Promotions;
-
 
 trait PromotionsTrait
 {
-
     /**
      * @inheritDoc
      */
