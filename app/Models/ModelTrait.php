@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Helpers\ConvertString;
-use App\ValueObjects\NonExistingMethod;
+use App\ValueObjects\Method;
 use ReflectionClass;
 use ReflectionProperty;
 
@@ -72,13 +72,13 @@ trait ModelTrait
      */
     public function __call(string $name, array $arguments)
     {
-        $method = new NonExistingMethod($this, $name);
+        $method = new Method($this, $name);
 
         switch ($method->getPrefix()) {
-            case NonExistingMethod::GET:
+            case Method::GET:
                 return $this->{$method->getPropertyName()};
                 break;
-            case NonExistingMethod::SET:
+            case Method::SET:
                 $this->{$method->getPropertyName()} = $method->getPropertyValue();
                 return $this;
                 break;

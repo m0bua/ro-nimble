@@ -6,7 +6,7 @@ use App\Helpers\ConvertString;
 use ReflectionClass;
 use Exception;
 
-class NonExistingMethod
+class Method
 {
     public const GET = 'get';
     public const SET = 'set';
@@ -39,14 +39,20 @@ class NonExistingMethod
     public function __construct(object $object, string $methodName)
     {
         $this->methodName = $methodName;
-        $this->prefixValidate();
-
         $this->object = $object;
-        $this->propertyValidate();
+
+        try {
+            $this->prefixValidate();
+            $this->propertyValidate();
+        } catch (\Throwable $t) {
+            report($t);
+        }
     }
 
     /**
      * Validate prefix of method
+     *
+     * @throws Exception
      */
     public function prefixValidate()
     {
