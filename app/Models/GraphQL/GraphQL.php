@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Library\Services;
+namespace App\Models\GraphQL;
 
 use GraphQL\Client;
 
@@ -10,7 +10,6 @@ use GraphQL\Client;
  */
 abstract class GraphQL
 {
-
     /**
      * @var Client
      */

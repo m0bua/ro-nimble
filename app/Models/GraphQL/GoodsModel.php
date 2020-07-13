@@ -2,7 +2,7 @@
 
 namespace App\Models\GraphQL;
 
-use App\Library\Services\GraphQL;
+use App\Models\GraphQL\GraphQL;
 use GraphQL\InlineFragment;
 use GraphQL\Query;
 use GraphQL\RawObject;
