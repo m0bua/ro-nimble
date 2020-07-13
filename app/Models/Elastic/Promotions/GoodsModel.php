@@ -2,15 +2,11 @@
 
 namespace App\Models\Elastic\Promotions;
 
-use App\Library\Services\Elastic;
-use App\Models\ModelTrait;
+use App\Models\Elastic\Elastic;
 use App\ValueObjects\Property;
-use ReflectionClass;
-use ReflectionProperty;
 
 class GoodsModel extends Elastic
 {
-    use ModelTrait;
     use PromotionsTrait;
 
     /**
@@ -21,34 +17,42 @@ class GoodsModel extends Elastic
         return 'goods';
     }
 
-    private $id;
-    private $promotionId;
-    private $constructorId;
-    private $giftId;
-    private $categoryId;
-    private $categoryIds;
-    private $options;
-    private $optionNames;
-    private $optionValues;
-    private $optionValueNames;
-    private $optionsChecked;
-    private $optionsSliders;
-    private $producerId;
-    private $producerName;
-    private $price;
-    private $rank;
-    private $sellStatus;
-    private $status_inherited;
-    private $sellerOrder;
-    private $sellerId;
-    private $incomeOrder;
-    private $groupId;
-    private $isGroupPrimary;
-    private $goodsOrder;
-    private $tags;
-    private $bonusCharge;
-    private $seriesId;
-    private $state;
+    /**
+     * @return array
+     */
+    public function getFields(): array
+    {
+        return get_object_vars($this);
+    }
+
+    public $id;
+    public $promotionId;
+    public $constructorId;
+    public $giftId;
+    public $categoryId;
+    public $categoryIds;
+    public $options;
+    public $optionNames;
+    public $optionValues;
+    public $optionValueNames;
+    public $optionsChecked;
+    public $optionsSliders;
+    public $producerId;
+    public $producerName;
+    public $price;
+    public $rank;
+    public $sellStatus;
+    public $statusInherited;
+    public $sellerOrder;
+    public $sellerId;
+    public $incomeOrder;
+    public $groupId;
+    public $isGroupPrimary;
+    public $goodsOrder;
+    public $tags;
+    public $bonusCharge;
+    public $seriesId;
+    public $state;
 
     /**
      * Ищет товар по ID

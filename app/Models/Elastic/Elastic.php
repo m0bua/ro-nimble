@@ -1,14 +1,17 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Library\Services;
+namespace App\Models\Elastic;
 
+use App\Helpers\ConvertString;
+use App\Models\Elastic\Promotions\GoodsModel;
+use App\ValueObjects\Method;
 use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
 
 /**
  * Class Elastic
- * @package App\Library\Services
+ * @package App\Models\Elastic
  */
 abstract class Elastic
 {
@@ -39,6 +42,13 @@ abstract class Elastic
     private $params;
 
     /**
+     * Data for parameters
+     *
+     * @var array
+     */
+    private $data;
+
+    /**
      * Elastic constructor.
      */
     public function __construct()
@@ -46,6 +56,25 @@ abstract class Elastic
         $this->client = ClientBuilder::create()->build();
         $this->index = $this->indexName();
         $this->type = $this->typeName();
+    }
+
+    /**
+     * @param string $name
+     * @param array $arguments
+     */
+    public function __call(string $name, array $arguments)
+    {
+        $method = new Method($this, $name, $arguments);
+
+        switch ($method->getPrefix()) {
+            case Method::GET:
+                return $this->{$method->getPropertyName()};
+                break;
+            case Method::SET:
+                $this->{$method->getPropertyName()} = $method->getPropertyValue();
+                return $this;
+                break;
+        }
     }
 
     /**
@@ -61,6 +90,13 @@ abstract class Elastic
      * @return string
      */
     abstract public function typeName(): string;
+
+    /**
+     * Реализуется в дочернем классе, возвращает список полей
+     *
+     * @return string
+     */
+    abstract public function getFields(): array;
 
     /**
      * @param array $params
@@ -101,5 +137,44 @@ abstract class Elastic
         ], $params);
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
+
+    /**
+     * @param $data
+     * @return $this
+     * @throws \ReflectionException
+     */
+    public function load($data)
+    {
+        $this->data = $data;
+
+        foreach ($this->getFields() as $field => $value) {
+            $this->{ConvertString::getSetter($field)}();
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return array|callable
+     */
+    public function save()
+    {
+        foreach ($this->getFields() as $field => $value) {
+            $this->params[ConvertString::camelCaseToSnake($field)] = $this->{$field};
+        }
+
+        return $this->index([
+            'id' => $this->params['id'],
+            'body' => $this->params
+        ]);
     }
 }

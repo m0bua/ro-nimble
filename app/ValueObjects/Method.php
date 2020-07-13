@@ -22,6 +22,11 @@ class Method
     private $methodName;
 
     /**
+     * @var array
+     */
+    private $arguments;
+
+    /**
      * @var string
      */
     private $methodPrefix;
@@ -36,11 +41,15 @@ class Method
      * @param object $object
      * @param string $methodName
      */
-    public function __construct(object $object, string $methodName)
+    public function __construct(object $object, string $methodName, array $arguments = [])
     {
-        $this->methodName = $methodName;
         $this->object = $object;
-
+        $this->methodName = $methodName;
+        $this->arguments = $arguments;
+dump(
+    $arguments
+);
+die;
         try {
             $this->prefixValidate();
             $this->propertyValidate();

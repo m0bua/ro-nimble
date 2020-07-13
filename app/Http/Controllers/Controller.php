@@ -33,7 +33,12 @@ class Controller extends BaseController
         $search = $elasticGoodsModel->searchById($id);
 
         dump(
-            $search
+            $search['hits']['hits'][0]['_source'],
+            array_merge([
+                'promotion_id' => 222,
+                'constructor_id' => 333,
+                'gift_id' => 444,
+            ], $goods)
         );
         die;
 

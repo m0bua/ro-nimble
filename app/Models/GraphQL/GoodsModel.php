@@ -41,9 +41,11 @@ class GoodsModel extends GraphQL
             'category_ids:mpath',
             'is_group_primary',
             'status',
+            'status_inherited',
             'promo_title_part',
             'comments_mark',
-            'order'
+            'goods_order:order',
+            'series_id'
         ];
     }
 
