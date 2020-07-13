@@ -9,22 +9,6 @@ class GoodsModel extends Elastic
 {
     use PromotionsTrait;
 
-    /**
-     * @inheritDoc
-     */
-    public function typeName(): string
-    {
-        return 'goods';
-    }
-
-    /**
-     * @return array
-     */
-    public function getFields(): array
-    {
-        return get_object_vars($this);
-    }
-
     public $id;
     public $promotionId;
     public $constructorId;
@@ -53,6 +37,22 @@ class GoodsModel extends Elastic
     public $bonusCharge;
     public $seriesId;
     public $state;
+
+    /**
+     * @inheritDoc
+     */
+    public function typeName(): string
+    {
+        return 'goods';
+    }
+
+    /**
+     * @return array
+     */
+    public function getFields(): array
+    {
+        return get_object_vars($this);
+    }
 
     /**
      * Ищет товар по ID

@@ -4,10 +4,10 @@ declare(strict_types=1);
 namespace App\Models\Elastic;
 
 use App\Helpers\ConvertString;
-use App\Models\Elastic\Promotions\GoodsModel;
 use App\ValueObjects\Method;
 use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
+use Prophecy\Exception\Doubler\MethodNotFoundException;
 
 /**
  * Class Elastic
@@ -59,25 +59,6 @@ abstract class Elastic
     }
 
     /**
-     * @param string $name
-     * @param array $arguments
-     */
-    public function __call(string $name, array $arguments)
-    {
-        $method = new Method($this, $name, $arguments);
-
-        switch ($method->getPrefix()) {
-            case Method::GET:
-                return $this->{$method->getPropertyName()};
-                break;
-            case Method::SET:
-                $this->{$method->getPropertyName()} = $method->getPropertyValue();
-                return $this;
-                break;
-        }
-    }
-
-    /**
      * Реализуется в дочернем классе для определения индекса (базы)
      *
      * @return string
@@ -97,6 +78,31 @@ abstract class Elastic
      * @return string
      */
     abstract public function getFields(): array;
+
+    /**
+     * @param string $name
+     * @param array $arguments
+     */
+    public function __call(string $name, array $arguments)
+    {
+        $method = new Method($this, $name);
+        $property = $method->getProperty();
+
+        switch ($method->getPrefix()) {
+            case Method::GET:
+
+                return $this->{$property->getName()};
+                break;
+            case Method::SET:
+                $this->setField($property->getName(), array_shift($arguments));
+
+                return $this;
+                break;
+            default:
+                throw new MethodNotFoundException("Method {$name} not found.", get_class($this), $name);
+                break;
+        }
+    }
 
     /**
      * @param array $params
@@ -150,18 +156,25 @@ abstract class Elastic
     /**
      * @param $data
      * @return $this
-     * @throws \ReflectionException
      */
-    public function load($data)
+    public function load(array $data)
     {
-        $this->data = $data;
-
-        foreach ($this->getFields() as $field => $value) {
-            $this->{ConvertString::getSetter($field)}();
+        foreach ($data as $field => $value) {
+            $this->setField($field, $value);
         }
 
         return $this;
     }
+
+    /**
+     * @param $fieldName
+     * @param $fieldValue
+     */
+    private function setField(string $fieldName, $fieldValue)
+    {
+        $this->$fieldName = $fieldValue;
+    }
+
 
     /**
      * @return array|callable

@@ -22,37 +22,22 @@ class Method
     private $methodName;
 
     /**
-     * @var array
-     */
-    private $arguments;
-
-    /**
      * @var string
      */
     private $methodPrefix;
-
-    /**
-     * @var string
-     */
-    private $propertyName;
 
     /**
      * Property constructor.
      * @param object $object
      * @param string $methodName
      */
-    public function __construct(object $object, string $methodName, array $arguments = [])
+    public function __construct(object $object, string $methodName)
     {
         $this->object = $object;
         $this->methodName = $methodName;
-        $this->arguments = $arguments;
-dump(
-    $arguments
-);
-die;
+
         try {
             $this->prefixValidate();
-            $this->propertyValidate();
         } catch (\Throwable $t) {
             report($t);
         }
@@ -84,39 +69,12 @@ die;
     }
 
     /**
-     * Validate property of method
-     * @throws Exception
+     * @return Property
      */
-    public function propertyValidate()
+    public function getProperty(): Property
     {
         $property = ConvertString::stringWithoutPrefix($this->methodName, $this->methodPrefix);
 
-        if (!property_exists($this->object, $property)) {
-            throw new Exception(sprintf('Property %s does not exists in %s', $this->methodName, get_class($this->object)));
-        }
-
-        $this->propertyName = $property;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPropertyName()
-    {
-        return $this->propertyName;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getPropertyValue()
-    {
-        $property = ConvertString::camelCaseToSnake($this->propertyName);
-
-        if (array_key_exists($property, $this->object->getData())) {
-            return $this->object->getData()[$property];
-        }
-
-        return null;
+        return new Property($this->object, $property);
     }
 }
