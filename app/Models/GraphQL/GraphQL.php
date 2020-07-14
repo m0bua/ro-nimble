@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Library\Services;
+namespace App\Models\GraphQL;
 
 use GraphQL\Client;
 

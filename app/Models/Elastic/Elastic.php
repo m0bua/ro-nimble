@@ -85,22 +85,27 @@ abstract class Elastic
      */
     public function __call(string $name, array $arguments)
     {
-        $method = new Method($this, $name);
-        $property = $method->getProperty();
+        try {
+            $method = new Method($this, $name);
+            $property = $method->getProperty();
 
-        switch ($method->getPrefix()) {
-            case Method::GET:
+            switch ($method->getPrefix()) {
+                case Method::GET:
 
-                return $this->{$property->getName()};
-                break;
-            case Method::SET:
-                $this->setField($property->getName(), array_shift($arguments));
+                    return $this->{$property->getName()};
+                    break;
+                case Method::SET:
+                    $this->setField($property->getName(), array_shift($arguments));
 
-                return $this;
-                break;
-            default:
-                throw new MethodNotFoundException("Method {$name} not found.", get_class($this), $name);
-                break;
+                    return $this;
+                    break;
+                default:
+                    throw new MethodNotFoundException("Method {$name} not found.", get_class($this), $name);
+                    break;
+            }
+        } catch (\Throwable $t) {
+            report($t);
+            abort(500, $t->getMessage());
         }
     }
 

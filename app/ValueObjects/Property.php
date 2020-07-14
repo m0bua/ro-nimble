@@ -5,6 +5,7 @@ namespace App\ValueObjects;
 
 
 use App\Helpers\ConvertString;
+use Exception;
 
 class Property
 {
@@ -22,18 +23,15 @@ class Property
      * Property constructor.
      * @param object $object
      * @param string $property
+     * @throws Exception
      */
     public function __construct(object $object, string $property)
     {
         $this->object = $object;
-        $this->property = $property;
+        $this->property = ConvertString::camelCaseToSnake($property);
 
-        try {
-            if (!property_exists($this->object, $this->property)) {
-                throw new \Exception(sprintf('Property %s does not exists in %s', $this->property, get_class($this->object)));
-            }
-        } catch (\Throwable $t) {
-            report($t);
+        if (!property_exists($this->object, $this->property)) {
+            throw new Exception(sprintf('Property %s does not exists in %s', $this->property, get_class($this->object)));
         }
     }
 
@@ -50,9 +48,7 @@ class Property
      */
     public function getValue()
     {
-        $property = ConvertString::camelCaseToSnake($this->property);
-
-        if (property_exists($this->object, $property)) {
+        if (property_exists($this->object, $this->property)) {
             return $this->object->property;
         }
 

@@ -24,8 +24,11 @@ class Controller extends BaseController
             'gift_id' => 444,
         ], $goods));
 
-        $elasticGoodsModel->setPromotionId(123);die;
-        dump($elasticGoodsModel->promotionId);die;
+//        $elasticGoodsModel->load([
+//            'promotion_id' => 333
+//        ]);
+//        $elasticGoodsModel->setPromotionId(123);
+        dump($elasticGoodsModel->promotion_id);die;
 
 //        $response = $elasticGoodsModel->save();
 //        dump(
