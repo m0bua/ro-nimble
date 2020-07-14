@@ -43,8 +43,6 @@ abstract class Elastic extends Immutable
      */
     private $params;
 
-    protected $something;
-
     /**
      * Elastic constructor.
      */
