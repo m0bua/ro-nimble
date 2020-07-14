@@ -5,6 +5,10 @@ namespace App\Models\Elastic\Promotions;
 use App\Models\Elastic\Elastic;
 use App\ValueObjects\Property;
 
+/**
+ * Class GoodsModel
+ * @package App\Models\Elastic\Promotions
+ */
 class GoodsModel extends Elastic
 {
     use PromotionsTrait;
@@ -44,14 +48,6 @@ class GoodsModel extends Elastic
     public function typeName(): string
     {
         return 'goods';
-    }
-
-    /**
-     * @return array
-     */
-    public function getFields(): array
-    {
-        return get_object_vars($this);
     }
 
     /**

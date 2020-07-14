@@ -3,11 +3,12 @@ declare(strict_types=1);
 
 namespace App\Models\Elastic;
 
-use App\Helpers\ConvertString;
 use App\ValueObjects\Method;
 use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
 use Prophecy\Exception\Doubler\MethodNotFoundException;
+use ReflectionClass;
+use ReflectionException;
 
 /**
  * Class Elastic
@@ -42,13 +43,6 @@ abstract class Elastic
     private $params;
 
     /**
-     * Data for parameters
-     *
-     * @var array
-     */
-    private $data;
-
-    /**
      * Elastic constructor.
      */
     public function __construct()
@@ -73,15 +67,37 @@ abstract class Elastic
     abstract public function typeName(): string;
 
     /**
-     * Реализуется в дочернем классе, возвращает список полей
+     * Возвращает список полей индекса текущей модели
      *
-     * @return string
+     * @param array $fieldNames
+     * @return array
+     * @throws ReflectionException
      */
-    abstract public function getFields(): array;
+    public function getFields(array $fieldNames = []): array
+    {
+        $fields = [];
+        $reflectionClass = new ReflectionClass(get_class($this));
+
+        array_map(function ($property) use (&$fields, $fieldNames) {
+            $propertyName = $property->getName();
+            $propertyValue = $property->getValue($this);
+            if (!empty($fieldNames)) {
+                if (in_array($propertyName, $fieldNames)) {
+                    $fields[$propertyName] = $propertyValue;
+                }
+            } else {
+                $fields[$propertyName] = $propertyValue;
+            }
+        }, $reflectionClass->getProperties());
+
+        return $fields;
+    }
+
 
     /**
      * @param string $name
      * @param array $arguments
+     * @return $this
      */
     public function __call(string $name, array $arguments)
     {
@@ -137,28 +153,6 @@ abstract class Elastic
     }
 
     /**
-     * @param array $params
-     * @return $this
-     */
-    private function prepareParams(array $params = []): self
-    {
-        $this->params = array_merge([
-            'index' => $this->index,
-            'type' => $this->type,
-        ], $params);
-
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getData()
-    {
-        return $this->data;
-    }
-
-    /**
      * @param $data
      * @return $this
      */
@@ -172,6 +166,20 @@ abstract class Elastic
     }
 
     /**
+     * @return array|callable
+     * @throws ReflectionException
+     */
+    public function save()
+    {
+        $fields = $this->getFields();
+
+        return $this->index([
+            'id' => $fields['id'],
+            'body' => $fields,
+        ]);
+    }
+
+    /**
      * @param $fieldName
      * @param $fieldValue
      */
@@ -180,19 +188,17 @@ abstract class Elastic
         $this->$fieldName = $fieldValue;
     }
 
-
     /**
-     * @return array|callable
+     * @param array $params
+     * @return $this
      */
-    public function save()
+    private function prepareParams(array $params = []): self
     {
-        foreach ($this->getFields() as $field => $value) {
-            $this->params[ConvertString::camelCaseToSnake($field)] = $this->{$field};
-        }
+        $this->params = array_merge([
+            'index' => $this->index,
+            'type' => $this->type,
+        ], $params);
 
-        return $this->index([
-            'id' => $this->params['id'],
-            'body' => $this->params
-        ]);
+        return $this;
     }
 }
