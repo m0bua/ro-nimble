@@ -16,13 +16,13 @@ class Controller extends BaseController
         $id = 199807069;
         $id = 108521;
 
-        $goods = $graphGoodsModel->getOneById($id);
-
-        $elasticGoodsModel->load(array_merge([
-            'promotion_id' => 222,
-            'constructor_id' => 333,
-            'gift_id' => 444,
-        ], $goods));
+//        $goods = $graphGoodsModel->getOneById($id);
+//
+//        $elasticGoodsModel->load(array_merge([
+//            'promotion_id' => 222,
+//            'constructor_id' => 333,
+//            'gift_id' => 444,
+//        ], $goods));
 
         $elasticGoodsModel->setPromotionId(123);
 

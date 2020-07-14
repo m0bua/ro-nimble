@@ -43,6 +43,8 @@ abstract class Elastic extends Immutable
      */
     private $params;
 
+    protected $something;
+
     /**
      * Elastic constructor.
      */
@@ -80,15 +82,17 @@ abstract class Elastic extends Immutable
         $reflectionClass = new ReflectionClass(get_class($this));
 
         array_map(function ($property) use (&$fields, $fieldNames) {
-            $property->setAccessible(true);
-            $propertyName = $property->getName();
-            $propertyValue = $property->getValue($this);
-            if (!empty($fieldNames)) {
-                if (in_array($propertyName, $fieldNames)) {
+            if (get_class($this) === $property->class) {
+                $property->setAccessible(true);
+                $propertyName = $property->getName();
+                $propertyValue = $property->getValue($this);
+                if (!empty($fieldNames)) {
+                    if (in_array($propertyName, $fieldNames)) {
+                        $fields[$propertyName] = $propertyValue;
+                    }
+                } else {
                     $fields[$propertyName] = $propertyValue;
                 }
-            } else {
-                $fields[$propertyName] = $propertyValue;
             }
         }, $reflectionClass->getProperties(\ReflectionProperty::IS_PROTECTED));
 
