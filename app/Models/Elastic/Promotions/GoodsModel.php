@@ -51,7 +51,7 @@ class GoodsModel extends Elastic
      */
     public function getFields(): array
     {
-        return get_object_vars($this);
+        return get_class_vars(__CLASS__);
     }
 
     /**
