@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\Elastic;
 
+use App\Helpers\Immutable;
 use App\ValueObjects\Method;
 use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
@@ -14,7 +15,7 @@ use ReflectionException;
  * Class Elastic
  * @package App\Models\Elastic
  */
-abstract class Elastic
+abstract class Elastic extends Immutable
 {
     /**
      * @var Client
