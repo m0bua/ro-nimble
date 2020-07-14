@@ -10,7 +10,6 @@ use GraphQL\Client;
  */
 abstract class GraphQL
 {
-
     /**
      * @var Client
      */
