@@ -28,23 +28,17 @@ class GoodsModel extends GraphQL
         return [
             'id',
             'category_id',
-            'title',
+            'category_ids:mpath',
             'price',
-            'comments_amount',
             'sell_status',
             'seller_id',
-            'merchant_id',
             'group_id',
-            'state',
-            'docket',
-            'category_ids:mpath',
             'is_group_primary',
-            'status',
             'status_inherited',
-            'promo_title_part',
-            'comments_mark',
             'goods_order:order',
-            'series_id'
+            'series_id',
+            'state',
+//            'bonus_charge:pl_bonus_charge_pcs',
         ];
     }
 
@@ -58,7 +52,7 @@ class GoodsModel extends GraphQL
         return array_merge(
             $this->mainFieldsStack(), [
                 (new Query('producer'))->setSelectionSet(['producer_id:id', 'producer_name:name']),
-                (new Query('tags'))->setSelectionSet(['id', 'title', 'name', 'priority']),
+//                (new Query('goods_ranks'))->setSelectionSet(['rank:search_rank', 'income_order:search_rank']),
             ]
         );
     }
@@ -71,15 +65,15 @@ class GoodsModel extends GraphQL
     public function getSecondPartParams()
     {
         return [
-            (new Query('attachments'))->setSelectionSet(['url', 'order']),
-            (new Query('options'))->setSelectionSet([
-                (new Query('settings'))->setSelectionSet(['status']),
-                (new Query('details'))->setSelectionSet(['id', 'title', 'name', 'type']),
-                (new InlineFragment('GoodsOptionSingle'))->setSelectionSet(['value']),
-                (new InlineFragment('GoodsOptionPlural'))->setSelectionSet([
-                    (new Query('values'))->setSelectionSet(['id', 'title']),
-                ]),
-            ]),
+//            (new Query('attachments'))->setSelectionSet(['url', 'order']),
+//            (new Query('options'))->setSelectionSet([
+//                (new Query('settings'))->setSelectionSet(['status']),
+//                (new Query('details'))->setSelectionSet(['id', 'title', 'name', 'type']),
+//                (new InlineFragment('GoodsOptionSingle'))->setSelectionSet(['value']),
+//                (new InlineFragment('GoodsOptionPlural'))->setSelectionSet([
+//                    (new Query('values'))->setSelectionSet(['id', 'title']),
+//                ]),
+//            ]),
         ];
     }
 
@@ -114,9 +108,22 @@ class GoodsModel extends GraphQL
      */
     public function getOneById(int $goodsId): array
     {
-        return array_merge(
-            $this->getGoodsOneData($goodsId, $this->getFirstPartParams()),
-            $this->getGoodsOneData($goodsId, $this->getSecondPartParams())
-        );
+        return $this->getResult(array_merge(
+            $this->getGoodsOneData($goodsId, $this->getFirstPartParams())
+//            ,
+//            $this->getGoodsOneData($goodsId, $this->getSecondPartParams())
+        ));
+    }
+
+    public function getResult($data)
+    {
+        $data['seller_order'] = $data['seller_id'] == 5 ? 1 : 0;
+        $data = array_merge($data, $data['producer']);
+        unset($data['producer']);
+
+//        $data = array_merge($data, $data['goods_ranks']);
+//        unset($data['goods_ranks']);
+
+        return $data;
     }
 }

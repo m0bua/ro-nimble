@@ -13,34 +13,42 @@ class GoodsModel extends Elastic
 {
     use PromotionsTrait;
 
-    protected $id;
-    protected $promotion_id;
-    protected $constructor_id;
-    protected $gift_id;
-    protected $category_id;
-    protected $category_ids;
+    protected $id; // id
+    protected $promotion_id; // promotion_id
+    protected $constructor_id; // constructor_id
+    protected $gift_id; // gift_id
+    protected $category_id; // category_id
+    protected $category_ids; // category_ids:mpath
+    protected $producer_id; // producer
+    protected $producer_name; // producer
+    protected $price; // price
+    protected $sell_status; // sell_status
+    protected $seller_order; // 'seller_id' == 5 ? 1 : 0
+    protected $seller_id; // seller_id
+    protected $group_id; // group_id
+    protected $is_group_primary; // is_group_primary
+    protected $status_inherited; // status_inherited
+    protected $goods_order; // goods_order:order
+    protected $series_id; // series_id
+    protected $state; // state
+
+
+    // ждем реалізацію від гудсов
+    protected $rank; //goods_ranks->search_rank
+    protected $income_order; //goods_ranks->search_rank
+    protected $bonus_charge; //bonus_charge:pl_bonus_charge_pcs
+
+
+
     protected $options;
     protected $option_names;
     protected $option_values;
     protected $option_values_names;
     protected $options_checked;
     protected $option_sliders;
-    protected $producer_id;
-    protected $producer_name;
-    protected $price;
-    protected $rank;
-    protected $sell_status;
-    protected $status_inherited;
-    protected $seller_order;
-    protected $seller_id;
-    protected $income_order;
-    protected $group_id;
-    protected $is_group_primary;
-    protected $goods_order;
+
+    // в маркетинг будемо ходити
     protected $tags;
-    protected $bonus_charge;
-    protected $series_id;
-    protected $state;
 
     /**
      * @inheritDoc
