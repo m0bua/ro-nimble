@@ -80,6 +80,7 @@ abstract class Elastic extends Immutable
         $reflectionClass = new ReflectionClass(get_class($this));
 
         array_map(function ($property) use (&$fields, $fieldNames) {
+            $property->setAccessible(true);
             $propertyName = $property->getName();
             $propertyValue = $property->getValue($this);
             if (!empty($fieldNames)) {
@@ -89,7 +90,7 @@ abstract class Elastic extends Immutable
             } else {
                 $fields[$propertyName] = $propertyValue;
             }
-        }, $reflectionClass->getProperties());
+        }, $reflectionClass->getProperties(\ReflectionProperty::IS_PROTECTED));
 
         return $fields;
     }
@@ -98,7 +99,6 @@ abstract class Elastic extends Immutable
     /**
      * @param string $name
      * @param array $arguments
-     * @return $this
      */
     public function __call(string $name, array $arguments)
     {

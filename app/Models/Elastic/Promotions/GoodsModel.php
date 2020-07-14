@@ -13,34 +13,34 @@ class GoodsModel extends Elastic
 {
     use PromotionsTrait;
 
-    public $id;
-    public $promotion_id;
-    public $constructor_id;
-    public $gift_id;
-    public $category_id;
-    public $category_ids;
-    public $options;
-    public $option_names;
-    public $option_values;
-    public $option_values_names;
-    public $options_checked;
-    public $option_sliders;
-    public $producer_id;
-    public $producer_name;
-    public $price;
-    public $rank;
-    public $sell_status;
-    public $status_inherited;
-    public $seller_order;
-    public $seller_id;
-    public $income_order;
-    public $group_id;
-    public $is_group_primary;
-    public $goods_order;
-    public $tags;
-    public $bonus_charge;
-    public $series_id;
-    public $state;
+    protected $id;
+    protected $promotion_id;
+    protected $constructor_id;
+    protected $gift_id;
+    protected $category_id;
+    protected $category_ids;
+    protected $options;
+    protected $option_names;
+    protected $option_values;
+    protected $option_values_names;
+    protected $options_checked;
+    protected $option_sliders;
+    protected $producer_id;
+    protected $producer_name;
+    protected $price;
+    protected $rank;
+    protected $sell_status;
+    protected $status_inherited;
+    protected $seller_order;
+    protected $seller_id;
+    protected $income_order;
+    protected $group_id;
+    protected $is_group_primary;
+    protected $goods_order;
+    protected $tags;
+    protected $bonus_charge;
+    protected $series_id;
+    protected $state;
 
     /**
      * @inheritDoc
