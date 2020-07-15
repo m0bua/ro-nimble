@@ -32,13 +32,15 @@ class Controller extends BaseController
             'gift_id' => 444,
         ], $goods));
 
+        $elasticGoodsModel->setId($id);
         $elasticGoodsModel->setPromotionId(123);
 
-        $response = $elasticGoodsModel->save();
-//        dump(
-//            $response
-//        );
-//        die;
+        $response = $elasticGoodsModel->index();
+
+        dump(
+            $response
+        );
+        die;
 
         $search = $elasticGoodsModel->searchById($id);
 

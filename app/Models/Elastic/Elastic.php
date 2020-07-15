@@ -44,13 +44,21 @@ abstract class Elastic extends Immutable
     private $params;
 
     /**
+     * @var ReflectionClass
+     */
+    private $reflectionClass;
+
+    /**
      * Elastic constructor.
+     * @throws ReflectionException
      */
     public function __construct()
     {
+        $this->reflectionClass = new ReflectionClass(get_class($this));
         $this->client = ClientBuilder::create()->build();
         $this->index = $this->indexName();
         $this->type = $this->typeName();
+        $this->checkRequired();
     }
 
     /**
@@ -68,6 +76,17 @@ abstract class Elastic extends Immutable
     abstract public function typeName(): string;
 
     /**
+     * Указывает обязательные поля для заполнения.
+     * Возвращает пустой массив, если таковых не имеется
+     *
+     * @return array
+     */
+    public function requiredFields(): array
+    {
+        return [];
+    }
+
+    /**
      * Возвращает список полей индекса текущей модели
      *
      * @param array $fieldNames
@@ -77,8 +96,6 @@ abstract class Elastic extends Immutable
     public function getFields(array $fieldNames = []): array
     {
         $fields = [];
-        $reflectionClass = new ReflectionClass(get_class($this));
-
         array_map(function ($property) use (&$fields, $fieldNames) {
             if (get_class($this) === $property->class) {
                 $property->setAccessible(true);
@@ -92,7 +109,7 @@ abstract class Elastic extends Immutable
                     $fields[$propertyName] = $propertyValue;
                 }
             }
-        }, $reflectionClass->getProperties(\ReflectionProperty::IS_PROTECTED));
+        }, $this->reflectionClass->getProperties(\ReflectionProperty::IS_PROTECTED));
 
         return $fields;
     }
@@ -143,7 +160,8 @@ abstract class Elastic extends Immutable
      */
     public function index(array $params = [])
     {
-        return $this->prepareParams($params)->client->index($this->params);
+        $this->checkRequiredIsSet();
+        return $this->prepareParams(array_merge(['body' => $this->getFields()], $params))->client->index($this->params);
     }
 
     /**
@@ -169,20 +187,6 @@ abstract class Elastic extends Immutable
     }
 
     /**
-     * @return array|callable
-     * @throws ReflectionException
-     */
-    public function save()
-    {
-        $fields = $this->getFields();
-
-        return $this->index([
-            'id' => $fields['id'],
-            'body' => $fields,
-        ]);
-    }
-
-    /**
      * @param $fieldName
      * @param $fieldValue
      */
@@ -203,5 +207,37 @@ abstract class Elastic extends Immutable
         ], $params);
 
         return $this;
+    }
+
+    /**
+     * Проверяет на наличие обязательных полей
+     *
+     * @throws ReflectionException
+     */
+    private function checkRequired()
+    {
+        $properties = [];
+        array_map(function ($property) use (&$properties) {
+            if (get_class($this) === $property->class) {
+                $properties[] = $property->getName();
+            }
+        }, $this->reflectionClass->getProperties(\ReflectionProperty::IS_PROTECTED));
+
+        $diff = array_diff($this->requiredFields(), $properties);
+        if (!empty($diff)) {
+            throw new \Exception(sprintf("Required fields is missing: %s", join(', ', $diff)));
+        }
+    }
+
+    /**
+     * Проверяет заполнены ли обязательные поля
+     */
+    private function checkRequiredIsSet()
+    {
+        array_map(function ($field) {
+            if (!isset($this->$field)) {
+                throw new \Exception(sprintf("Field %s can not be null", $field));
+            }
+        }, $this->requiredFields());
     }
 }

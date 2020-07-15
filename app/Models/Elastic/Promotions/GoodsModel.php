@@ -59,6 +59,26 @@ class GoodsModel extends Elastic
     }
 
     /**
+     * @inheritDoc
+     */
+    public function requiredFields(): array
+    {
+        return ['id'];
+    }
+
+    /**
+     * @param array $params
+     * @return array|callable
+     * @throws \ReflectionException
+     */
+    public function index(array $params = [])
+    {
+        return parent::index(
+            array_merge($this->getFields(['id']), $params)
+        );
+    }
+
+    /**
      * Ищет товар по ID
      *
      * @param int $goodsId
