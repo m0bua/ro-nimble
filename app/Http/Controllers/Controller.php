@@ -10,6 +10,43 @@ class Controller extends BaseController
 {
     public function goods(GraphGoodsModel $graphGoodsModel, ElasticGoodsModel $elasticGoodsModel)
     {
+        $groupId = 24089947;
+        $groupGoods = $graphGoodsModel->getManyByGroup($groupId);
+
+//        dump(
+//            $groupGoods
+//        );
+//        die;
+
+        if ($groupGoods) {
+            foreach ($groupGoods as $goods) {
+                $elasticGoodsModel->load(array_merge([
+                    'promotion_id' => 222,
+                    'constructor_id' => 333,
+                    'gift_id' => 444,
+                ], $goods));
+
+                $response = $elasticGoodsModel->index();
+            }
+        }
+//        dump(
+//            array_column($groupGoods, 'id')
+//        );
+//        die;
+
+        $search1 = $elasticGoodsModel->searchById(199807069);
+        $search2 = $elasticGoodsModel->searchById(199824781);
+
+        dump(
+            $search1['hits']['hits'][0]['_source'],
+            $search2['hits']['hits'][0]['_source']
+        );
+        die;
+
+
+
+
+
         $id = 200775625;
         $id = 97653;
         $id = 198516121;
@@ -18,13 +55,14 @@ class Controller extends BaseController
         $id = 208281043;
         $id = 151676890;
         $id = 96418468;
+//        $id = 16631;
 
         $goods = $graphGoodsModel->getOneById($id);
 
-//        dump(
-//            $goods
-//        );
-//        die;
+        dump(
+            $goods
+        );
+        die;
 
         $elasticGoodsModel->load(array_merge([
             'promotion_id' => 222,
@@ -32,15 +70,9 @@ class Controller extends BaseController
             'gift_id' => 444,
         ], $goods));
 
-        $elasticGoodsModel->setId($id);
         $elasticGoodsModel->setPromotionId(123);
 
         $response = $elasticGoodsModel->index();
-
-        dump(
-            $response
-        );
-        die;
 
         $search = $elasticGoodsModel->searchById($id);
 

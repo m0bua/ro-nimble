@@ -31,6 +31,7 @@ class GoodsModel extends Elastic
     protected $goods_order; // goods_order:order
     protected $series_id; // series_id
     protected $state; // state
+    protected $tags; // tags
 
 
     // ждем реалізацію від гудсов
@@ -46,9 +47,6 @@ class GoodsModel extends Elastic
     protected $option_values_names;
     protected $options_checked;
     protected $option_sliders;
-
-    // в маркетинг будемо ходити
-    protected $tags;
 
     /**
      * @inheritDoc
