@@ -51,4 +51,12 @@ class ConvertString
         return sprintf('set%s', ucfirst($propertyName));
     }
 
+    /**
+     * @param array $data
+     * @return string
+     */
+    public static function formattedOptions(array $data)
+    {
+        return $data ? sprintf(',%s,', implode(',', array_keys($data))) : '';
+    }
 }

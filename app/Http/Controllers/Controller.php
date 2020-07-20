@@ -10,42 +10,38 @@ class Controller extends BaseController
 {
     public function goods(GraphGoodsModel $graphGoodsModel, ElasticGoodsModel $elasticGoodsModel)
     {
-        $groupId = 24089947;
-        $groupGoods = $graphGoodsModel->getManyByGroup($groupId);
-
+//        $groupId = 24089947;
+//        $groupGoods = $graphGoodsModel->getManyByGroup($groupId);
+//
 //        dump(
 //            $groupGoods
 //        );
 //        die;
 
-        if ($groupGoods) {
-            foreach ($groupGoods as $goods) {
-                $elasticGoodsModel->load(array_merge([
-                    'promotion_id' => 222,
-                    'constructor_id' => 333,
-                    'gift_id' => 444,
-                ], $goods));
-
-                $response = $elasticGoodsModel->index();
-            }
-        }
+//        if ($groupGoods) {
+//            foreach ($groupGoods as $goods) {
+//                $elasticGoodsModel->load(array_merge([
+//                    'promotion_id' => 222,
+//                    'constructor_id' => 333,
+//                    'gift_id' => 444,
+//                ], $goods));
+//
+//                $response = $elasticGoodsModel->index();
+//            }
+//        }
 //        dump(
 //            array_column($groupGoods, 'id')
 //        );
 //        die;
 
-        $search1 = $elasticGoodsModel->searchById(199807069);
-        $search2 = $elasticGoodsModel->searchById(199824781);
-
-        dump(
-            $search1['hits']['hits'][0]['_source'],
-            $search2['hits']['hits'][0]['_source']
-        );
-        die;
-
-
-
-
+//        $search1 = $elasticGoodsModel->searchById(199807069);
+//        $search2 = $elasticGoodsModel->searchById(199824781);
+//
+//        dump(
+//            $search1['hits']['hits'][0]['_source'],
+//            $search2['hits']['hits'][0]['_source']
+//        );
+//        die;
 
         $id = 200775625;
         $id = 97653;
@@ -55,6 +51,11 @@ class Controller extends BaseController
         $id = 208281043;
         $id = 151676890;
         $id = 96418468;
+        $id = 17501340;
+        $id = 155179;
+        $id = 55981038;
+        $id = 112629260;
+        $id = 183082;
 //        $id = 16631;
 
         $goods = $graphGoodsModel->getOneById($id);

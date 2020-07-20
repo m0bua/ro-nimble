@@ -13,25 +13,31 @@ class GoodsModel extends Elastic
 {
     use PromotionsTrait;
 
-    protected $id; // id
-    protected $promotion_id; // promotion_id
-    protected $constructor_id; // constructor_id
-    protected $gift_id; // gift_id
-    protected $category_id; // category_id
-    protected $category_ids; // category_ids:mpath
-    protected $producer_id; // producer
-    protected $producer_name; // producer
-    protected $price; // price
-    protected $sell_status; // sell_status
-    protected $seller_order; // 'seller_id' == 5 ? 1 : 0
-    protected $seller_id; // seller_id
-    protected $group_id; // group_id
-    protected $is_group_primary; // is_group_primary
-    protected $status_inherited; // status_inherited
-    protected $goods_order; // goods_order:order
-    protected $series_id; // series_id
-    protected $state; // state
-    protected $tags; // tags
+    protected $id;
+    protected $promotion_id;
+    protected $constructor_id;
+    protected $gift_id;
+    protected $category_id;
+    protected $category_ids;
+    protected $producer_id;
+    protected $producer_name;
+    protected $price;
+    protected $sell_status;
+    protected $seller_order;
+    protected $seller_id;
+    protected $group_id;
+    protected $is_group_primary;
+    protected $status_inherited;
+    protected $goods_order;
+    protected $series_id;
+    protected $state;
+    protected $tags;
+    protected $options;
+    protected $option_names;
+    protected $option_values;
+    protected $option_values_names;
+    protected $options_checked;
+    protected $option_sliders;
 
 
     // ждем реалізацію від гудсов
@@ -41,12 +47,7 @@ class GoodsModel extends Elastic
 
 
 
-    protected $options;
-    protected $option_names;
-    protected $option_values;
-    protected $option_values_names;
-    protected $options_checked;
-    protected $option_sliders;
+
 
     /**
      * @inheritDoc
