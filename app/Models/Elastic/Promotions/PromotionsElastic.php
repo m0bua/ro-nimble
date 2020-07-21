@@ -6,7 +6,7 @@ namespace App\Models\Elastic\Promotions;
 
 use App\Models\Elastic\Elastic;
 
-class PromotionsElastic extends Elastic
+abstract class PromotionsElastic extends Elastic
 {
 
     /**

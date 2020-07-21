@@ -11,8 +11,6 @@ use App\ValueObjects\Property;
  */
 class GoodsModel extends PromotionsElastic
 {
-    use PromotionsTrait;
-
     protected $id;
     protected $promotion_id;
     protected $constructor_id;
@@ -44,18 +42,6 @@ class GoodsModel extends PromotionsElastic
     protected $rank; //goods_ranks->search_rank
     protected $income_order; //goods_ranks->search_rank
     protected $bonus_charge; //bonus_charge:pl_bonus_charge_pcs
-
-
-
-
-
-    /**
-     * @inheritDoc
-     */
-    public function typeName(): string
-    {
-        return 'goods';
-    }
 
     /**
      * @inheritDoc
