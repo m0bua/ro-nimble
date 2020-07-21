@@ -105,9 +105,7 @@ class GoodsModel extends GraphQL
 
         unset($data['options'], $data['producer'], $data['goods_ranks']);
 
-        $data = array_merge($data, $options->getOptions());
-
-        return $data;
+        return array_merge($data, $options->getOptions());
     }
 
     /**
