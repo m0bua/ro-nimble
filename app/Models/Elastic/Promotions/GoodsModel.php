@@ -9,7 +9,7 @@ use App\ValueObjects\Property;
  * Class GoodsModel
  * @package App\Models\Elastic\Promotions
  */
-class GoodsModel extends Elastic
+class GoodsModel extends PromotionsElastic
 {
     use PromotionsTrait;
 

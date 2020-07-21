@@ -23,18 +23,11 @@ abstract class Elastic extends Immutable
     private $client;
 
     /**
-     * Index (db name) associated with the model
+     * Index associated with the model
      *
      * @var string
      */
     private $index;
-
-    /**
-     * Type (table name) associated with the model
-     *
-     * @var string
-     */
-    private $type;
 
     /**
      * Parameters for query
@@ -57,23 +50,15 @@ abstract class Elastic extends Immutable
         $this->reflectionClass = new ReflectionClass(get_class($this));
         $this->client = ClientBuilder::create()->build();
         $this->index = $this->indexName();
-        $this->type = $this->typeName();
         $this->checkRequired();
     }
 
     /**
-     * Реализуется в дочернем классе для определения индекса (базы)
+     * Реализуется в дочернем классе для определения индекса
      *
      * @return string
      */
     abstract public function indexName(): string;
-
-    /**
-     * Реализуется в дочернем классе для определения типа (таблицы)
-     *
-     * @return string
-     */
-    abstract public function typeName(): string;
 
     /**
      * Указывает обязательные поля для заполнения.
@@ -201,10 +186,7 @@ abstract class Elastic extends Immutable
      */
     private function prepareParams(array $params = []): self
     {
-        $this->params = array_merge([
-            'index' => $this->index,
-            'type' => $this->type,
-        ], $params);
+        $this->params = array_merge(['index' => $this->index], $params);
 
         return $this;
     }
