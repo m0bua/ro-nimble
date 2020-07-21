@@ -76,7 +76,7 @@ class Options
     public function __construct($data)
     {
         try {
-            $this->optionsValidate($data);
+            $this->fillOptions($data);
         } catch (\Throwable $t) {
             report($t);
         }
@@ -86,7 +86,7 @@ class Options
      * Валидация опций и наполнение свойств данными
      * @param $data
      */
-    public function optionsValidate($data)
+    private function fillOptions($data)
     {
         if (!$data || !is_array($data)) {
             return;
@@ -116,9 +116,7 @@ class Options
                     $this->optionValuesNames[$value['name']] = null;
                 }
             } elseif (in_array($details['type'], self::OPTIONS_BY_TYPES['integers'])) {
-                $this->optionSliders[] = [
-                    $details['id'] => $option['value']
-                ];
+                $this->optionSliders[$details['id']] = $option['value'];
             } elseif (in_array($details['type'], self::OPTIONS_BY_TYPES['booleans'])) {
                 $this->optionsChecked[$details['id']] = null;
             }
@@ -131,12 +129,12 @@ class Options
     public function getOptions(): array
     {
         return [
-            'options' => ConvertString::formattedOptions($this->options),
-            'option_names' => ConvertString::formattedOptions($this->optionNames),
-            'option_values' => ConvertString::formattedOptions($this->optionValues),
-            'option_values_names' => ConvertString::formattedOptions($this->optionValuesNames),
-            'options_checked' => ConvertString::formattedOptions($this->optionsChecked),
-            'option_sliders' => json_encode($this->optionSliders)
+            'options' => array_keys($this->options),
+            'option_names' => array_map('strval', array_keys($this->optionNames)),
+            'option_values' => array_keys($this->optionValues),
+            'option_values_names' => array_map('strval', array_keys($this->optionValuesNames)),
+            'options_checked' => array_keys($this->optionsChecked),
+            'option_sliders' => $this->optionSliders
         ];
     }
 }

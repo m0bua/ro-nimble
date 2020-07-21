@@ -46,25 +46,25 @@ class Controller extends BaseController
         $id = 200775625;
         $id = 97653;
         $id = 198516121;
-        $id = 199807069;
+        $id = 199807069;  //tags
         $id = 108521;
         $id = 208281043;
         $id = 151676890;
         $id = 96418468;
         $id = 17501340;
         $id = 155179;
-        $id = 55981038;
-        $id = 112629260;
-        $id = 183082;
+        $id = 55981038;   //options
+        $id = 112629260; //options
+        $id = 183082;  //options with sliders
 //        $id = 16631;
 
         $goods = $graphGoodsModel->getOneById($id);
 
-        dump(
-            $goods
-        );
-        die;
-
+//        dump(
+//            $goods
+//        );
+//        die;
+//
         $elasticGoodsModel->load(array_merge([
             'promotion_id' => 222,
             'constructor_id' => 333,
@@ -74,6 +74,10 @@ class Controller extends BaseController
         $elasticGoodsModel->setPromotionId(123);
 
         $response = $elasticGoodsModel->index();
+//        dump(
+//            $response
+//        );
+//        die;
 
         $search = $elasticGoodsModel->searchById($id);
 

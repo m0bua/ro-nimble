@@ -97,8 +97,9 @@ class GoodsModel extends GraphQL
     {
         $options = new Options($data['options']);
 
+        $data['category_ids'] = array_filter(explode('.', $data['category_ids']));
         $data['seller_order'] = $data['seller_id'] == 5 ? 1 : 0;
-        $data['tags'] = implode(',', array_column($data['tags'], 'id'));
+        $data['tags'] = array_column($data['tags'], 'id');
         $data = array_merge($data, $data['producer']);
 //        $data = array_merge($data, $data['goods_ranks']);
 
