@@ -172,6 +172,21 @@ abstract class Elastic extends Immutable
     }
 
     /**
+     * Возвращает поля поиска
+     *
+     * @param array $searchResult
+     * @return array
+     */
+    public function getSource(array $searchResult): array
+    {
+        if (!isset($searchResult['hits'])) {
+            return array_column($searchResult, '_source');
+        }
+
+        return $this->getSource($searchResult['hits']);
+    }
+
+    /**
      * @param $fieldName
      * @param $fieldValue
      */

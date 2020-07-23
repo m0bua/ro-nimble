@@ -45,20 +45,16 @@ class ChangePromotionConstructorGoodsCommand extends Command
             if ($constructorInfo !== null) {
                 $gqGoodsModel = new GraphQLGoodsModel();
                 $elasticGoodsModel = new ElasticGoodsModel();
-                $res = $elasticGoodsModel->load(
-                    array_merge(
-                        $gqGoodsModel->getOneById($goodsId),
-                        [
-                            'promotion_id' => $constructorInfo->promotion_id,
-                            'constructor_id' => $constructorId,
-                            'gift_id' => $constructorInfo->gift_id
-                        ]
-                    )
-                )->index();
-                dump($res);die;
-            }
 
-            var_dump($amqpMessage->body);
+                $elasticGoodsModel->load($elasticGoodsModel->searchById($goodsId));
+                $elasticGoodsModel->setConstructorsId(
+                    array_unique(array_merge($elasticGoodsModel->getConstructorsId(), [$constructorId]))
+                );
+                $elasticGoodsModel->setPromotionsId(
+                    array_unique(array_merge($elasticGoodsModel->getPromotionsId(), [$constructorInfo->promotion_id]))
+                );
+                $elasticGoodsModel->load($gqGoodsModel->getOneById($goodsId))->index();
+            }
         }, new RoutingKey($this->routingKey));
     }
 }

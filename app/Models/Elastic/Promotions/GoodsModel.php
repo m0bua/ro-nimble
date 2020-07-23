@@ -12,8 +12,8 @@ use App\ValueObjects\Property;
 class GoodsModel extends PromotionsElastic
 {
     protected $id;
-    protected $promotion_id;
-    protected $constructor_id;
+    protected $promotions_id = [];
+    protected $constructors_id = [];
     protected $gift_id;
     protected $category_id;
     protected $category_ids;
@@ -71,17 +71,16 @@ class GoodsModel extends PromotionsElastic
      */
     public function searchById(int $goodsId)
     {
-        return $this->search(
+        $searchResult = $this->search(
             [
                 'body' => [
                     'query' => [
-                        'multi_match' => [
-                            'query' => $goodsId,
-                            'fields' => ['id'],
-                        ],
+                        'term' => ['id' => $goodsId],
                     ],
                 ],
             ]
         );
+
+        return $this->getSource($searchResult)[0];
     }
 }
