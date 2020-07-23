@@ -35,35 +35,62 @@ class ChangePromotionConstructorGoodsCommand extends Command
     public function handle()
     {
         (new PromoGoodsConsumer())->consume(function ($amqpMessage, $resolver) {
+            $gqGoodsModel = new GraphQLGoodsModel();
+            $elasticGoodsModel = new ElasticGoodsModel();
             $message = new Message($amqpMessage);
+
             $goodsId = $message->getField('fields_data.goods_id');
             $constructorId = $message->getField('fields_data.promotion_constructor_id');
+            $promotionId = null;
+            $giftId = null;
+
             $constructorInfo = json_decode(
                 app('redis')->get($constructorId)
             );
 
             if ($constructorInfo !== null) {
-                $gqGoodsModel = new GraphQLGoodsModel();
-                $elasticGoodsModel = new ElasticGoodsModel();
-
-                $elasticGoodsModel->load($elasticGoodsModel->searchById($goodsId));
-
-                $elasticGoodsModel->setPromotionConstructors(
-                    array_unique(
-                        array_merge(
-                            $elasticGoodsModel->getPromotionConstructors(),
-                            [[
-                                'id' => $constructorId,
-                                'promotion_id' => $constructorInfo->promotion_id,
-                                'gift_id' => $constructorInfo->gift_id,
-                            ]]
-                        ),
-                        SORT_REGULAR
-                    )
-                );
-
-                $elasticGoodsModel->load($gqGoodsModel->getOneById($goodsId))->index();
+                $promotionId = $constructorInfo->promotion_id;
+                $giftId = $constructorInfo->gift_id;
             }
+
+            $elasticGoodsModel->load($elasticGoodsModel->searchById($goodsId));
+            $elasticGoodsModel->setPromotionConstructors(
+                $this->takeEmptySeat(
+                    $elasticGoodsModel->getPromotionConstructors(),
+                    [
+                        'id' => $constructorId,
+                        'promotion_id' => $promotionId,
+                        'gift_id' => $giftId,
+                    ]
+                )
+            );
+            $elasticGoodsModel->load($gqGoodsModel->getOneById($goodsId))->index();
+
+            unset($gqGoodsModel, $elasticGoodsModel, $message);
+
         }, new RoutingKey($this->routingKey));
+    }
+
+    /**
+     * @param array $seats
+     * @param array $body
+     * @return array[]
+     */
+    public function takeEmptySeat(array $seats, array $body): array
+    {
+        $seatTaken = false;
+        foreach ($seats as &$seat) {
+            if ($seat['id'] === $body['id'] && $seat['promotion_id'] === null) {
+                $seat['promotion_id'] = $body['promotion_id'];
+                $seat['gift_id'] = $body['gift_id'];
+                $seatTaken = true;
+                break;
+            }
+        }
+        if (!$seatTaken) {
+            array_push($seats, $body);
+        }
+
+        return array_unique($seats, SORT_REGULAR);
     }
 }

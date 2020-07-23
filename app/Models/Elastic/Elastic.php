@@ -233,7 +233,7 @@ abstract class Elastic extends Immutable
     {
         array_map(function ($field) {
             if (!isset($this->$field)) {
-                throw new \Exception(sprintf("Field %s can not be null", $field));
+                throw new \Exception(sprintf('Field "%s" can not be null', $field));
             }
         }, $this->requiredFields());
     }
