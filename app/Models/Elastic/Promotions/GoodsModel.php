@@ -12,8 +12,7 @@ use App\ValueObjects\Property;
 class GoodsModel extends PromotionsElastic
 {
     protected $id;
-    protected $promotions_id = [];
-    protected $constructors_id = [];
+    protected $promotion_constructors = [];
     protected $gift_id;
     protected $category_id;
     protected $category_ids;
@@ -81,6 +80,7 @@ class GoodsModel extends PromotionsElastic
             ]
         );
 
-        return $this->getSource($searchResult)[0];
+        $source = $this->getSource($searchResult);
+        return isset($source[0]) ? $source[0] : $source;
     }
 }

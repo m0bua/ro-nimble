@@ -34,7 +34,10 @@ class PromoGoodsConsumer extends ConsumerClosure
                     $callback($message, $resolver);
                 }
             } catch (\Throwable $t) {
-                Log::error($t->getMessage());
+                Log::error(
+                    "{$t->getMessage()}; File: {$t->getFile()}; Line: {$t->getLine()}"
+                );
+//                abort(500, "{$t->getMessage()}; File: {$t->getFile()}; Line: {$t->getLine()}");
             }
         });
     }

@@ -172,7 +172,7 @@ abstract class Elastic extends Immutable
     }
 
     /**
-     * Возвращает поля поиска
+     * Возвращает source-результат поиска
      *
      * @param array $searchResult
      * @return array

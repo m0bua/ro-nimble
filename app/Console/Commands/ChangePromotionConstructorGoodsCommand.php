@@ -47,12 +47,21 @@ class ChangePromotionConstructorGoodsCommand extends Command
                 $elasticGoodsModel = new ElasticGoodsModel();
 
                 $elasticGoodsModel->load($elasticGoodsModel->searchById($goodsId));
-                $elasticGoodsModel->setConstructorsId(
-                    array_unique(array_merge($elasticGoodsModel->getConstructorsId(), [$constructorId]))
+
+                $elasticGoodsModel->setPromotionConstructors(
+                    array_unique(
+                        array_merge(
+                            $elasticGoodsModel->getPromotionConstructors(),
+                            [[
+                                'id' => $constructorId,
+                                'promotion_id' => $constructorInfo->promotion_id,
+                                'gift_id' => $constructorInfo->gift_id,
+                            ]]
+                        ),
+                        SORT_REGULAR
+                    )
                 );
-                $elasticGoodsModel->setPromotionsId(
-                    array_unique(array_merge($elasticGoodsModel->getPromotionsId(), [$constructorInfo->promotion_id]))
-                );
+
                 $elasticGoodsModel->load($gqGoodsModel->getOneById($goodsId))->index();
             }
         }, new RoutingKey($this->routingKey));
