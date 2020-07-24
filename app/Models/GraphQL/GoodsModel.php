@@ -6,7 +6,6 @@ use App\ValueObjects\Options;
 use GraphQL\InlineFragment;
 use GraphQL\Query;
 use GraphQL\RawObject;
-use function GuzzleHttp\Psr7\str;
 
 /**
  * Class GoodsModel
@@ -49,42 +48,31 @@ class GoodsModel extends GraphQL
      *
      * @return array
      */
-    public function getFirstPartParams()
+    public function getParams()
     {
         return array_merge(
             $this->mainFieldsStack(), [
                 (new Query('producer'))->setSelectionSet(['producer_id:id', 'producer_name:name']),
                 (new Query('tags'))->setSelectionSet(['id']),
 //                (new Query('goods_ranks'))->setSelectionSet(['rank:search_rank', 'income_order:search_rank']),
-            ]
-        );
-    }
-
-    /**
-     * second part of the parameters
-     *
-     * @return array
-     */
-    public function getSecondPartParams()
-    {
-        return [
-            (new Query('options'))->setSelectionSet([
-                (new InlineFragment('GoodsOptionSingle'))->setSelectionSet([
-                    'value',
-                    (new Query('details'))->setSelectionSet([
-                        'id', 'name', 'type', 'state',
+                (new Query('options'))->setSelectionSet([
+                    (new InlineFragment('GoodsOptionSingle'))->setSelectionSet([
+                        'value',
+                        (new Query('details'))->setSelectionSet([
+                            'id', 'name', 'type', 'state',
+                        ]),
                     ]),
-                ]),
-                (new InlineFragment('GoodsOptionPlural'))->setSelectionSet([
-                    (new Query('details'))->setSelectionSet([
-                        'id', 'name', 'type', 'state',
-                        (new Query('values'))->setSelectionSet([
-                            'id', 'name', 'status'
+                    (new InlineFragment('GoodsOptionPlural'))->setSelectionSet([
+                        (new Query('details'))->setSelectionSet([
+                            'id', 'name', 'type', 'state',
+                            (new Query('values'))->setSelectionSet([
+                                'id', 'name', 'status'
+                            ]),
                         ]),
                     ]),
                 ]),
-            ]),
-        ];
+            ]
+        );
     }
 
     /**
@@ -116,10 +104,7 @@ class GoodsModel extends GraphQL
      */
     public function getOneById(int $id): array
     {
-        return $this->formatResponse(array_merge(
-            $this->getGoodsOneData($id, $this->getFirstPartParams()),
-            $this->getGoodsOneData($id, $this->getSecondPartParams())
-        ));
+        return $this->formatResponse($this->getGoodsOneData($id, $this->getParams()));
     }
 
     /**
@@ -158,10 +143,7 @@ class GoodsModel extends GraphQL
      */
     public function getManyByGroup(int $groupId): array
     {
-        $result = array_merge(
-            $this->getGroupGoodsData($groupId, $this->getFirstPartParams()),
-            $this->getGoodsOneData($groupId, $this->getSecondPartParams())
-        );
+        $result = $this->getGroupGoodsData($groupId, $this->getParams());
 
         foreach ($result as &$goods) {
             $goods = $this->formatResponse($goods);

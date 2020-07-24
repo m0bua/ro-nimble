@@ -10,13 +10,13 @@ class Controller extends BaseController
 {
     public function goods(GraphGoodsModel $graphGoodsModel, ElasticGoodsModel $elasticGoodsModel)
     {
-//        $groupId = 24089947;
-//        $groupGoods = $graphGoodsModel->getManyByGroup($groupId);
-//
-//        dump(
-//            $groupGoods
-//        );
-//        die;
+        $groupId = 24089947;
+        $groupGoods = $graphGoodsModel->getManyByGroup($groupId);
+
+        dump(
+            $groupGoods
+        );
+        die;
 
 //        if ($groupGoods) {
 //            foreach ($groupGoods as $goods) {
@@ -60,11 +60,11 @@ class Controller extends BaseController
 
         $goods = $graphGoodsModel->getOneById($id);
 
-//        dump(
-//            $goods
-//        );
-//        die;
-//
+        dump(
+            $goods
+        );
+        die;
+
         $elasticGoodsModel->load(array_merge([
             'promotion_id' => 222,
             'constructor_id' => 333,
@@ -82,6 +82,7 @@ class Controller extends BaseController
         $search = $elasticGoodsModel->searchById($id);
 
         dump(
+            $search,
             $search['hits']['hits'][0]['_source'],
             array_merge([
                 'promotion_id' => 222,
