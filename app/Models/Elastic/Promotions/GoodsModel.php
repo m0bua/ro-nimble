@@ -70,11 +70,21 @@ class GoodsModel extends PromotionsElastic
      */
     public function searchById(int $goodsId)
     {
+        return $this->searchTermByField('id', $goodsId);
+    }
+
+    /**
+     * @param $fieldName
+     * @param $value
+     * @return array|mixed
+     */
+    public function searchTermByField($fieldName, $value)
+    {
         $searchResult = $this->search(
             [
                 'body' => [
                     'query' => [
-                        'term' => ['id' => $goodsId],
+                        'term' => [$fieldName => $value],
                     ],
                 ],
             ]

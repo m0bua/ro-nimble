@@ -106,4 +106,21 @@ class PromotionConstructor
 
         return array_unique($this->seats, SORT_REGULAR);
     }
+
+    /**
+     * @param int $constructorId
+     * @param array $constructors
+     * @return array
+     */
+    public static function remove(int $constructorId, array $constructors): array
+    {
+        foreach ($constructors as $key => $constructor)
+        {
+            if ($constructor['id'] === $constructorId) {
+                unset($constructors[$key]);
+            }
+        }
+
+        return $constructors;
+    }
 }

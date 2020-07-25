@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Consumers\PromoGoodsConsumer;
 use App\Models\Elastic\Promotions\GoodsModel;
 use App\ValueObjects\Message;
+use App\ValueObjects\PromotionConstructor;
 use App\ValueObjects\RoutingKey;
 use Bschmitt\Amqp\Exception\Configuration;
 use Illuminate\Console\Command;
@@ -45,7 +46,7 @@ class DeletePromotionConstructorGoodsCommand extends Command
 
                 $elasticGoodsModel->load($goodsData);
                 $elasticGoodsModel->setPromotionConstructors(
-                    $this->removeConstructor($constructorId, $elasticGoodsModel->getPromotionConstructors())
+                    PromotionConstructor::remove($constructorId, $elasticGoodsModel->getPromotionConstructors())
                 );
 
                 $elasticGoodsModel->index();
@@ -53,22 +54,5 @@ class DeletePromotionConstructorGoodsCommand extends Command
 
             unset($elasticGoodsModel, $message);
         }, new RoutingKey($this->routingKey));
-    }
-
-    /**
-     * @param int $constructorId
-     * @param array $constructors
-     * @return array[]
-     */
-    private function removeConstructor(int $constructorId, array $constructors): array
-    {
-        foreach ($constructors as $key => $constructor)
-        {
-            if ($constructor['id'] === $constructorId) {
-                unset($constructors[$key]);
-            }
-        }
-
-        return $constructors;
     }
 }
