@@ -39,6 +39,14 @@ class Message
     }
 
     /**
+     * @return mixed
+     */
+    public function routingKey(): RoutingKey
+    {
+        return new RoutingKey($this->message->delivery_info['routing_key']);
+    }
+
+    /**
      * @param string $fieldRoute
      * @return mixed
      * @throws Exception

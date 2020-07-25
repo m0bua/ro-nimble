@@ -88,7 +88,7 @@ class PromotionConstructor
 
         $seatTaken = false;
         foreach ($this->seats as &$seat) {
-            if ($seat['id'] === $this->id && $seat['promotion_id'] === null) {
+            if ($seat['id'] === $this->id) {
                 $seat['promotion_id'] = $this->promotionId;
                 $seat['gift_id'] = $this->giftId;
                 $seatTaken = true;

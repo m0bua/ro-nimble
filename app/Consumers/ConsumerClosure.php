@@ -14,8 +14,7 @@ abstract class ConsumerClosure
 
     /**
      * @param Closure $callback
-     * @param RoutingKey $routingKey
      * @return mixed
      */
-    abstract public function consume(Closure $callback, RoutingKey $routingKey);
+    abstract public function consume(Closure $callback);
 }

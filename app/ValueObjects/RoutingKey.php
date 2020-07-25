@@ -3,6 +3,7 @@
 
 namespace App\ValueObjects;
 
+use App\Processors\AbstractCore;
 
 class RoutingKey
 {
@@ -10,6 +11,11 @@ class RoutingKey
      * @var string
      */
     private $routingKey;
+
+    /**
+     * @var
+     */
+    private $processorClass;
 
     /**
      * RoutingKey constructor.
@@ -26,5 +32,33 @@ class RoutingKey
     public function get()
     {
         return $this->routingKey;
+    }
+
+    /**
+     * @return AbstractCore
+     */
+    public function prepareProcessor(): AbstractCore
+    {
+        $this->generateProcessorName();
+
+        return new $this->processorClass();
+    }
+
+    /**
+     * @return string
+     */
+    private function generateProcessorName()
+    {
+        $procName = ucfirst(
+            str_replace(
+                '_', '', str_replace(
+                    '_record', '_Processor', str_replace(
+                        '.', '_', $this->routingKey
+                    )
+                )
+            )
+        );
+
+        $this->processorClass = "\App\Processors\\$procName";
     }
 }
