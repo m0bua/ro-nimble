@@ -6,6 +6,7 @@ use App\Consumers\PromoGoodsConsumer;
 use App\Models\GraphQL\GoodsModel as GraphQLGoodsModel;
 use App\Models\Elastic\Promotions\GoodsModel as ElasticGoodsModel;
 use App\ValueObjects\Message;
+use App\ValueObjects\PromotionConstructor;
 use App\ValueObjects\RoutingKey;
 
 use Bschmitt\Amqp\Exception\Configuration;
@@ -39,10 +40,10 @@ class ChangePromotionConstructorGoodsCommand extends Command
             $elasticGoodsModel = new ElasticGoodsModel();
             $message = new Message($amqpMessage);
 
+            $giftId = null;
+            $promotionId = null;
             $goodsId = $message->getField('fields_data.goods_id');
             $constructorId = $message->getField('fields_data.promotion_constructor_id');
-            $promotionId = null;
-            $giftId = null;
 
             $constructorInfo = json_decode(
                 app('redis')->get($constructorId)
@@ -53,44 +54,21 @@ class ChangePromotionConstructorGoodsCommand extends Command
                 $giftId = $constructorInfo->gift_id;
             }
 
-            $elasticGoodsModel->load($elasticGoodsModel->searchById($goodsId));
-            $elasticGoodsModel->setPromotionConstructors(
-                $this->takeEmptySeat(
-                    $elasticGoodsModel->getPromotionConstructors(),
-                    [
-                        'id' => $constructorId,
-                        'promotion_id' => $promotionId,
-                        'gift_id' => $giftId,
-                    ]
-                )
+            $promotionConstructor = new PromotionConstructor(
+                [
+                    'id' => $constructorId,
+                    'promotion_id' => $promotionId,
+                    'gift_id' => $giftId,
+                ]
             );
+
+            $elasticGoodsModel->load($elasticGoodsModel->searchById($goodsId));
+            $promotionConstructor->setSeats($elasticGoodsModel->getPromotionConstructors());
+            $elasticGoodsModel->setPromotionConstructors($promotionConstructor->takeEmptySeat());
             $elasticGoodsModel->load($gqGoodsModel->getOneById($goodsId))->index();
 
             unset($gqGoodsModel, $elasticGoodsModel, $message);
 
         }, new RoutingKey($this->routingKey));
-    }
-
-    /**
-     * @param array $seats
-     * @param array $body
-     * @return array[]
-     */
-    public function takeEmptySeat(array $seats, array $body): array
-    {
-        $seatTaken = false;
-        foreach ($seats as &$seat) {
-            if ($seat['id'] === $body['id'] && $seat['promotion_id'] === null) {
-                $seat['promotion_id'] = $body['promotion_id'];
-                $seat['gift_id'] = $body['gift_id'];
-                $seatTaken = true;
-                break;
-            }
-        }
-        if (!$seatTaken) {
-            array_push($seats, $body);
-        }
-
-        return array_unique($seats, SORT_REGULAR);
     }
 }
