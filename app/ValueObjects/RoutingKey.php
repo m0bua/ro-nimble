@@ -45,6 +45,7 @@ class RoutingKey
     }
 
     /**
+     * TODO продумать над тем что бывынести эту генерацию в специфические классы
      * @return string
      */
     private function generateProcessorName()
