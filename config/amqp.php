@@ -55,7 +55,18 @@ return [
             'qos'                   => false,
             'qos_prefetch_size'     => 0,
             'qos_prefetch_count'    => 1,
-            'qos_a_global'          => false
+            'qos_a_global'          => false,
+            'processor_name'        => function($routingKey) {
+                return ucfirst(
+                    str_replace(
+                        '_', '', str_replace(
+                            '_record', '_Processor', str_replace(
+                                '.', '_', $routingKey
+                            )
+                        )
+                    )
+                );
+            }
         ],
 
         // marketing service

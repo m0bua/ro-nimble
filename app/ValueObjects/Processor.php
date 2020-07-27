@@ -34,21 +34,17 @@ class Processor
     }
 
     /**
-     * TODO продумать над тем что бывынести эту генерацию в специфические классы
-     * @return string
+     * @throws \Exception
      */
     private function generateProcessorClass()
     {
-        $procName = ucfirst(
-            str_replace(
-                '_', '', str_replace(
-                    '_record', '_Processor', str_replace(
-                        '.', '_', $this->message->getRoutingKey()
-                    )
-                )
-            )
-        );
+        $use = config('amqp.use');
+        $processorName = config("amqp.properties.$use.processor_name");
 
-        $this->processorClass = "\App\Processors\\$procName";
+        if (is_callable($processorName)) {
+            $this->processorClass = "\App\Processors\\{$processorName($this->message->getRoutingKey())}";
+        } else {
+            $this->processorClass = "\App\Processors\\{$processorName}";
+        }
     }
 }
