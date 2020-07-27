@@ -58,6 +58,16 @@ return [
             'qos_a_global'          => false
         ],
 
+        // marketing service
+        'ms' => [
+
+        ],
+
+        // goods service
+        'gs' => [
+
+        ],
+
     ],
 
 ];

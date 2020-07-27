@@ -39,11 +39,11 @@ class Message
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function routingKey(): RoutingKey
+    public function getRoutingKey(): string
     {
-        return new RoutingKey($this->message->delivery_info['routing_key']);
+        return $this->message->delivery_info['routing_key'];
     }
 
     /**

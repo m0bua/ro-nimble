@@ -12,23 +12,17 @@ abstract class AbstractCore
      */
     protected $message;
 
+    public function __construct(Message $message)
+    {
+        $this->message = $message;
+    }
+
     /**
      * @return mixed
      */
     final public function run()
     {
         return $this->doJob();
-    }
-
-    /**
-     * @param Message $message
-     * @return $this
-     */
-    public function setMessage(Message $message): AbstractCore
-    {
-        $this->message = $message;
-
-        return $this;
     }
 
     /**

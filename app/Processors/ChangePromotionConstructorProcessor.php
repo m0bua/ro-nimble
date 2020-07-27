@@ -2,12 +2,7 @@
 
 namespace App\Processors;
 
-use App\Consumers\PromoGoodsConsumer;
-use App\ValueObjects\Message;
-use App\ValueObjects\RoutingKey;
-use Bschmitt\Amqp\Exception\Configuration;
 use Exception;
-use Illuminate\Console\Command;
 
 class ChangePromotionConstructorProcessor extends AbstractCore
 {
