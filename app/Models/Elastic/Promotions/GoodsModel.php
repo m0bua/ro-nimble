@@ -15,7 +15,7 @@ class GoodsModel extends PromotionsElastic
     protected $promotion_constructors = [];
     protected $gift_id;
     protected $category_id;
-    protected $category_ids;
+    protected $mpath;
     protected $producer_id;
     protected $producer_name;
     protected $price;
@@ -25,7 +25,7 @@ class GoodsModel extends PromotionsElastic
     protected $group_id;
     protected $is_group_primary;
     protected $status_inherited;
-    protected $goods_order;
+    protected $order;
     protected $series_id;
     protected $state;
     protected $tags;

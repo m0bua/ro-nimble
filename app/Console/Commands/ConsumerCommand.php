@@ -7,6 +7,7 @@ use App\ValueObjects\Processor;
 use Bschmitt\Amqp\Amqp;
 use Bschmitt\Amqp\Exception\Configuration;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class ConsumerCommand extends Command
 {
@@ -30,12 +31,15 @@ class ConsumerCommand extends Command
         (new Amqp())->consume($this->argument('queue'), function ($amqpMessage, $resolver) {
             try {
                 $message   = new Message($amqpMessage);
-                $processor = new Processor($message);
-                $processor->run();
+                dump($message->getBody());
+//                $processor = new Processor($message);
+//                $code = $processor->run();
 
-//                $resolver->acknowledge($amqpMessage);
+//                if (Processor::CODE_SUCCESS === $code) {
+//                    $resolver->acknowledge($amqpMessage);
+//                }
             } catch (\Throwable $t) {
-//                Log::error("{$t->getMessage()}; File: {$t->getFile()}; Line: {$t->getLine()}");
+                Log::error("{$t->getMessage()}; File: {$t->getFile()}; Line: {$t->getLine()}");
                 abort(500, "{$t->getMessage()}; File: {$t->getFile()}; Line: {$t->getLine()}");
             }
         });

@@ -6,15 +6,14 @@ use DeepCopy\Exception\PropertyException;
 
 abstract class Immutable
 {
-
     /**
      * @param $name
      * @param $value
-     * @throws PropertyException
+     * @return null
      */
     public function __set($name, $value)
     {
-        throw new PropertyException("Property {$name} not found in " . get_class($this));
+        return null;
     }
 
     /**

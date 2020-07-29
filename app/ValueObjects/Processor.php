@@ -5,9 +5,14 @@ namespace App\ValueObjects;
 
 
 use App\Processors\AbstractCore;
+use Exception;
 
 class Processor
 {
+
+    const CODE_SUCCESS = 0;
+    const CODE_ERROR = 1;
+    const CODE_SKIP = -1;
 
     /**
      * @var Message
@@ -19,6 +24,11 @@ class Processor
      */
     private $processorClass;
 
+    /**
+     * Processor constructor.
+     * @param Message $message
+     * @throws Exception
+     */
     public function __construct(Message $message)
     {
         $this->message = $message;
@@ -30,11 +40,15 @@ class Processor
      */
     public function run()
     {
-        return (new $this->processorClass($this->message))->run();
+        if (class_exists($this->processorClass)) {
+            return (new $this->processorClass($this->message))->run();
+        }
+
+        return Processor::CODE_SKIP;
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     private function generateProcessorClass()
     {
