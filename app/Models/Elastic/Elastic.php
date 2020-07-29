@@ -48,7 +48,13 @@ abstract class Elastic extends Immutable
     public function __construct()
     {
         $this->reflectionClass = new ReflectionClass(get_class($this));
-        $this->client = ClientBuilder::create()->build();
+        $this->client = ClientBuilder::create()
+            ->setHosts(config('database.elasticsearch.hosts'))
+            ->setBasicAuthentication(
+                config('database.elasticsearch.basic_auth.username'),
+                config('database.elasticsearch.basic_auth.password')
+            )
+            ->build();
         $this->index = $this->indexName();
         $this->checkRequired();
     }

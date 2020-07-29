@@ -49,7 +49,7 @@ return [
             'queue_nowait'          => false,
             'queue_properties'      => [
                 'x-ha-policy' => ['S', 'all'],
-                'x-max-priority' => ['I', 5],
+//                'x-max-priority' => ['I', 5],
             ],
 
             'consumer_tag'          => '',

@@ -3,6 +3,7 @@
 namespace App\Processors;
 
 use App\Models\Elastic\Promotions\GoodsModel;
+use App\ValueObjects\Processor;
 use App\ValueObjects\PromotionConstructor;
 use Exception;
 
@@ -34,5 +35,7 @@ class DeletePromotionConstructorGroupsProcessor extends AbstractCore
                 $elasticGoodsModel->index();
             }, $groupGoodsData);
         }
+
+        return Processor::CODE_SUCCESS;
     }
 }

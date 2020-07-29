@@ -31,13 +31,12 @@ class ConsumerCommand extends Command
         (new Amqp())->consume($this->argument('queue'), function ($amqpMessage, $resolver) {
             try {
                 $message   = new Message($amqpMessage);
-                dump($message->getBody());
-//                $processor = new Processor($message);
-//                $code = $processor->run();
+                $processor = new Processor($message);
+                $code = $processor->run();
 
-//                if (Processor::CODE_SUCCESS === $code) {
-//                    $resolver->acknowledge($amqpMessage);
-//                }
+                if (Processor::CODE_SUCCESS === $code) {
+                    $resolver->acknowledge($amqpMessage);
+                }
             } catch (\Throwable $t) {
                 Log::error("{$t->getMessage()}; File: {$t->getFile()}; Line: {$t->getLine()}");
                 abort(500, "{$t->getMessage()}; File: {$t->getFile()}; Line: {$t->getLine()}");

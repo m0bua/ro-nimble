@@ -4,6 +4,7 @@ namespace App\Processors;
 
 use App\Models\Elastic\Promotions\GoodsModel as ElasticGoodsModel;
 use App\Models\GraphQL\GoodsModel as GraphQLGoodsModel;
+use App\ValueObjects\Processor;
 use App\ValueObjects\PromotionConstructor;
 use Exception;
 
@@ -49,5 +50,7 @@ class ChangePromotionConstructorGroupProcessor extends AbstractCore
             $elasticGoodsModel->load($goods)->index();
 
         }, $gqGoodsModel->getManyByGroup($groupId));
+
+        return Processor::CODE_SUCCESS;
     }
 }

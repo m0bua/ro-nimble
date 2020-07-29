@@ -3,6 +3,7 @@
 namespace App\Processors;
 
 use App\Models\Elastic\Promotions\GoodsModel;
+use App\ValueObjects\Processor;
 use App\ValueObjects\PromotionConstructor;
 use ReflectionException;
 
@@ -31,5 +32,7 @@ class DeletePromotionConstructorGoodsProcessor extends AbstractCore
         }
 
         unset($elasticGoodsModel, $message);
+
+        return Processor::CODE_SUCCESS;
     }
 }

@@ -9,4 +9,11 @@ return [
             'database' => env('REDIS_DB', 0),
         ],
     ],
+    'elasticsearch' => [
+        'hosts' => explode(',', env('ELASTIC_HOSTS')),
+        'basic_auth' => [
+            'username' => env('ELASTIC_AUTH_USER'),
+            'password' => env('ELASTIC_AUTH_PASS'),
+        ]
+    ]
 ];

@@ -2,6 +2,7 @@
 
 namespace App\Processors;
 
+use App\ValueObjects\Processor;
 use Exception;
 
 class ChangePromotionConstructorProcessor extends AbstractCore
@@ -18,5 +19,7 @@ class ChangePromotionConstructorProcessor extends AbstractCore
                 'gift_id' => $this->message->getField('fields_data.gift_id'),
             ])
         );
+
+        return Processor::CODE_SUCCESS;
     }
 }
