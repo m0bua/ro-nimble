@@ -40,32 +40,37 @@ class Options
     public const STATUS_ACTIVE = 'active';
 
     /**
-     * @var string
+     * @var array
      */
     private $options = [];
 
     /**
-     * @var string
+     * @var array
      */
     private $optionNames = [];
 
     /**
-     * @var string
+     * @var array
      */
     private $optionValues = [];
 
     /**
-     * @var string
+     * @var array
      */
     private $optionValuesNames = [];
 
     /**
-     * @var string
+     * @var array
      */
-    private $optionsChecked = [];
+    private $optionChecked = [];
 
     /**
-     * @var string
+     * @var array
+     */
+    private $optionCheckedNames = [];
+
+    /**
+     * @var array
      */
     private $optionSliders = [];
 
@@ -116,9 +121,10 @@ class Options
                     $this->optionValuesNames[$value['name']] = null;
                 }
             } elseif (in_array($details['type'], self::OPTIONS_BY_TYPES['integers'])) {
-                $this->optionSliders[$details['id']] = $option['value'];
+                $this->optionSliders[$details['name']] = $option['value'];
             } elseif (in_array($details['type'], self::OPTIONS_BY_TYPES['booleans'])) {
-                $this->optionsChecked[$details['id']] = null;
+                $this->optionChecked[$details['id']] = null;
+                $this->optionCheckedNames[$details['name']] = null;
             }
         }
     }
@@ -133,7 +139,8 @@ class Options
             'option_names' => array_map('strval', array_keys($this->optionNames)),
             'option_values' => array_keys($this->optionValues),
             'option_values_names' => array_map('strval', array_keys($this->optionValuesNames)),
-            'options_checked' => array_keys($this->optionsChecked),
+            'option_checked' => array_keys($this->optionChecked),
+            'option_checked_names' => array_map('strval', array_keys($this->optionCheckedNames)),
             'option_sliders' => $this->optionSliders
         ];
     }

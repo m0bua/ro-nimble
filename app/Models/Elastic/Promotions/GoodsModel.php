@@ -33,7 +33,8 @@ class GoodsModel extends PromotionsElastic
     protected $option_names;
     protected $option_values;
     protected $option_values_names;
-    protected $options_checked;
+    protected $option_checked;
+    protected $option_checked_names;
     protected $option_sliders;
 
 
