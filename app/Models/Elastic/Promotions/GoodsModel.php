@@ -13,7 +13,6 @@ class GoodsModel extends PromotionsElastic
 {
     protected $id;
     protected $promotion_constructors = [];
-    protected $gift_id;
     protected $category_id;
     protected $mpath;
     protected $producer_id;
