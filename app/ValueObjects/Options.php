@@ -109,19 +109,25 @@ class Options
             }
 
             if (in_array($details['type'], self::OPTIONS_BY_TYPES['values'])) {
-                $this->options[$details['id']] = null;
-                $this->optionNames[$details['name']] = null;
+                if (!empty($option['values'])) {
+                    $this->options[$details['id']] = null;
+                    $this->optionNames[$details['name']] = null;
 
-                foreach ($details['values'] as $value) {
-                    if ($value['status'] != self::STATUS_ACTIVE) {
-                        continue;
+                    foreach ($option['values'] as $value) {
+                        if ($value['status'] != self::STATUS_ACTIVE) {
+                            continue;
+                        }
+
+                        $this->optionValues[$value['id']] = null;
+                        $this->optionValuesNames[$value['name']] = null;
                     }
-
-                    $this->optionValues[$value['id']] = null;
-                    $this->optionValuesNames[$value['name']] = null;
                 }
             } elseif (in_array($details['type'], self::OPTIONS_BY_TYPES['integers'])) {
-                $this->optionSliders[$details['name']] = $option['value'];
+                $this->optionSliders[] = [
+                    'id' => (int) $details['id'],
+                    'name' => $details['name'],
+                    'value' => $option['value']
+                ];
             } elseif (in_array($details['type'], self::OPTIONS_BY_TYPES['booleans'])) {
                 $this->optionChecked[$details['id']] = null;
                 $this->optionCheckedNames[$details['name']] = null;
