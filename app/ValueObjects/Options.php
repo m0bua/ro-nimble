@@ -126,7 +126,7 @@ class Options
                 $this->optionSliders[] = [
                     'id' => (int) $details['id'],
                     'name' => $details['name'],
-                    'value' => $option['value']
+                    'value' => (float) $option['value']
                 ];
             } elseif (in_array($details['type'], self::OPTIONS_BY_TYPES['booleans'])) {
                 $this->optionsChecked[] = $details['id'];

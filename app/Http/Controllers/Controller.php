@@ -64,10 +64,10 @@ class Controller extends BaseController
 
         $goods = $graphGoodsModel->getOneById($id);
 
-        dump(
-            $goods
-        );
-        die;
+//        dump(
+//            $goods
+//        );
+//        die;
 
         $elasticGoodsModel->load(array_merge([
             'promotion_constructors' => [

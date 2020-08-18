@@ -82,7 +82,7 @@ class GoodsModel extends GraphQL
         $options = new Options($data['options']);
 
         if (isset($data['mpath'])) {
-            $data['categories_path'] = array_values(array_filter(explode('.', $data['mpath'])));
+            $data['categories_path'] = array_map('intval', array_values(array_filter(explode('.', $data['mpath']))));
         }
 
         if (isset($data['seller_id'])) {
@@ -97,11 +97,11 @@ class GoodsModel extends GraphQL
             $data = array_merge($data, $data['producer']);
         }
 
-        if (isset($data['goods_ranks'])) {
-            $data = array_merge($data, $data['goods_ranks']);
+        if (isset($data['rank'])) {
+            $data = array_merge($data, $data['rank']);
         }
 
-        unset($data['options'], $data['producer'], $data['goods_ranks']);
+        unset($data['options'], $data['producer'], $data['rank'], $data['mpath']);
 
         return array_merge($data, $options->getOptions());
     }

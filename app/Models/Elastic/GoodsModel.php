@@ -25,6 +25,8 @@ class GoodsModel extends Elastic
     protected $series_id;
     protected $state;
     protected $tags;
+    protected $pl_bonus_charge_pcs;
+    protected $search_rank;
     protected $options;
     protected $option_names;
     protected $option_values;
@@ -32,12 +34,6 @@ class GoodsModel extends Elastic
     protected $option_checked;
     protected $option_checked_names;
     protected $option_sliders;
-
-
-    // ждем реалізацію від гудсов
-    protected $rank; //goods_ranks->search_rank
-    protected $income_order; //goods_ranks->search_rank
-    protected $bonus_charge; //bonus_charge:pl_bonus_charge_pcs
 
     /**
      * @return string
