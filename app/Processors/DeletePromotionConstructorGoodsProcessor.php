@@ -2,7 +2,7 @@
 
 namespace App\Processors;
 
-use App\Models\Elastic\Promotions\GoodsModel;
+use App\Models\Elastic\GoodsModel;
 use App\ValueObjects\Processor;
 use App\ValueObjects\PromotionConstructor;
 use ReflectionException;

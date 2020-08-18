@@ -1,21 +1,17 @@
 <?php
 
-namespace App\Models\Elastic\Promotions;
-
-use App\Models\Elastic\Elastic;
-use App\ValueObjects\Property;
+namespace App\Models\Elastic;
 
 /**
  * Class GoodsModel
  * @package App\Models\Elastic\Promotions
  */
-class GoodsModel extends PromotionsElastic
+class GoodsModel extends Elastic
 {
     protected $id;
     protected $promotion_constructors = [];
-    protected $gift_id;
     protected $category_id;
-    protected $mpath;
+    protected $categories_path;
     protected $producer_id;
     protected $producer_name;
     protected $price;
@@ -42,6 +38,14 @@ class GoodsModel extends PromotionsElastic
     protected $rank; //goods_ranks->search_rank
     protected $income_order; //goods_ranks->search_rank
     protected $bonus_charge; //bonus_charge:pl_bonus_charge_pcs
+
+    /**
+     * @return string
+     */
+    public function indexName(): string
+    {
+        return 'goods';
+    }
 
     /**
      * @inheritDoc

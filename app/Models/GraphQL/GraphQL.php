@@ -2,13 +2,14 @@
 
 namespace App\Models\GraphQL;
 
+use App\Interfaces\GraphQLInterface;
 use GraphQL\Client;
 
 /**
  * Class GraphQL
  * @package App\Library\Services
  */
-abstract class GraphQL
+abstract class GraphQL implements GraphQLInterface
 {
     /**
      * @var Client
@@ -40,9 +41,4 @@ abstract class GraphQL
     {
         return $this->client;
     }
-
-    /**
-     * @return string
-     */
-    abstract public function serviceName(): string;
 }

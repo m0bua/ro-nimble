@@ -65,7 +65,6 @@ $app->singleton(
 
 $app->configure('app');
 $app->configure('amqp');
-$app->configure('database');
 $app->configure('graphql');
 
 /*

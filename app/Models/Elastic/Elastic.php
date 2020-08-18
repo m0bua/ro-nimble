@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Models\Elastic;
 
 use App\Helpers\Immutable;
+use App\Interfaces\ElasticInterface;
 use App\ValueObjects\Method;
 use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
@@ -15,7 +16,7 @@ use ReflectionException;
  * Class Elastic
  * @package App\Models\Elastic
  */
-abstract class Elastic extends Immutable
+abstract class Elastic extends Immutable implements ElasticInterface
 {
     /**
      * @var Client
@@ -57,24 +58,6 @@ abstract class Elastic extends Immutable
             ->build();
         $this->index = $this->indexName();
         $this->checkRequired();
-    }
-
-    /**
-     * Реализуется в дочернем классе для определения индекса
-     *
-     * @return string
-     */
-    abstract public function indexName(): string;
-
-    /**
-     * Указывает обязательные поля для заполнения.
-     * Возвращает пустой массив, если таковых не имеется
-     *
-     * @return array
-     */
-    public function requiredFields(): array
-    {
-        return [];
     }
 
     /**

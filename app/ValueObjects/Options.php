@@ -110,16 +110,16 @@ class Options
 
             if (in_array($details['type'], self::OPTIONS_BY_TYPES['values'])) {
                 if (!empty($option['values'])) {
-                    $this->options[$details['id']] = null;
-                    $this->optionNames[$details['name']] = null;
+                    $this->options[] = $details['id'];
+                    $this->optionNames[] = (string) $details['name'];
 
                     foreach ($option['values'] as $value) {
                         if ($value['status'] != self::STATUS_ACTIVE) {
                             continue;
                         }
 
-                        $this->optionValues[$value['id']] = null;
-                        $this->optionValuesNames[$value['name']] = null;
+                        $this->optionValues[] = $value['id'];
+                        $this->optionValuesNames[] = (string) $value['name'];
                     }
                 }
             } elseif (in_array($details['type'], self::OPTIONS_BY_TYPES['integers'])) {
@@ -129,8 +129,8 @@ class Options
                     'value' => $option['value']
                 ];
             } elseif (in_array($details['type'], self::OPTIONS_BY_TYPES['booleans'])) {
-                $this->optionChecked[$details['id']] = null;
-                $this->optionCheckedNames[$details['name']] = null;
+                $this->optionsChecked[] = $details['id'];
+                $this->optionCheckedNames[] = (string) $details['name'];
             }
         }
     }
@@ -141,12 +141,12 @@ class Options
     public function getOptions(): array
     {
         return [
-            'options' => array_keys($this->options),
-            'option_names' => array_map('strval', array_keys($this->optionNames)),
-            'option_values' => array_keys($this->optionValues),
-            'option_values_names' => array_map('strval', array_keys($this->optionValuesNames)),
-            'option_checked' => array_keys($this->optionChecked),
-            'option_checked_names' => array_map('strval', array_keys($this->optionCheckedNames)),
+            'options' => $this->options,
+            'option_names' => $this->optionNames,
+            'option_values' => $this->optionValues,
+            'option_values_names' => $this->optionValuesNames,
+            'options_checked' => array_unique($this->optionsChecked),
+            'option_checked_names' => $this->optionCheckedNames,
             'option_sliders' => $this->optionSliders
         ];
     }

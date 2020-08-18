@@ -52,24 +52,19 @@ class GoodsModel extends GraphQL
     public function getParams()
     {
         return array_merge(
-            $this->mainFieldsStack(), [
+            $this->mainFieldsStack(),
+            [
                 (new Query('producer'))->setSelectionSet(['producer_id:id', 'producer_name:name']),
                 (new Query('tags'))->setSelectionSet(['id']),
                 (new Query('rank'))->setSelectionSet(['search_rank']),
                 (new Query('options'))->setSelectionSet([
                     (new InlineFragment('GoodsOptionSingle'))->setSelectionSet([
                         'value',
-                        (new Query('details'))->setSelectionSet([
-                            'id', 'name', 'type', 'state',
-                        ]),
+                        (new Query('details'))->setSelectionSet(['id', 'name', 'type', 'state']),
                     ]),
                     (new InlineFragment('GoodsOptionPlural'))->setSelectionSet([
-                        (new Query('details'))->setSelectionSet([
-                            'id', 'name', 'type', 'state',
-                        ]),
-                        (new Query('values'))->setSelectionSet([
-                            'id', 'name', 'status'
-                        ]),
+                        (new Query('details'))->setSelectionSet(['id', 'name', 'type', 'state']),
+                        (new Query('values'))->setSelectionSet(['id', 'name', 'status']),
                     ]),
                 ]),
             ]
@@ -86,11 +81,25 @@ class GoodsModel extends GraphQL
     {
         $options = new Options($data['options']);
 
-        $data['mpath'] = array_filter(explode('.', $data['mpath']));
-        $data['seller_order'] = $data['seller_id'] == 5 ? 1 : 0;
-        $data['tags'] = array_column($data['tags'], 'id');
-        $data = array_merge($data, $data['producer']);
-        $data = array_merge($data, $data['rank']);
+        if (isset($data['mpath'])) {
+            $data['categories_path'] = array_values(array_filter(explode('.', $data['mpath'])));
+        }
+
+        if (isset($data['seller_id'])) {
+            $data['seller_order'] = $data['seller_id'] == 5 ? 1 : 0;
+        }
+
+        if (isset($data['tags'])) {
+            $data['tags'] = array_column($data['tags'], 'id');
+        }
+
+        if (isset($data['producer'])) {
+            $data = array_merge($data, $data['producer']);
+        }
+
+        if (isset($data['goods_ranks'])) {
+            $data = array_merge($data, $data['goods_ranks']);
+        }
 
         unset($data['options'], $data['producer'], $data['goods_ranks']);
 

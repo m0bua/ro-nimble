@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Elastic\Promotions\GoodsModel as ElasticGoodsModel;
+use App\Models\Elastic\GoodsModel as ElasticGoodsModel;
 use App\Models\GraphQL\GoodsModel as GraphGoodsModel;
 use Laravel\Lumen\Routing\Controller as BaseController;
 
