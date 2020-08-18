@@ -2,7 +2,7 @@
 
 namespace App\Processors;
 
-use App\Models\Elastic\Promotions\GoodsModel as ElasticGoodsModel;
+use App\Models\Elastic\GoodsModel as ElasticGoodsModel;
 use App\Models\GraphQL\GoodsModel as GraphQLGoodsModel;
 use App\ValueObjects\Processor;
 use App\ValueObjects\PromotionConstructor;

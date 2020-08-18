@@ -104,21 +104,21 @@ class Options
             }
 
             if (in_array($details['type'], self::OPTIONS_BY_TYPES['values'])) {
-                $this->options[$details['id']] = null;
-                $this->optionNames[$details['name']] = null;
+                $this->options[] = $details['id'];
+                $this->optionNames[] = (string)$details['name'];
 
-                foreach ($details['values'] as $value) {
+                foreach ($option['values'] as $value) {
                     if ($value['status'] != self::STATUS_ACTIVE) {
                         continue;
                     }
 
-                    $this->optionValues[$value['id']] = null;
-                    $this->optionValuesNames[$value['name']] = null;
+                    $this->optionValues[] = $value['id'];
+                    $this->optionValuesNames[] = (string)$value['name'];
                 }
             } elseif (in_array($details['type'], self::OPTIONS_BY_TYPES['integers'])) {
                 $this->optionSliders[$details['id']] = $option['value'];
             } elseif (in_array($details['type'], self::OPTIONS_BY_TYPES['booleans'])) {
-                $this->optionsChecked[$details['id']] = null;
+                $this->optionsChecked[] = $details['id'];
             }
         }
     }
@@ -129,11 +129,11 @@ class Options
     public function getOptions(): array
     {
         return [
-            'options' => array_keys($this->options),
-            'option_names' => array_map('strval', array_keys($this->optionNames)),
-            'option_values' => array_keys($this->optionValues),
-            'option_values_names' => array_map('strval', array_keys($this->optionValuesNames)),
-            'options_checked' => array_keys($this->optionsChecked),
+            'options' => $this->options,
+            'option_names' => $this->optionNames,
+            'option_values' => $this->optionValues,
+            'option_values_names' => $this->optionValuesNames,
+            'options_checked' => array_unique($this->optionsChecked),
             'option_sliders' => $this->optionSliders
         ];
     }

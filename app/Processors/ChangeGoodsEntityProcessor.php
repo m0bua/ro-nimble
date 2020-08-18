@@ -4,7 +4,7 @@
 namespace App\Processors;
 
 
-use App\Models\Elastic\Promotions\GoodsModel;
+use App\Models\Elastic\GoodsModel;
 
 class ChangeGoodsEntityProcessor extends AbstractCore
 {
