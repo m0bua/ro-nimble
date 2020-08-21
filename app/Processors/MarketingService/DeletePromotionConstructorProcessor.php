@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Processors;
+namespace App\Processors\MarketingService;
 
+use App\Processors\AbstractCore;
 use App\ValueObjects\Processor;
 use Exception;
 

@@ -4,6 +4,7 @@
 namespace App\ValueObjects;
 
 
+use App\Interfaces\MessageInterface;
 use App\Processors\AbstractCore;
 use Exception;
 
@@ -26,10 +27,10 @@ class Processor
 
     /**
      * Processor constructor.
-     * @param Message $message
+     * @param MessageInterface $message
      * @throws Exception
      */
-    public function __construct(Message $message)
+    public function __construct(MessageInterface $message)
     {
         $this->message = $message;
         $this->generateProcessorClass();

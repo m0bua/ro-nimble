@@ -2,7 +2,7 @@
 
 namespace App\Models\GraphQL;
 
-use App\ValueObjects\Options;
+use App\Interfaces\OptionsInterface;
 use GraphQL\InlineFragment;
 use GraphQL\Query;
 use GraphQL\RawObject;
@@ -19,10 +19,18 @@ class GoodsModel extends GraphQL
     private $selection = [];
 
     /**
-     * GoodsModel constructor.
+     * @var OptionsInterface
      */
-    public function __construct()
+    private $options;
+
+    /**
+     * GoodsModel constructor.
+     * @param OptionsInterface $options
+     */
+    public function __construct(OptionsInterface $options)
     {
+        $this->options = $options;
+
         $this->prepareSelection();
 
         parent::__construct();
@@ -152,7 +160,7 @@ class GoodsModel extends GraphQL
      */
     private function formatResponse($data)
     {
-        $options = new Options($data['options']);
+        $this->options->fill($data['options']);
 
         if (isset($data['mpath'])) {
             $data['categories_path'] = array_values(array_filter(explode('.', $data['mpath'])));
@@ -176,6 +184,6 @@ class GoodsModel extends GraphQL
 
         unset($data['options'], $data['producer'], $data['goods_ranks']);
 
-        return array_merge($data, $options->getOptions());
+        return array_merge($data, $this->options->get());
     }
 }

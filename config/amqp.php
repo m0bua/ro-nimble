@@ -65,7 +65,7 @@ return [
             'qos_prefetch_count'    => 1,
             'qos_a_global'          => false,
             'processor_name'        => function($routingKey) {
-                return ucfirst(
+                return 'MarketingService\\' . ucfirst(
                     str_replace(
                         '_', '', str_replace(
                             '_record', '_Processor', str_replace(
@@ -119,7 +119,7 @@ return [
             'processor_name'        => function($routingKey) {
                 $keywords = explode('.', ucwords($routingKey, '.'));
 
-                return $keywords[0] . $keywords[1] . $keywords[2] . 'Processor';
+                return "GoodsService\{$keywords[0]}{$keywords[1]}{$keywords[2]}Processor";
             }
         ],
 

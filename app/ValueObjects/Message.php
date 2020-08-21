@@ -4,10 +4,11 @@
 namespace App\ValueObjects;
 
 
+use App\Interfaces\MessageInterface;
 use Exception;
 use PhpAmqpLib\Message\AMQPMessage;
 
-class Message
+class Message implements MessageInterface
 {
     /**
      * @var AMQPMessage

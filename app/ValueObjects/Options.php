@@ -3,9 +3,10 @@
 namespace App\ValueObjects;
 
 use App\Helpers\ConvertString;
+use App\Interfaces\OptionsInterface;
 use Exception;
 
-class Options
+class Options implements OptionsInterface
 {
     /**
      * Option types
@@ -70,23 +71,25 @@ class Options
     private $optionSliders = [];
 
     /**
-     * Options constructor.
-     * @param $data
+     * @return array
      */
-    public function __construct($data)
+    public function get(): array
     {
-        try {
-            $this->fillOptions($data);
-        } catch (\Throwable $t) {
-            report($t);
-        }
+        return [
+            'options' => $this->options,
+            'option_names' => $this->optionNames,
+            'option_values' => $this->optionValues,
+            'option_values_names' => $this->optionValuesNames,
+            'options_checked' => array_unique($this->optionsChecked),
+            'option_sliders' => $this->optionSliders
+        ];
     }
 
     /**
      * Валидация опций и наполнение свойств данными
      * @param $data
      */
-    private function fillOptions($data)
+    public function fill($data)
     {
         if (!$data || !is_array($data)) {
             return;
@@ -121,20 +124,5 @@ class Options
                 $this->optionsChecked[] = $details['id'];
             }
         }
-    }
-
-    /**
-     * @return array
-     */
-    public function getOptions(): array
-    {
-        return [
-            'options' => $this->options,
-            'option_names' => $this->optionNames,
-            'option_values' => $this->optionValues,
-            'option_values_names' => $this->optionValuesNames,
-            'options_checked' => array_unique($this->optionsChecked),
-            'option_sliders' => $this->optionSliders
-        ];
     }
 }
