@@ -3,6 +3,7 @@ image: docker:19.03.8-dind
 stages:
   - build
   - stage
+  - prod
 
 build:
   stage: build
@@ -36,6 +37,24 @@ stage:
     - nomad job run nomad/dev.nomad.job
   only:
     - branches
+  tags:
+    - infra-docker
+
+prod:
+  stage: prod
+  image: debian:10
+  variables:
+    NOMAD_ADDR: http://nomad.rozetka.company:4646
+  before_script:
+    - apt-get update
+    - apt-get install curl gettext-base -y
+    - curl http://repo.dev.rozetka.com.ua/devops/nomad-0.11.3 --output /bin/nomad --silent
+    - chmod a+x /bin/nomad
+  script:
+    - envsubst < nomad/prod.nomad > nomad/prod.nomad.job
+    - nomad job run nomad/prod.nomad.job
+  only:
+    - master
   tags:
     - infra-docker
 
