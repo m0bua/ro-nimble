@@ -1,0 +1,41 @@
+image: docker:19.03.8-dind
+
+stages:
+  - build
+  - stage
+
+build:
+  stage: build
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_DRIVER: overlay2
+    DOCKER_HOST: tcp://localhost:2375
+  services:
+    - docker:19.03.8-dind
+  script: 
+    - docker login -u "${CI_REGISTRY_USER}" -p "${CI_REGISTRY_PASSWORD}" "${CI_REGISTRY}"
+    - docker image build --target=prod -t ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA} .
+    - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA}
+  when: manual
+  allow_failure: false
+  tags:
+    - kube-prod
+
+stage:
+  stage: stage
+  image: debian:10
+  variables:
+    NOMAD_ADDR: http://nomad.rozetka.company:4646
+  before_script:
+    - apt-get update
+    - apt-get install curl gettext-base -y
+    - curl http://repo.dev.rozetka.com.ua/devops/nomad-0.11.3 --output /bin/nomad --silent
+    - chmod a+x /bin/nomad
+  script:
+    - envsubst < nomad/dev.nomad > nomad/dev.nomad.job
+    - nomad job run nomad/dev.nomad.job
+  only:
+    - branches
+  tags:
+    - infra-docker
+
