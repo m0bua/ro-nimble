@@ -37,6 +37,8 @@ stage:
     - nomad job run nomad/dev.nomad.job
   only:
     - branches
+  except:
+    - master
   tags:
     - infra-docker
 
