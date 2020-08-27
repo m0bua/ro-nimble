@@ -1,18 +1,16 @@
 <?php
 
-
-namespace App\Processors;
-
+namespace App\Processors\GoodsService;
 
 use App\Models\Elastic\GoodsModel;
+use App\Processors\AbstractCore;
 
 class ChangeGoodsEntityProcessor extends AbstractCore
 {
-
     /**
      * @inheritDoc
      */
-    protected function doJob()
+    public function doJob()
     {
 //        $elasticGoodsModel = new GoodsModel();
 //        $goodsId = $this->message->getField('data.id');

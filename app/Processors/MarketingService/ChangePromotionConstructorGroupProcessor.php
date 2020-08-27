@@ -1,28 +1,29 @@
 <?php
 
-namespace App\Processors;
+namespace App\Processors\MarketingService;
 
-use App\Models\GraphQL\GoodsModel as GraphQLGoodsModel;
 use App\Models\Elastic\GoodsModel as ElasticGoodsModel;
+use App\Models\GraphQL\GoodsModel as GraphQLGoodsModel;
+use App\Processors\AbstractCore;
+use App\ValueObjects\Options;
 use App\ValueObjects\Processor;
 use App\ValueObjects\PromotionConstructor;
 use Exception;
-use ReflectionException;
 
-class ChangePromotionConstructorGoodsProcessor extends AbstractCore
+class ChangePromotionConstructorGroupProcessor extends AbstractCore
 {
     /**
-     * @throws ReflectionException
      * @throws Exception
      */
     public function doJob()
     {
-        $gqGoodsModel = new GraphQLGoodsModel();
+        $options = new Options();
+        $gqGoodsModel = new GraphQLGoodsModel($options);
         $elasticGoodsModel = new ElasticGoodsModel();
 
         $giftId = null;
         $promotionId = null;
-        $goodsId = $this->message->getField('fields_data.goods_id');
+        $groupId = $this->message->getField('fields_data.group_id');
         $constructorId = $this->message->getField('fields_data.promotion_constructor_id');
 
         $constructorInfo = json_decode(
@@ -42,12 +43,16 @@ class ChangePromotionConstructorGoodsProcessor extends AbstractCore
             ]
         );
 
-        $elasticGoodsModel->load($elasticGoodsModel->searchById($goodsId));
-        $promotionConstructor->setSeats($elasticGoodsModel->getPromotionConstructors());
-        $elasticGoodsModel->setPromotionConstructors($promotionConstructor->takeEmptySeat());
-        $elasticGoodsModel->load($gqGoodsModel->getOneById($goodsId))->index();
+        array_map(function ($goods) use (
+            $elasticGoodsModel,
+            $promotionConstructor
+        ) {
+            $elasticGoodsModel->load($elasticGoodsModel->searchById($goods['id']));
+            $promotionConstructor->setSeats($elasticGoodsModel->getPromotionConstructors());
+            $elasticGoodsModel->setPromotionConstructors($promotionConstructor->takeEmptySeat());
+            $elasticGoodsModel->load($goods)->index();
 
-        unset($gqGoodsModel, $elasticGoodsModel, $message);
+        }, $gqGoodsModel->getManyByGroup($groupId));
 
         return Processor::CODE_SUCCESS;
     }

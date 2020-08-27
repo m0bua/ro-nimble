@@ -35,7 +35,7 @@ class ConsumerCommand extends Command
                 $code = $processor->run();
 
                 if (Processor::CODE_SUCCESS === $code) {
-//                    $resolver->acknowledge($amqpMessage);
+                    $resolver->acknowledge($amqpMessage);
                 }
             } catch (\Throwable $t) {
                 Log::error("{$t->getMessage()}; File: {$t->getFile()}; Line: {$t->getLine()}");

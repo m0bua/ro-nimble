@@ -2,7 +2,7 @@
 
 namespace App\Models\GraphQL;
 
-use App\ValueObjects\Options;
+use App\Interfaces\OptionsInterface;
 use GraphQL\InlineFragment;
 use GraphQL\Query;
 use GraphQL\RawObject;
@@ -14,6 +14,29 @@ use phpDocumentor\Reflection\DocBlock\Tags\Formatter\AlignFormatter;
  */
 class GoodsModel extends GraphQL
 {
+    /**
+     * @var array
+     */
+    private $selection = [];
+
+    /**
+     * @var OptionsInterface
+     */
+    private $options;
+
+    /**
+     * GoodsModel constructor.
+     * @param OptionsInterface $options
+     */
+    public function __construct(OptionsInterface $options)
+    {
+        $this->options = $options;
+
+        $this->prepareSelection();
+
+        parent::__construct();
+    }
+
     /**
      * @inheritDoc
      */
@@ -45,13 +68,72 @@ class GoodsModel extends GraphQL
     }
 
     /**
-     * first part of the parameters
+     * Получение отформатированных данных одного товара по id
      *
+     * @param int $id
      * @return array
      */
-    public function getParams()
+    public function getOneById(int $id): array
     {
-        return array_merge(
+        echo $id . "\n";
+        return $this->formatResponse(
+            $this->getGoodsOne(new RawObject("{id_eq: $id}"))
+        );
+    }
+
+    /**
+     * Получение отформатированных данных товаров одной группы
+     *
+     * @param int $groupId
+     * @return array
+     */
+    public function getManyByGroup(int $groupId): array
+    {
+        $result = $this->getGoodsMany(new RawObject("{group_id_eq: $groupId}"));
+
+        return array_map(function ($goods) {
+            return $this->formatResponse($goods);
+        }, $result);
+    }
+
+    /**
+     * @param $where
+     * @return array
+     */
+    public function getGoodsOne($where): array
+    {
+        $query = (new Query('goodsOne'))
+            ->setArguments(['where' => $where])
+            ->setSelectionSet($this->selection);
+
+        return $this->client
+            ->runQuery($query,true)
+            ->getResults()['data']['goodsOne'];
+    }
+
+    /**
+     * @param $where
+     * @return array
+     */
+    public function getGoodsMany($where): array
+    {
+        $query = (new Query('goodsMany'))
+            ->setArguments(['where' => $where])
+            ->setSelectionSet([
+                (new Query('nodes'))->setSelectionSet($this->selection)
+            ]);
+
+        return $this->client
+            ->runQuery($query,true)
+            ->getResults()['data']['goodsMany']['nodes'];
+    }
+
+    /**
+     * Prepare selection set
+     */
+    private function prepareSelection()
+    {
+        $this->selection = array_merge(
             $this->mainFieldsStack(),
             [
                 (new Query('producer'))->setSelectionSet(['producer_id:id', 'producer_name:name']),
@@ -77,9 +159,9 @@ class GoodsModel extends GraphQL
      * @param $data
      * @return array
      */
-    public function formatResponse($data)
+    private function formatResponse($data)
     {
-        $options = new Options($data['options']);
+        $this->options->fill($data['options']);
 
         if (isset($data['mpath'])) {
             $data['categories_path'] = array_map('intval', array_values(array_filter(explode('.', $data['mpath']))));
@@ -103,92 +185,6 @@ class GoodsModel extends GraphQL
 
         unset($data['options'], $data['producer'], $data['rank'], $data['mpath']);
 
-        return array_merge($data, $options->getOptions());
-    }
-
-    /**
-     * Получение отформатированных данных одного товара по id
-     *
-     * @param int $id
-     * @return array
-     */
-    public function getOneById(int $id): array
-    {
-        return $this->formatResponse($this->getGoodsOneData($id, $this->getParams()));
-    }
-
-    /**
-     * Получение одного товара по id
-     *
-     * @param int $goodsId
-     * @param array $fields
-     * @return array
-     */
-    public function getGoodsOneData(int $id, array $fields): array
-    {
-        return $this->client
-            ->runQuery($this->getGoodsOneQuery($id, $fields),true)
-            ->getResults()['data']['goodsOne'];
-    }
-
-    /**
-     * Генерирует запрос на получение одного товара по id
-     *
-     * @param int $id
-     * @param array $fields
-     * @return Query
-     */
-    private function getGoodsOneQuery(int $id, array $fields): Query
-    {
-        return (new Query('goodsOne'))
-            ->setArguments(['where' => new RawObject("{id_eq: $id}")])
-            ->setSelectionSet($fields);
-    }
-
-    /**
-     * Получение отформатированных данных товаров одной группы
-     *
-     * @param int $groupId
-     * @return array
-     */
-    public function getManyByGroup(int $groupId): array
-    {
-        $result = $this->getGroupGoodsData($groupId, $this->getParams());
-
-        foreach ($result as &$goods) {
-            $goods = $this->formatResponse($goods);
-        }
-
-        return $result;
-    }
-
-    /**
-     * Получение товаров одной группы
-     *
-     * @param int $groupId
-     * @param array $fields
-     * @return array
-     */
-    public function getGroupGoodsData(int $groupId, array $fields): array
-    {
-        return $this->client
-            ->runQuery($this->getGroupGoodsQuery($groupId, $fields),true)
-            ->getResults()['data']['goodsMany']['nodes'];
-    }
-
-    /**
-     * Генерирует запрос на получение одного товара по id
-     *
-     * @param int $groupId
-     * @param array $fields
-     * @return Query
-     */
-    private function getGroupGoodsQuery(int $groupId, array $fields): Query
-    {
-        return (new Query('goodsMany'))
-            ->setArguments(['where' => new RawObject("{group_id_eq: $groupId}")])
-            ->setSelectionSet([
-                (new Query('nodes'))->setSelectionSet($fields)
-            ]);
+        return array_merge($data, $this->options->get());
     }
 }

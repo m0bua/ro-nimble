@@ -1,16 +1,15 @@
 <?php
 
+namespace App\Processors\GoodsService;
 
-namespace App\Processors;
-
+use App\Processors\AbstractCore;
 
 class CreateGoodsEntityProcessor extends AbstractCore
 {
-
     /**
      * @inheritDoc
      */
-    protected function doJob()
+    public function doJob()
     {
         // TODO: Implement doJob() method.
     }

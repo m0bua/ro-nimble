@@ -114,8 +114,7 @@ class PromotionConstructor
      */
     public static function remove(int $constructorId, array $constructors): array
     {
-        foreach ($constructors as $key => $constructor)
-        {
+        foreach ($constructors as $key => $constructor) {
             if ($constructor['id'] === $constructorId) {
                 unset($constructors[$key]);
             }

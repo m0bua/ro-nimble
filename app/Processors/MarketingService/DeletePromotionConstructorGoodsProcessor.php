@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Processors;
+namespace App\Processors\MarketingService;
 
 use App\Models\Elastic\GoodsModel;
+use App\Processors\AbstractCore;
 use App\ValueObjects\Processor;
 use App\ValueObjects\PromotionConstructor;
 use ReflectionException;

@@ -2,17 +2,18 @@
 
 namespace App\Processors;
 
-use App\ValueObjects\Message;
+use App\Interfaces\MessageInterface;
+use App\Interfaces\ProcessorInterface;
 
-abstract class AbstractCore
+abstract class AbstractCore implements ProcessorInterface
 {
 
     /**
-     * @var Message
+     * @var MessageInterface
      */
     protected $message;
 
-    public function __construct(Message $message)
+    public function __construct(MessageInterface $message)
     {
         $this->message = $message;
     }
@@ -25,8 +26,5 @@ abstract class AbstractCore
         return $this->doJob();
     }
 
-    /**
-     * @return mixed
-     */
-    abstract protected function doJob();
+    abstract public function doJob();
 }
