@@ -85,7 +85,7 @@ class Options implements OptionsInterface
             'option_names' => $this->optionNames,
             'option_values' => $this->optionValues,
             'option_values_names' => $this->optionValuesNames,
-            'options_checked' => array_unique($this->optionsChecked),
+            'option_checked' => array_unique($this->optionChecked),
             'option_sliders' => $this->optionSliders
         ];
     }

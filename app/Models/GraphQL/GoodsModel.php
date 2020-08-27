@@ -6,7 +6,6 @@ use App\Interfaces\OptionsInterface;
 use GraphQL\InlineFragment;
 use GraphQL\Query;
 use GraphQL\RawObject;
-use phpDocumentor\Reflection\DocBlock\Tags\Formatter\AlignFormatter;
 
 /**
  * Class GoodsModel

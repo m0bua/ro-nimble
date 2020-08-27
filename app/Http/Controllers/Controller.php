@@ -4,12 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Elastic\GoodsModel as ElasticGoodsModel;
 use App\Models\GraphQL\GoodsModel as GraphGoodsModel;
+use App\Models\GraphQL\GoodsModel as GraphQLGoodsModel;
+use App\ValueObjects\Options;
 use Laravel\Lumen\Routing\Controller as BaseController;
 
 class Controller extends BaseController
 {
-    public function goods(GraphGoodsModel $graphGoodsModel, ElasticGoodsModel $elasticGoodsModel)
+    public function goods()
     {
+        $options = new Options();
+        $graphGoodsModel = new GraphQLGoodsModel($options);
+        $elasticGoodsModel = new ElasticGoodsModel();
 //        $groupId = 24089947;
 //        $groupGoods = $graphGoodsModel->getManyByGroup($groupId);
 //
@@ -54,11 +59,11 @@ class Controller extends BaseController
         $id = 151676890;
         $id = 96418468;
         $id = 17501340;
-//        $id = 155179;
-//        $id = 55981038;   //options with checked
-//        $id = 112629260; //options with checked
-//        $id = 183082;  //options with sliders
-//        $id = 16631;  //options with sliders and with checked
+        $id = 155179;
+        $id = 55981038;   //options with checked
+//        $id = 112629260; //options with checked    empty
+        $id = 183082;  //options with sliders
+        $id = 16631;  //options with sliders and with checked
 //        $id = 229495;
 //        $id = 229494;
 
