@@ -58,12 +58,12 @@ class Controller extends BaseController
         $id = 208281043;
         $id = 151676890;
         $id = 96418468;
-        $id = 17501340;
-        $id = 155179;
+//        $id = 17501340;
+//        $id = 155179;
         $id = 55981038;   //options with checked
 //        $id = 112629260; //options with checked    empty
-        $id = 183082;  //options with sliders
-        $id = 16631;  //options with sliders and with checked
+//        $id = 183082;  //options with sliders
+//        $id = 16631;  //options with sliders and with checked
 //        $id = 229495;
 //        $id = 229494;
 
