@@ -62,7 +62,7 @@ class GoodsModel extends GraphQL
             'order',
             'series_id',
             'state',
-//            'bonus_charge:pl_bonus_charge_pcs',
+            'pl_bonus_charge_pcs',
         ];
     }
 
@@ -137,7 +137,7 @@ class GoodsModel extends GraphQL
             [
                 (new Query('producer'))->setSelectionSet(['producer_id:id', 'producer_name:name']),
                 (new Query('tags'))->setSelectionSet(['id']),
-//                (new Query('goods_ranks'))->setSelectionSet(['rank:search_rank', 'income_order:search_rank']),
+                (new Query('rank'))->setSelectionSet(['search_rank']),
                 (new Query('options'))->setSelectionSet([
                     (new InlineFragment('GoodsOptionSingle'))->setSelectionSet([
                         'value',
@@ -163,7 +163,7 @@ class GoodsModel extends GraphQL
         $this->options->fill($data['options']);
 
         if (isset($data['mpath'])) {
-            $data['categories_path'] = array_values(array_filter(explode('.', $data['mpath'])));
+            $data['categories_path'] = array_map('intval', array_values(array_filter(explode('.', $data['mpath']))));
         }
 
         if (isset($data['seller_id'])) {
@@ -178,11 +178,11 @@ class GoodsModel extends GraphQL
             $data = array_merge($data, $data['producer']);
         }
 
-        if (isset($data['goods_ranks'])) {
-            $data = array_merge($data, $data['goods_ranks']);
+        if (isset($data['rank'])) {
+            $data = array_merge($data, $data['rank']);
         }
 
-        unset($data['options'], $data['producer'], $data['goods_ranks']);
+        unset($data['options'], $data['producer'], $data['rank'], $data['mpath']);
 
         return array_merge($data, $this->options->get());
     }
