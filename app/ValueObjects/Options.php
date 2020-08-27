@@ -129,7 +129,7 @@ class Options
                     'value' => (float) $option['value']
                 ];
             } elseif (in_array($details['type'], self::OPTIONS_BY_TYPES['booleans'])) {
-                $this->optionsChecked[] = $details['id'];
+                $this->optionChecked[] = $details['id'];
                 $this->optionCheckedNames[] = (string) $details['name'];
             }
         }
@@ -145,7 +145,7 @@ class Options
             'option_names' => $this->optionNames,
             'option_values' => $this->optionValues,
             'option_values_names' => $this->optionValuesNames,
-            'options_checked' => array_unique($this->optionsChecked),
+            'option_checked' => array_unique($this->optionChecked),
             'option_checked_names' => $this->optionCheckedNames,
             'option_sliders' => $this->optionSliders
         ];
