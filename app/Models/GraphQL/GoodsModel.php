@@ -74,7 +74,6 @@ class GoodsModel extends GraphQL
      */
     public function getOneById(int $id): array
     {
-        echo $id . "\n";
         return $this->formatResponse(
             $this->getGoodsOne(new RawObject("{id_eq: $id}"))
         );

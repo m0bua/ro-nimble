@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Logging\CustomLogger;
 use App\ValueObjects\Message;
 use App\ValueObjects\Processor;
 use Bschmitt\Amqp\Amqp;
@@ -11,6 +12,8 @@ use Illuminate\Support\Facades\Log;
 
 class ConsumerCommand extends Command
 {
+    const MAX_ERRORS_COUNT = 100;
+
     /**
      * @var string
      */
@@ -42,10 +45,20 @@ class ConsumerCommand extends Command
                         $errorsCount = 0;
                     }
                 }
+                unset($message, $processor);
             } catch (\Throwable $t) {
-                Log::error("{$t->getMessage()}; File: {$t->getFile()}; Line: {$t->getLine()}");
-                if ($errorsCount == 5) {
-                    abort(500, "{$t->getMessage()}; File: {$t->getFile()}; Line: {$t->getLine()}");
+                $additionalLogData = ['configuration' => $this->argument('config')];
+                if (isset($message)) {
+                    $additionalLogData['consumer_got_message'] = $message->getBody();
+                    $additionalLogData['routing_key'] = $message->getRoutingKey();
+                }
+
+                Log::channel('consumer')->error(
+                    $errorMessage = CustomLogger::generateMessage($t, $additionalLogData)
+                );
+
+                if ($errorsCount == self::MAX_ERRORS_COUNT) {
+                    abort(500, $errorMessage);
                 }
 
                 $errorsCount++;
