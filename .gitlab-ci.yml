@@ -4,6 +4,7 @@ stages:
   - build
   - stage
   - prod
+  - stop
 
 build:
   stage: build
@@ -57,6 +58,24 @@ prod:
     - nomad job run nomad/prod.nomad.job
   only:
     - master
+  tags:
+    - infra-docker
+
+stop:
+  stage: stop
+  image: debian:10
+  variables:
+    NOMAD_ADDR: http://nomad.rozetka.company:4646
+  before_script:
+    - apt-get update
+    - apt-get install curl gettext-base -y
+    - curl http://repo.dev.rozetka.com.ua/devops/nomad-0.11.3 --output /bin/nomad --silent
+    - chmod a+x /bin/nomad
+  script:
+    - nomad job stop nimble
+  only:
+    - master
+  when: manual
   tags:
     - infra-docker
 
