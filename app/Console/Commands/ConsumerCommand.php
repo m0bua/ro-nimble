@@ -28,7 +28,8 @@ class ConsumerCommand extends Command
     {
         config(['amqp.use' => $this->argument('config')]);
 
-        (new Amqp())->consume($this->argument('queue'), function ($amqpMessage, $resolver) {
+        $errorsCount = 0;
+        (new Amqp())->consume($this->argument('queue'), function ($amqpMessage, $resolver) use (&$errorsCount) {
             try {
                 $message   = new Message($amqpMessage);
                 $processor = new Processor($message);
@@ -36,10 +37,18 @@ class ConsumerCommand extends Command
 
                 if (Processor::CODE_SUCCESS === $code) {
                     $resolver->acknowledge($amqpMessage);
+
+                    if ($errorsCount > 0) {
+                        $errorsCount = 0;
+                    }
                 }
             } catch (\Throwable $t) {
                 Log::error("{$t->getMessage()}; File: {$t->getFile()}; Line: {$t->getLine()}");
-//                abort(500, "{$t->getMessage()}; File: {$t->getFile()}; Line: {$t->getLine()}");
+                if ($errorsCount == 5) {
+                    abort(500, "{$t->getMessage()}; File: {$t->getFile()}; Line: {$t->getLine()}");
+                }
+
+                $errorsCount++;
             }
         });
     }
