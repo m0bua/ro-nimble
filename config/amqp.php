@@ -64,7 +64,7 @@ return [
             'qos_prefetch_size'     => null,
             'qos_prefetch_count'    => 1000,
             'qos_a_global'          => false,
-            
+
             'processor_name'        => function($routingKey) {
                 return 'MarketingService\\' . ucfirst(
                     str_replace(
