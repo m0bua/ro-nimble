@@ -134,7 +134,7 @@ class GoodsModel extends GraphQL
         $this->selection = array_merge(
             $this->mainFieldsStack(),
             [
-                (new Query('producer'))->setSelectionSet(['producer_id:id', 'producer_name:name']),
+                (new Query('producer'))->setSelectionSet(['producer_id:id', 'producer_name:name', 'producer_title:title']),
                 (new Query('tags'))->setSelectionSet(['id']),
                 (new Query('rank'))->setSelectionSet(['search_rank']),
                 (new Query('options'))->setSelectionSet([

@@ -13,6 +13,7 @@ class GoodsModel extends Elastic
     protected $category_id;
     protected $categories_path;
     protected $producer_id;
+    protected $producer_title;
     protected $producer_name;
     protected $price;
     protected $sell_status;
