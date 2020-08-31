@@ -19,7 +19,7 @@ job "dev-nimble" {
     }
 
     group "nimble" {
-        
+
         count = 1
 
         task "consumer" {
@@ -31,7 +31,7 @@ job "dev-nimble" {
                 image = "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA}"
                 force_pull = true
                 network_mode = "host"
-                args = ["ms", "promotion_goods_marketing_to_ivv_queue"]
+                args = ["ms", "promotion.push.goods"]
                 auth {
                     username = "${DEPLOY_USER}"
                     password = "${DEPLOY_PASSWORD}"
@@ -53,8 +53,8 @@ job "dev-nimble" {
                     "AMQP_MS_PORT" = "5672"
                     "AMQP_MS_USERNAME" = "admin"
                     "AMQP_MS_EXCHANGE" = "marketing.promotion_push"
-                    "GQL_GOODS_SERVICE_URL" = "http://mdm-goods-prod.prod.kube/graphql"
-                    "GQL_GOODS_SERVICE_LOGIN" = "catalog"
+                    "GQL_GOODS_SERVICE_URL" = "http://mdm-goods-demo.demo.kube/graphql"
+                    "GQL_GOODS_SERVICE_LOGIN" = "basic"
                     "ELASTIC_HOSTS" = "10.10.29.62:9200"
                     "ELASTIC_AUTH_USER" = ""
                     "ELASTIC_AUTH_PASS" = ""
@@ -63,7 +63,7 @@ job "dev-nimble" {
                 template {
                     data = <<EOH
 AMQP_MS_PASSWORD="{{with secret "IVV/data/dev/mardrmq"}}{{.Data.data.admin}}{{end}}"
-GQL_GOODS_SERVICE_PASSWORD="{{with secret "IVV/data/prod/nimble"}}{{.Data.data.GQL_GOODS_SERVICE_PASSWORD}}{{end}}"
+GQL_GOODS_SERVICE_PASSWORD="{{with secret "IVV/data/dev/nimble"}}{{.Data.data.GQL_GOODS_SERVICE_PASSWORD}}{{end}}"
 EOH
                     destination = "/opt/nomad/file.env"
                     change_mode = "noop"
