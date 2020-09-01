@@ -54,7 +54,7 @@ job "dev-nimble" {
                     "AMQP_MS_PORT" = "5672"
                     "AMQP_MS_USERNAME" = "admin"
                     "AMQP_MS_EXCHANGE" = "marketing.promotion_push"
-                    "GQL_GOODS_SERVICE_URL" = "http://mdm-goods-demo.demo.kube/graphql"
+                    "GQL_GOODS_SERVICE_URL" = "http://mdm-goods-demo.test.kube/graphql"
                     "GQL_GOODS_SERVICE_LOGIN" = "basic"
                     "ELASTIC_HOSTS" = "10.10.29.62:9200"
                     "ELASTIC_AUTH_USER" = ""
