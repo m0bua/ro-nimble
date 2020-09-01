@@ -49,6 +49,7 @@ job "dev-nimble" {
                     "REDIS_HOST" = "10.10.29.61"
                     "REDIS_PORT" = "6379"
                     "REDIS_DB" = "0"
+                    "REDIS_PASSWORD" = "ivvtest"
                     "AMQP_MS_HOST" = "10.10.28.72"
                     "AMQP_MS_PORT" = "5672"
                     "AMQP_MS_USERNAME" = "admin"
