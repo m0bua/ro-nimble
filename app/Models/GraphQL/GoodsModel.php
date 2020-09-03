@@ -10,6 +10,8 @@ use GraphQL\RawObject;
 /**
  * Class GoodsModel
  * @package App\Models\GraphQL
+ *
+ * @deprecated
  */
 class GoodsModel extends GraphQL
 {
