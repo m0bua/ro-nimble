@@ -12,5 +12,5 @@ interface GraphQLInterface
     /**
      * @return string
      */
-//    public function entityName(): string;
+    public function entityName(): string;
 }

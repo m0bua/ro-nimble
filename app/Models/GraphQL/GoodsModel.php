@@ -44,6 +44,11 @@ class GoodsModel extends GraphQL
         return 'goods';
     }
 
+    public function entityName(): string
+    {
+        return 'goodsOne';
+    }
+
     /**
      * @return string[]
      */
