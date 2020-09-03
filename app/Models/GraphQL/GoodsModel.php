@@ -138,12 +138,9 @@ class GoodsModel extends GraphQL
                 (new Query('tags'))->setSelectionSet(['id']),
                 (new Query('rank'))->setSelectionSet(['search_rank']),
                 (new Query('options'))->setSelectionSet([
-                    (new InlineFragment('GoodsOptionSingle'))->setSelectionSet([
-                        'value',
-                        (new Query('details'))->setSelectionSet(['id', 'name', 'type', 'state']),
-                    ]),
+                    (new Query('details'))->setSelectionSet(['id', 'name', 'type', 'state']),
+                    (new InlineFragment('GoodsOptionSingle'))->setSelectionSet(['value']),
                     (new InlineFragment('GoodsOptionPlural'))->setSelectionSet([
-                        (new Query('details'))->setSelectionSet(['id', 'name', 'type', 'state']),
                         (new Query('values'))->setSelectionSet(['id', 'name', 'status']),
                     ]),
                 ]),

@@ -8,4 +8,9 @@ interface GraphQLInterface
      * @return string
      */
     public function serviceName(): string;
+
+    /**
+     * @return string
+     */
+//    public function entityName(): string;
 }
