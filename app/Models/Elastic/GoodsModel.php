@@ -5,36 +5,38 @@ namespace App\Models\Elastic;
 /**
  * Class GoodsModel
  * @package App\Models\Elastic\Promotions
+ *
+ * @property integer $is_group_primary
  */
 class GoodsModel extends Elastic
 {
-    protected $id;
-    protected $promotion_constructors = [];
-    protected $category_id;
-    protected $categories_path;
-    protected $producer_id;
-    protected $producer_title;
-    protected $producer_name;
-    protected $price;
-    protected $sell_status;
-    protected $seller_order;
-    protected $seller_id;
-    protected $group_id;
-    protected $is_group_primary;
-    protected $status_inherited;
-    protected $order;
-    protected $series_id;
-    protected $state;
-    protected $tags;
-    protected $pl_bonus_charge_pcs;
-    protected $search_rank;
-    protected $options;
-    protected $option_names;
-    protected $option_values;
-    protected $option_values_names;
-    protected $option_checked;
-    protected $option_checked_names;
-    protected $option_sliders;
+    protected ?int $id;
+    protected ?array $promotion_constructors = null;
+    protected ?int $category_id              = null;
+    protected ?array $categories_path        = null;
+    protected ?int $producer_id              = null;
+    protected ?string $producer_title        = null;
+    protected ?string $producer_name         = null;
+    protected ?int $price                    = null;
+    protected ?string $sell_status           = null;
+    protected ?int $seller_order             = null;
+    protected ?int $seller_id                = null;
+    protected ?int $group_id                 = null;
+    protected ?int $is_group_primary         = null;
+    protected ?string $status_inherited      = null;
+    protected ?int $order                    = null;
+    protected ?int $series_id                = null;
+    protected ?string $state                 = null;
+    protected ?array $tags                   = null;
+    protected ?int $pl_bonus_charge_pcs      = null;
+    protected ?float $search_rank            = null;
+    protected ?array $options                = null;
+    protected ?array $option_names           = null;
+    protected ?array $option_values          = null;
+    protected ?array $option_values_names    = null;
+    protected ?array $option_checked         = null;
+    protected ?array $option_checked_names   = null;
+    protected ?array $option_sliders         = null;
 
     /**
      * @return string
@@ -50,6 +52,19 @@ class GoodsModel extends Elastic
     public function requiredFields(): array
     {
         return ['id'];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function typeIndication(): array
+    {
+        return [
+            'is_group_primary' => [
+                'own_type' => 'integer',
+                'possible_types' => ['integer', 'boolean']
+            ],
+        ];
     }
 
     /**

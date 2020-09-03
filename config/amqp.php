@@ -120,7 +120,7 @@ return [
             'processor_name'        => function($routingKey) {
                 $keywords = explode('.', ucwords($routingKey, '.'));
 
-                return "GoodsService\{$keywords[0]}{$keywords[1]}{$keywords[2]}Processor";
+                return "GoodsService\\{$keywords[0]}{$keywords[1]}{$keywords[2]}Processor";
             }
         ],
 

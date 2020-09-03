@@ -5,7 +5,7 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": "^7.2.5",
+        "php": "^7.4",
         "ext-json": "*",
         "bschmitt/laravel-amqp": "^2.0",
         "elasticsearch/elasticsearch": "^7.7",

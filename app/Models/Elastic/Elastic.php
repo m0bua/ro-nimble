@@ -8,6 +8,7 @@ use App\Interfaces\ElasticInterface;
 use App\ValueObjects\Method;
 use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
+use Exception;
 use Prophecy\Exception\Doubler\MethodNotFoundException;
 use ReflectionClass;
 use ReflectionException;
@@ -58,6 +59,16 @@ abstract class Elastic extends Immutable implements ElasticInterface
             ->build();
         $this->index = $this->indexName();
         $this->checkRequired();
+    }
+
+    /**
+     * Указывает на возможные типы, которые конкретное поле сможет принимать от сторонних сервисов
+     *
+     * @return array
+     */
+    public function typeIndication(): array
+    {
+        return [];
     }
 
     /**
@@ -176,11 +187,27 @@ abstract class Elastic extends Immutable implements ElasticInterface
     }
 
     /**
-     * @param $fieldName
+     * @param string $fieldName
      * @param $fieldValue
+     * @throws Exception
      */
     private function setField(string $fieldName, $fieldValue)
     {
+        $typeIndication = $this->typeIndication();
+
+        if (array_key_exists($fieldName, $typeIndication)) {
+            $ownType = $typeIndication[$fieldName]['own_type'];
+            $incomingType = gettype($fieldValue);
+
+            if (in_array($incomingType, $typeIndication[$fieldName]['possible_types'])) {
+                if (!settype($fieldValue, $ownType)) {
+                    throw new Exception("Can't transform type of field '{$fieldName}'. Type expected: {$ownType}; Type given: {$incomingType}");
+                }
+            } else {
+                throw new Exception("Can't resolve type of field '{$fieldName}'. Type expected: {$ownType}; Type given: {$incomingType}");
+            }
+        }
+
         $this->$fieldName = $fieldValue;
     }
 
@@ -198,7 +225,7 @@ abstract class Elastic extends Immutable implements ElasticInterface
     /**
      * Проверяет на наличие обязательных полей
      *
-     * @throws ReflectionException
+     * @throws Exception
      */
     private function checkRequired()
     {
@@ -211,7 +238,7 @@ abstract class Elastic extends Immutable implements ElasticInterface
 
         $diff = array_diff($this->requiredFields(), $properties);
         if (!empty($diff)) {
-            throw new \Exception(sprintf("Required fields is missing: %s", join(', ', $diff)));
+            throw new Exception(sprintf("Required fields is missing: %s", join(', ', $diff)));
         }
     }
 
@@ -222,7 +249,7 @@ abstract class Elastic extends Immutable implements ElasticInterface
     {
         array_map(function ($field) {
             if (!isset($this->$field)) {
-                throw new \Exception(sprintf('Field "%s" can not be null', $field));
+                throw new Exception(sprintf('Field "%s" can not be null', $field));
             }
         }, $this->requiredFields());
     }

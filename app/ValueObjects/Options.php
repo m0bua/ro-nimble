@@ -102,7 +102,7 @@ class Options implements OptionsInterface
         }
 
         foreach($data as $option) {
-            if (!$option) {
+            if (!$option || !is_array($option)) {
                 continue;
             }
 
