@@ -36,9 +36,6 @@ class ChangePromotionConstructorGoodsProcessor extends AbstractCore
             $giftId = $constructorInfo->gift_id;
         }
 
-        $currentData = $elasticGoodsModel->searchById($goodsId);
-        $elasticGoodsModel->load($currentData);
-
         $promotionConstructor = new PromotionConstructor(
             [
                 'id' => $constructorId,
@@ -46,6 +43,10 @@ class ChangePromotionConstructorGoodsProcessor extends AbstractCore
                 'gift_id' => $giftId,
             ]
         );
+
+        $currentData = $elasticGoodsModel->searchById($goodsId);
+        $elasticGoodsModel->load($currentData);
+
         $promotionConstructors = $elasticGoodsModel->getPromotionConstructors();
         $promotionConstructor->setSeats($promotionConstructors);
 
@@ -61,7 +62,7 @@ class ChangePromotionConstructorGoodsProcessor extends AbstractCore
 
         $elasticGoodsModel->load($formattedData)->index();
 
-        unset($gqGoodsModel, $elasticGoodsModel, $message);
+        unset($goodsOneModel, $elasticGoodsModel);
 
         return Processor::CODE_SUCCESS;
     }
