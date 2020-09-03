@@ -11,7 +11,7 @@ namespace App\Models\Elastic;
 class GoodsModel extends Elastic
 {
     protected ?int $id;
-    protected ?array $promotion_constructors = null;
+    protected ?array $promotion_constructors = [];
     protected ?int $category_id              = null;
     protected ?array $categories_path        = null;
     protected ?int $producer_id              = null;
@@ -30,13 +30,13 @@ class GoodsModel extends Elastic
     protected ?array $tags                   = null;
     protected ?int $pl_bonus_charge_pcs      = null;
     protected ?float $search_rank            = null;
-    protected ?array $options                = null;
-    protected ?array $option_names           = null;
-    protected ?array $option_values          = null;
-    protected ?array $option_values_names    = null;
-    protected ?array $option_checked         = null;
-    protected ?array $option_checked_names   = null;
-    protected ?array $option_sliders         = null;
+    protected ?array $options                = [];
+    protected ?array $option_names           = [];
+    protected ?array $option_values          = [];
+    protected ?array $option_values_names    = [];
+    protected ?array $option_checked         = [];
+    protected ?array $option_checked_names   = [];
+    protected ?array $option_sliders         = [];
 
     /**
      * @return string

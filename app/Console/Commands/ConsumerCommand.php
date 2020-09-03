@@ -5,15 +5,13 @@ namespace App\Console\Commands;
 use App\Logging\CustomLogger;
 use App\ValueObjects\Message;
 use App\ValueObjects\Processor;
-use Bschmitt\Amqp\Amqp;
 use Bschmitt\Amqp\Exception\Configuration;
-use Bschmitt\Amqp\Request;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
 class ConsumerCommand extends Command
 {
-    const MAX_ERRORS_COUNT = 1;
+    const MAX_ERRORS_COUNT = 100;
 
     /**
      * @var string
