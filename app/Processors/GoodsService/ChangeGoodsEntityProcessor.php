@@ -4,14 +4,15 @@ namespace App\Processors\GoodsService;
 
 use App\Helpers\CommonFormatter;
 use App\Models\Elastic\GoodsModel;
-use App\Models\GraphQL\ProducerOneModel;
 use App\Processors\AbstractCore;
 use App\ValueObjects\Processor;
+use ReflectionException;
 
 class ChangeGoodsEntityProcessor extends AbstractCore
 {
     /**
-     * @inheritDoc
+     * @return int
+     * @throws ReflectionException
      */
     public function doJob()
     {
@@ -19,24 +20,19 @@ class ChangeGoodsEntityProcessor extends AbstractCore
         $goodsId = $this->message->getField('data.id');
         $goodsData = (array)$this->message->getField('data');
 
-        $oldAttributes = $elasticGoodsModel->searchById($goodsId);
+        $currentData = $elasticGoodsModel->searchById($goodsId);
 
-        if (empty($oldAttributes)) {
-            $goodsData['producer'] = (new ProducerOneModel())
-                ->setSelectionSet(['producer_id:id', 'producer_title:title', 'producer_name:name'])
-                ->setArgumentsWhere(
-                    'id_eq',
-                    $this->message->getField('data.producer_id')
-                )
-                ->get();
+        if (!empty($currentData)) {
+            $elasticGoodsModel->load($currentData);
+
+            $commonFormatter = new CommonFormatter($goodsData);
+            $commonFormatter->formatGoodsForIndex();
+            $formattedData = $commonFormatter->getFormattedData();
+            $elasticGoodsModel->load($formattedData)->index();
+
+            return Processor::CODE_SUCCESS;
         }
 
-        $elasticGoodsModel->load($oldAttributes);
-
-        $commonFormatter = new CommonFormatter($goodsData);
-        $commonFormatter->formatGoodsForIndex();
-        $elasticGoodsModel->load($commonFormatter->getFormattedData());
-
-        return Processor::CODE_SUCCESS;
+        return Processor::CODE_SKIP;
     }
 }

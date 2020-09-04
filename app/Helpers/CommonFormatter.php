@@ -60,7 +60,7 @@ class CommonFormatter
         }
 
         unset($this->incomeData['producer'], $this->incomeData['rank'], $this->incomeData['mpath']);
-        $this->formattedData = array_merge($this->formattedData, $this->incomeData);
+        $this->formattedData = array_merge($this->incomeData, $this->formattedData);
 
         return $this;
     }
