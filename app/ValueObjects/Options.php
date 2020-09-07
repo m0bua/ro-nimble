@@ -106,7 +106,7 @@ class Options implements OptionsInterface
 
             $details = $option['details'];
 
-            if ($details['state'] != self::STATUS_ACTIVE) {
+            if (is_null($details) || $details['state'] != self::STATUS_ACTIVE) {
                 continue;
             }
 
