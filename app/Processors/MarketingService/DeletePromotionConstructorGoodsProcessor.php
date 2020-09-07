@@ -17,16 +17,18 @@ class DeletePromotionConstructorGoodsProcessor extends AbstractCore
     {
         $elasticGoodsModel = new GoodsModel();
 
-        $goodsData = $elasticGoodsModel->searchById(
-            $this->message->getField('fields_data.goods_id')
+        $goodsData = $elasticGoodsModel->one(
+            $elasticGoodsModel->searchById(
+                $this->message->getField('fields_data.goods_id')
+            )
         );
 
         if (!empty($goodsData)) {
             $constructorId = $this->message->getField('fields_data.promotion_constructor_id');
 
             $elasticGoodsModel->load($goodsData);
-            $elasticGoodsModel->setPromotionConstructors(
-                PromotionConstructor::remove($constructorId, $elasticGoodsModel->getPromotionConstructors())
+            $elasticGoodsModel->set_promotion_constructors(
+                PromotionConstructor::remove($constructorId, $elasticGoodsModel->get_promotion_constructors())
             );
 
             $elasticGoodsModel->index();

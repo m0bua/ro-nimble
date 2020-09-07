@@ -8,7 +8,7 @@ use App\ValueObjects\Processor;
 use App\ValueObjects\PromotionConstructor;
 use Exception;
 
-class DeletePromotionConstructorGroupsProcessor extends AbstractCore
+class DeletePromotionConstructorGroupProcessor extends AbstractCore
 {
 
     /**
@@ -29,12 +29,12 @@ class DeletePromotionConstructorGroupsProcessor extends AbstractCore
 
             array_map(function ($goodsOne) use ($constructorId, $elasticGoodsModel) {
                 $elasticGoodsModel->load($goodsOne);
-                $elasticGoodsModel->setPromotionConstructors(
-                    PromotionConstructor::remove($constructorId, $elasticGoodsModel->getPromotionConstructors())
+                $elasticGoodsModel->set_promotion_constructors(
+                    PromotionConstructor::remove($constructorId, $elasticGoodsModel->get_promotion_constructors())
                 );
 
                 $elasticGoodsModel->index();
-            }, $groupGoodsData);
+            }, $elasticGoodsModel->all($groupGoodsData));
         }
 
         return Processor::CODE_SUCCESS;

@@ -8,6 +8,7 @@ use App\Interfaces\ElasticInterface;
 use App\ValueObjects\Method;
 use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
+use Exception;
 use Prophecy\Exception\Doubler\MethodNotFoundException;
 use ReflectionClass;
 use ReflectionException;
@@ -61,6 +62,16 @@ abstract class Elastic extends Immutable implements ElasticInterface
     }
 
     /**
+     * Указывает на возможные типы, которые конкретное поле сможет принимать от сторонних сервисов
+     *
+     * @return array
+     */
+    public function typeIndication(): array
+    {
+        return [];
+    }
+
+    /**
      * Возвращает список полей индекса текущей модели
      *
      * @param array $fieldNames
@@ -88,35 +99,50 @@ abstract class Elastic extends Immutable implements ElasticInterface
         return $fields;
     }
 
-
     /**
      * @param string $name
      * @param array $arguments
+     * @return $this|void
      */
     public function __call(string $name, array $arguments)
     {
         try {
-            $method = new Method($this, $name);
-            $property = $method->getProperty();
+            $method = new Method($name);
 
-            switch ($method->getPrefix()) {
-                case Method::GET:
-
-                    return $this->{$property->getName()};
-                    break;
-                case Method::SET:
-                    $this->setField($property->getName(), array_shift($arguments));
-
-                    return $this;
-                    break;
-                default:
-                    throw new MethodNotFoundException("Method {$name} not found.", get_class($this), $name);
-                    break;
+            if (!in_array($method->getPrefix(), [Method::GET, Method::SET])) {
+                throw new MethodNotFoundException("Method {$name} not found.", get_class($this), $name);
             }
+
+            $property = $method->getNameWithoutPrefix();
+            if ($method->isSet()) {
+                $this->setField($property, array_shift($arguments));
+                return $this;
+            }
+
+            return $this->$property;
+
         } catch (\Throwable $t) {
             report($t);
             abort(500, $t->getMessage());
         }
+    }
+
+    /**
+     * @param array $data
+     * @param array $changeSetMethod
+     * @return $this
+     */
+    public function load(array $data, array $changeSetMethod = [])
+    {
+        foreach ($data as $field => $value) {
+            if (isset($changeSetMethod[$field]) && method_exists($this, $changeSetMethod[$field])) {
+                $this->{$changeSetMethod[$field]}($value);
+            } else {
+                $this->{'set_' . $field}($value);
+            }
+        }
+
+        return $this;
     }
 
     /**
@@ -148,19 +174,6 @@ abstract class Elastic extends Immutable implements ElasticInterface
     }
 
     /**
-     * @param $data
-     * @return $this
-     */
-    public function load(array $data)
-    {
-        foreach ($data as $field => $value) {
-            $this->setField($field, $value);
-        }
-
-        return $this;
-    }
-
-    /**
      * Возвращает source-результат поиска
      *
      * @param array $searchResult
@@ -176,11 +189,45 @@ abstract class Elastic extends Immutable implements ElasticInterface
     }
 
     /**
-     * @param $fieldName
-     * @param $fieldValue
+     * @param array $searchResult
+     * @return array
      */
-    private function setField(string $fieldName, $fieldValue)
+    public function one(array $searchResult): array
     {
+        return isset($searchResult[0]) ? $searchResult[0] : $searchResult;
+    }
+
+    /**
+     * @param array $searchResult
+     * @return array|array[]
+     */
+    public function all(array $searchResult): array
+    {
+        return !isset($searchResult[0]) ? [$searchResult] : $searchResult;
+    }
+
+    /**
+     * @param string $fieldName
+     * @param $fieldValue
+     * @throws Exception
+     */
+    protected function setField(string $fieldName, $fieldValue)
+    {
+        $typeIndication = $this->typeIndication();
+
+        if (array_key_exists($fieldName, $typeIndication)) {
+            $ownType = $typeIndication[$fieldName]['own_type'];
+            $incomingType = gettype($fieldValue);
+
+            if (in_array($incomingType, $typeIndication[$fieldName]['possible_types'])) {
+                if (!settype($fieldValue, $ownType)) {
+                    throw new Exception("Can't transform type of field '{$fieldName}'. Type expected: {$ownType}; Type given: {$incomingType}");
+                }
+            } else {
+                throw new Exception("Can't resolve type of field '{$fieldName}'. Type expected: {$ownType}; Type given: {$incomingType}");
+            }
+        }
+
         $this->$fieldName = $fieldValue;
     }
 
@@ -198,7 +245,7 @@ abstract class Elastic extends Immutable implements ElasticInterface
     /**
      * Проверяет на наличие обязательных полей
      *
-     * @throws ReflectionException
+     * @throws Exception
      */
     private function checkRequired()
     {
@@ -211,7 +258,7 @@ abstract class Elastic extends Immutable implements ElasticInterface
 
         $diff = array_diff($this->requiredFields(), $properties);
         if (!empty($diff)) {
-            throw new \Exception(sprintf("Required fields is missing: %s", join(', ', $diff)));
+            throw new Exception(sprintf("Required fields is missing: %s", join(', ', $diff)));
         }
     }
 
@@ -222,7 +269,7 @@ abstract class Elastic extends Immutable implements ElasticInterface
     {
         array_map(function ($field) {
             if (!isset($this->$field)) {
-                throw new \Exception(sprintf('Field "%s" can not be null', $field));
+                throw new Exception(sprintf('Field "%s" can not be null', $field));
             }
         }, $this->requiredFields());
     }

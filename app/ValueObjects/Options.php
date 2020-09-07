@@ -2,9 +2,7 @@
 
 namespace App\ValueObjects;
 
-use App\Helpers\ConvertString;
 use App\Interfaces\OptionsInterface;
-use Exception;
 
 class Options implements OptionsInterface
 {
@@ -102,7 +100,7 @@ class Options implements OptionsInterface
         }
 
         foreach($data as $option) {
-            if (!$option) {
+            if (!$option || !is_array($option)) {
                 continue;
             }
 

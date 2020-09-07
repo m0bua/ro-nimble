@@ -2,10 +2,10 @@
 
 namespace App\Processors\MarketingService;
 
+use App\Helpers\CommonFormatter;
 use App\Models\Elastic\GoodsModel as ElasticGoodsModel;
-use App\Models\GraphQL\GoodsModel as GraphQLGoodsModel;
+use App\Models\GraphQL\GoodsManyModel;
 use App\Processors\AbstractCore;
-use App\ValueObjects\Options;
 use App\ValueObjects\Processor;
 use App\ValueObjects\PromotionConstructor;
 use Exception;
@@ -17,8 +17,7 @@ class ChangePromotionConstructorGroupProcessor extends AbstractCore
      */
     public function doJob()
     {
-        $options = new Options();
-        $gqGoodsModel = new GraphQLGoodsModel($options);
+        $goodsManyModel = new GoodsManyModel();
         $elasticGoodsModel = new ElasticGoodsModel();
 
         $giftId = null;
@@ -43,16 +42,25 @@ class ChangePromotionConstructorGroupProcessor extends AbstractCore
             ]
         );
 
-        array_map(function ($goods) use (
-            $elasticGoodsModel,
-            $promotionConstructor
-        ) {
-            $elasticGoodsModel->load($elasticGoodsModel->searchById($goods['id']));
-            $promotionConstructor->setSeats($elasticGoodsModel->getPromotionConstructors());
-            $elasticGoodsModel->setPromotionConstructors($promotionConstructor->takeEmptySeat());
-            $elasticGoodsModel->load($goods)->index();
+        array_map(function ($goods) use ($elasticGoodsModel, $promotionConstructor) {
+            $currentData = $elasticGoodsModel->one($elasticGoodsModel->searchById($goods['id']));
+            $elasticGoodsModel->load($currentData);
 
-        }, $gqGoodsModel->getManyByGroup($groupId));
+            $promotionConstructors = $elasticGoodsModel->get_promotion_constructors();
+            $promotionConstructor->setSeats($promotionConstructors);
+
+            $emptySeat = $promotionConstructor->takeEmptySeat();
+            $elasticGoodsModel->set_promotion_constructors($emptySeat);
+
+            $commonFormatter = new CommonFormatter($goods);
+            $commonFormatter->formatGoodsForIndex();
+            $commonFormatter->formatOptionsForIndex();
+            $formattedData = $commonFormatter->getFormattedData();
+
+            $elasticGoodsModel->load($formattedData)->index();
+        }, $goodsManyModel->getDefaultDataByGroupId($groupId));
+
+        unset($goodsOneModel, $elasticGoodsModel);
 
         return Processor::CODE_SUCCESS;
     }

@@ -2,62 +2,28 @@
 
 namespace App\ValueObjects;
 
-use App\Helpers\ConvertString;
-use ReflectionClass;
-use Exception;
-
 class Method
 {
     public const GET = 'get';
     public const SET = 'set';
 
     /**
-     * @var object
+     * @var string
      */
-    private $object;
+    private string $methodPrefix;
 
     /**
      * @var string
      */
-    private $methodName;
-
-    /**
-     * @var string
-     */
-    private $methodPrefix;
+    private string $nameWithoutPrefix;
 
     /**
      * Property constructor.
-     * @param object $object
      * @param string $methodName
      */
-    public function __construct(object $object, string $methodName)
+    public function __construct(string $methodName)
     {
-        $this->object = $object;
-        $this->methodName = $methodName;
-
-        try {
-            $this->prefixValidate();
-        } catch (\Throwable $t) {
-            report($t);
-        }
-    }
-
-    /**
-     * Validate prefix of method
-     *
-     * @throws Exception
-     */
-    public function prefixValidate()
-    {
-        $reflection = new ReflectionClass($this);
-        $prefix = ConvertString::getPrefix($this->methodName, $reflection->getConstants());
-
-        if (!$prefix) {
-            throw new \Exception(sprintf('Incorrect method %s', $this->methodName));
-        }
-
-        $this->methodPrefix = $prefix;
+        $this->cutIntoPieces($methodName);
     }
 
     /**
@@ -69,12 +35,36 @@ class Method
     }
 
     /**
-     * @return Property
+     * @return string
      */
-    public function getProperty(): Property
+    public function getNameWithoutPrefix(): string
     {
-        $property = ConvertString::stringWithoutPrefix($this->methodName, $this->methodPrefix);
+        return $this->nameWithoutPrefix;
+    }
 
-        return new Property($this->object, $property);
+    /**
+     * @return bool
+     */
+    public function isSet(): bool
+    {
+        return self::SET === $this->methodPrefix;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isGet(): bool
+    {
+        return self::GET === $this->methodPrefix;
+    }
+
+    /**
+     * @param string $methodName
+     */
+    private function cutIntoPieces(string $methodName)
+    {
+        $pieces = explode('_', $methodName);
+        $this->methodPrefix = array_shift($pieces);
+        $this->nameWithoutPrefix = implode('_', $pieces);
     }
 }

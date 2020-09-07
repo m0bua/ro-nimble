@@ -11,7 +11,7 @@ abstract class AbstractCore implements ProcessorInterface
     /**
      * @var MessageInterface
      */
-    protected $message;
+    protected MessageInterface $message;
 
     public function __construct(MessageInterface $message)
     {
@@ -26,5 +26,8 @@ abstract class AbstractCore implements ProcessorInterface
         return $this->doJob();
     }
 
+    /**
+     * @return mixed
+     */
     abstract public function doJob();
 }

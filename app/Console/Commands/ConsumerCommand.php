@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Logging\CustomLogger;
 use App\ValueObjects\Message;
 use App\ValueObjects\Processor;
-use Bschmitt\Amqp\Amqp;
 use Bschmitt\Amqp\Exception\Configuration;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -32,7 +31,11 @@ class ConsumerCommand extends Command
         config(['amqp.use' => $this->argument('config')]);
 
         $errorsCount = 0;
-        (new Amqp())->consume($this->argument('queue'), function ($amqpMessage, $resolver) use (&$errorsCount) {
+
+        $consumer = app()->make('Bschmitt\Amqp\Consumer');
+        $consumer->connect();
+
+        $consumer->consume($this->argument('queue'), function ($amqpMessage, $resolver) use (&$errorsCount) {
             try {
                 $message   = new Message($amqpMessage);
                 $processor = new Processor($message);
@@ -45,6 +48,7 @@ class ConsumerCommand extends Command
                         $errorsCount = 0;
                     }
                 }
+
                 unset($message, $processor);
             } catch (\Throwable $t) {
                 $additionalLogData = ['configuration' => $this->argument('config')];

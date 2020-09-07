@@ -2,10 +2,10 @@
 
 namespace App\Processors\MarketingService;
 
-use App\Models\GraphQL\GoodsModel as GraphQLGoodsModel;
+use App\Helpers\CommonFormatter;
 use App\Models\Elastic\GoodsModel as ElasticGoodsModel;
+use App\Models\GraphQL\GoodsOneModel;
 use App\Processors\AbstractCore;
-use App\ValueObjects\Options;
 use App\ValueObjects\Processor;
 use App\ValueObjects\PromotionConstructor;
 use Exception;
@@ -19,9 +19,8 @@ class ChangePromotionConstructorGoodsProcessor extends AbstractCore
      */
     public function doJob()
     {
-        $options = new Options();
-        $gqGoodsModel = new GraphQLGoodsModel($options);
         $elasticGoodsModel = new ElasticGoodsModel();
+        $goodsOneModel = new GoodsOneModel();
 
         $giftId = null;
         $promotionId = null;
@@ -45,12 +44,25 @@ class ChangePromotionConstructorGoodsProcessor extends AbstractCore
             ]
         );
 
-        $elasticGoodsModel->load($elasticGoodsModel->searchById($goodsId));
-        $promotionConstructor->setSeats($elasticGoodsModel->getPromotionConstructors());
-        $elasticGoodsModel->setPromotionConstructors($promotionConstructor->takeEmptySeat());
-        $elasticGoodsModel->load($gqGoodsModel->getOneById($goodsId))->index();
+        $currentData = $elasticGoodsModel->one($elasticGoodsModel->searchById($goodsId));
+        $elasticGoodsModel->load($currentData);
 
-        unset($gqGoodsModel, $elasticGoodsModel, $message);
+        $promotionConstructors = $elasticGoodsModel->get_promotion_constructors();
+        $promotionConstructor->setSeats($promotionConstructors);
+
+        $emptySeat = $promotionConstructor->takeEmptySeat();
+        $elasticGoodsModel->set_promotion_constructors($emptySeat);
+
+        $goodsOneData = $goodsOneModel->getDefaultDataById($goodsId);
+
+        $commonFormatter = new CommonFormatter($goodsOneData);
+        $commonFormatter->formatGoodsForIndex();
+        $commonFormatter->formatOptionsForIndex();
+        $formattedData = $commonFormatter->getFormattedData();
+
+        $elasticGoodsModel->load($formattedData)->index();
+
+        unset($goodsOneModel, $elasticGoodsModel);
 
         return Processor::CODE_SUCCESS;
     }
