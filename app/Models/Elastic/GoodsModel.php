@@ -20,7 +20,7 @@ class GoodsModel extends Elastic
     protected ?int $producer_id              = null;
     protected ?string $producer_title        = null;
     protected ?string $producer_name         = null;
-    protected ?int $price                    = null;
+    protected ?float $price                  = null;
     protected ?string $sell_status           = null;
     protected ?int $seller_order             = null;
     protected ?int $seller_id                = null;
