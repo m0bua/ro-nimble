@@ -17,8 +17,10 @@ class DeletePromotionConstructorGoodsProcessor extends AbstractCore
     {
         $elasticGoodsModel = new GoodsModel();
 
-        $goodsData = $elasticGoodsModel->searchById(
-            $this->message->getField('fields_data.goods_id')
+        $goodsData = $elasticGoodsModel->one(
+            $elasticGoodsModel->searchById(
+                $this->message->getField('fields_data.goods_id')
+            )
         );
 
         if (!empty($goodsData)) {

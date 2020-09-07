@@ -44,7 +44,7 @@ class ChangePromotionConstructorGoodsProcessor extends AbstractCore
             ]
         );
 
-        $currentData = $elasticGoodsModel->searchById($goodsId);
+        $currentData = $elasticGoodsModel->one($elasticGoodsModel->searchById($goodsId));
         $elasticGoodsModel->load($currentData);
 
         $promotionConstructors = $elasticGoodsModel->get_promotion_constructors();

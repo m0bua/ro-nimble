@@ -34,7 +34,7 @@ class DeletePromotionConstructorGroupsProcessor extends AbstractCore
                 );
 
                 $elasticGoodsModel->index();
-            }, $groupGoodsData);
+            }, $elasticGoodsModel->all($groupGoodsData));
         }
 
         return Processor::CODE_SUCCESS;

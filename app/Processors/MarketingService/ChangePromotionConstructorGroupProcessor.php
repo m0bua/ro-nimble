@@ -43,7 +43,7 @@ class ChangePromotionConstructorGroupProcessor extends AbstractCore
         );
 
         array_map(function ($goods) use ($elasticGoodsModel, $promotionConstructor) {
-            $currentData = $elasticGoodsModel->searchById($goods['id']);
+            $currentData = $elasticGoodsModel->one($elasticGoodsModel->searchById($goods['id']));
             $elasticGoodsModel->load($currentData);
 
             $promotionConstructors = $elasticGoodsModel->get_promotion_constructors();
