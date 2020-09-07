@@ -25,8 +25,8 @@ class DeletePromotionConstructorGoodsProcessor extends AbstractCore
             $constructorId = $this->message->getField('fields_data.promotion_constructor_id');
 
             $elasticGoodsModel->load($goodsData);
-            $elasticGoodsModel->setPromotionConstructors(
-                PromotionConstructor::remove($constructorId, $elasticGoodsModel->getPromotionConstructors())
+            $elasticGoodsModel->set_promotion_constructors(
+                PromotionConstructor::remove($constructorId, $elasticGoodsModel->get_promotion_constructors())
             );
 
             $elasticGoodsModel->index();

@@ -46,11 +46,11 @@ class ChangePromotionConstructorGroupProcessor extends AbstractCore
             $currentData = $elasticGoodsModel->searchById($goods['id']);
             $elasticGoodsModel->load($currentData);
 
-            $promotionConstructors = $elasticGoodsModel->getPromotionConstructors();
+            $promotionConstructors = $elasticGoodsModel->get_promotion_constructors();
             $promotionConstructor->setSeats($promotionConstructors);
 
             $emptySeat = $promotionConstructor->takeEmptySeat();
-            $elasticGoodsModel->setPromotionConstructors($emptySeat);
+            $elasticGoodsModel->set_promotion_constructors($emptySeat);
 
             $commonFormatter = new CommonFormatter($goods);
             $commonFormatter->formatGoodsForIndex();

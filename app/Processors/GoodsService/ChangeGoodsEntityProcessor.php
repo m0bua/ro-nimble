@@ -6,13 +6,13 @@ use App\Helpers\CommonFormatter;
 use App\Models\Elastic\GoodsModel;
 use App\Processors\AbstractCore;
 use App\ValueObjects\Processor;
-use ReflectionException;
+use Exception;
 
 class ChangeGoodsEntityProcessor extends AbstractCore
 {
     /**
      * @return int
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function doJob()
     {
@@ -24,7 +24,6 @@ class ChangeGoodsEntityProcessor extends AbstractCore
 
         if (!empty($currentData)) {
             $elasticGoodsModel->load($currentData);
-
             $commonFormatter = new CommonFormatter($goodsData);
             $commonFormatter->formatGoodsForIndex();
             $formattedData = $commonFormatter->getFormattedData();

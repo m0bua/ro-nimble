@@ -47,11 +47,11 @@ class ChangePromotionConstructorGoodsProcessor extends AbstractCore
         $currentData = $elasticGoodsModel->searchById($goodsId);
         $elasticGoodsModel->load($currentData);
 
-        $promotionConstructors = $elasticGoodsModel->getPromotionConstructors();
+        $promotionConstructors = $elasticGoodsModel->get_promotion_constructors();
         $promotionConstructor->setSeats($promotionConstructors);
 
         $emptySeat = $promotionConstructor->takeEmptySeat();
-        $elasticGoodsModel->setPromotionConstructors($emptySeat);
+        $elasticGoodsModel->set_promotion_constructors($emptySeat);
 
         $goodsOneData = $goodsOneModel->getDefaultDataById($goodsId);
 

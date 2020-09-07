@@ -2,6 +2,9 @@
 
 namespace App\Models\Elastic;
 
+use App\Models\GraphQL\ProducerOneModel;
+use Exception;
+
 /**
  * Class GoodsModel
  * @package App\Models\Elastic\Promotions
@@ -10,7 +13,7 @@ namespace App\Models\Elastic;
  */
 class GoodsModel extends Elastic
 {
-    protected ?int $id;
+    protected ?int $id                       = null;
     protected ?array $promotion_constructors = [];
     protected ?int $category_id              = null;
     protected ?array $categories_path        = null;
@@ -27,7 +30,7 @@ class GoodsModel extends Elastic
     protected ?int $order                    = null;
     protected ?int $series_id                = null;
     protected ?string $state                 = null;
-    protected ?array $tags                   = null;
+    protected ?array $tags                   = [];
     protected ?int $pl_bonus_charge_pcs      = null;
     protected ?float $search_rank            = null;
     protected ?array $options                = [];
@@ -109,5 +112,24 @@ class GoodsModel extends Elastic
 
         $source = $this->getSource($searchResult);
         return isset($source[0]) ? $source[0] : $source;
+    }
+
+    /**
+     * @param int $producerId
+     * @throws Exception
+     */
+    public function set_producer_id(int $producerId)
+    {
+        $producer = (new ProducerOneModel())
+            ->setSelectionSet(['title', 'name'])
+            ->setArgumentsWhere(
+                'id_eq',
+                $producerId
+            )
+            ->get();
+
+        $this->setField('producer_title', $producer['title']);
+        $this->setField('producer_name', $producer['name']);
+        $this->setField('producer_id', $producerId);
     }
 }

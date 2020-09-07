@@ -99,35 +99,46 @@ abstract class Elastic extends Immutable implements ElasticInterface
         return $fields;
     }
 
-
     /**
      * @param string $name
      * @param array $arguments
+     * @return $this|void
      */
     public function __call(string $name, array $arguments)
     {
         try {
-            $method = new Method($this, $name);
-            $property = $method->getProperty();
+            $method = new Method($name);
 
-            switch ($method->getPrefix()) {
-                case Method::GET:
-
-                    return $this->{$property->getName()};
-                    break;
-                case Method::SET:
-                    $this->setField($property->getName(), array_shift($arguments));
-
-                    return $this;
-                    break;
-                default:
-                    throw new MethodNotFoundException("Method {$name} not found.", get_class($this), $name);
-                    break;
+            if (!in_array($method->getPrefix(), [Method::GET, Method::SET])) {
+                throw new MethodNotFoundException("Method {$name} not found.", get_class($this), $name);
             }
+
+            $property = $method->getNameWithoutPrefix();
+            if ($method->isSet()) {
+                $this->setField($property, array_shift($arguments));
+                return $this;
+            }
+
+            return $this->$property;
+
         } catch (\Throwable $t) {
             report($t);
             abort(500, $t->getMessage());
         }
+    }
+
+    /**
+     * @param array $data
+     * @return $this
+     * @throws Exception
+     */
+    public function load(array $data)
+    {
+        foreach ($data as $field => $value) {
+            $this->{'set_' . $field}($value);
+        }
+
+        return $this;
     }
 
     /**
@@ -159,19 +170,6 @@ abstract class Elastic extends Immutable implements ElasticInterface
     }
 
     /**
-     * @param $data
-     * @return $this
-     */
-    public function load(array $data)
-    {
-        foreach ($data as $field => $value) {
-            $this->setField($field, $value);
-        }
-
-        return $this;
-    }
-
-    /**
      * Возвращает source-результат поиска
      *
      * @param array $searchResult
@@ -191,7 +189,7 @@ abstract class Elastic extends Immutable implements ElasticInterface
      * @param $fieldValue
      * @throws Exception
      */
-    private function setField(string $fieldName, $fieldValue)
+    protected function setField(string $fieldName, $fieldValue)
     {
         $typeIndication = $this->typeIndication();
 

@@ -29,8 +29,8 @@ class DeletePromotionConstructorGroupsProcessor extends AbstractCore
 
             array_map(function ($goodsOne) use ($constructorId, $elasticGoodsModel) {
                 $elasticGoodsModel->load($goodsOne);
-                $elasticGoodsModel->setPromotionConstructors(
-                    PromotionConstructor::remove($constructorId, $elasticGoodsModel->getPromotionConstructors())
+                $elasticGoodsModel->set_promotion_constructors(
+                    PromotionConstructor::remove($constructorId, $elasticGoodsModel->get_promotion_constructors())
                 );
 
                 $elasticGoodsModel->index();
