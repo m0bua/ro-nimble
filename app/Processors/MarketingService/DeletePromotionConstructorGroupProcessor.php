@@ -8,7 +8,7 @@ use App\ValueObjects\Processor;
 use App\ValueObjects\PromotionConstructor;
 use Exception;
 
-class DeletePromotionConstructorGroupsProcessor extends AbstractCore
+class DeletePromotionConstructorGroupProcessor extends AbstractCore
 {
 
     /**
