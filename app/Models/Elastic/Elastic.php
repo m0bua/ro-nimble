@@ -129,13 +129,17 @@ abstract class Elastic extends Immutable implements ElasticInterface
 
     /**
      * @param array $data
+     * @param array $changeSetMethod
      * @return $this
-     * @throws Exception
      */
-    public function load(array $data)
+    public function load(array $data, array $changeSetMethod = [])
     {
         foreach ($data as $field => $value) {
-            $this->{'set_' . $field}($value);
+            if (isset($changeSetMethod[$field]) && method_exists($this, $changeSetMethod[$field])) {
+                $this->{$changeSetMethod[$field]}($value);
+            } else {
+                $this->{'set_' . $field}($value);
+            }
         }
 
         return $this;

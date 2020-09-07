@@ -117,7 +117,7 @@ class GoodsModel extends Elastic
      * @param int $producerId
      * @throws Exception
      */
-    public function set_producer_id(int $producerId)
+    public function setProducerIdWithExtra(int $producerId)
     {
         $producer = (new ProducerOneModel())
             ->setSelectionSet(['title', 'name'])

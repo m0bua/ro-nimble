@@ -27,7 +27,10 @@ class ChangeGoodsEntityProcessor extends AbstractCore
             $commonFormatter = new CommonFormatter($goodsData);
             $commonFormatter->formatGoodsForIndex();
             $formattedData = $commonFormatter->getFormattedData();
-            $elasticGoodsModel->load($formattedData)->index();
+
+            $elasticGoodsModel
+                ->load($formattedData, ['producer_id' => 'setProducerIdWithExtra'])
+                ->index();
 
             return Processor::CODE_SUCCESS;
         }
