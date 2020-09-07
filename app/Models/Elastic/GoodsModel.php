@@ -94,11 +94,11 @@ class GoodsModel extends Elastic
     }
 
     /**
-     * @param $fieldName
-     * @param $value
-     * @return array|mixed
+     * @param string $fieldName
+     * @param mixed $value
+     * @return array
      */
-    public function searchTermByField($fieldName, $value)
+    public function searchTermByField(string $fieldName, $value): array
     {
         $searchResult = $this->search(
             [
@@ -110,8 +110,7 @@ class GoodsModel extends Elastic
             ]
         );
 
-        $source = $this->getSource($searchResult);
-        return isset($source[0]) ? $source[0] : $source;
+        return $this->getSource($searchResult);
     }
 
     /**

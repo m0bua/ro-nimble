@@ -185,6 +185,24 @@ abstract class Elastic extends Immutable implements ElasticInterface
     }
 
     /**
+     * @param array $searchResult
+     * @return array
+     */
+    public function one(array $searchResult): array
+    {
+        return isset($searchResult[0]) ? $searchResult[0] : $searchResult;
+    }
+
+    /**
+     * @param array $searchResult
+     * @return array|array[]
+     */
+    public function all(array $searchResult): array
+    {
+        return !isset($searchResult[0]) ? [$searchResult] : $searchResult;
+    }
+
+    /**
      * @param string $fieldName
      * @param $fieldValue
      * @throws Exception
