@@ -23,7 +23,7 @@ build:
   tags:
     - kube-prod
 
-stage:
+stage-marketing:
   stage: stage
   image: debian:10
   variables:
@@ -34,8 +34,8 @@ stage:
     - curl http://repo.dev.rozetka.com.ua/devops/nomad-0.11.3 --output /bin/nomad --silent
     - chmod a+x /bin/nomad
   script:
-    - envsubst < nomad/dev.nomad > nomad/dev.nomad.job
-    - nomad job run nomad/dev.nomad.job
+    - envsubst < nomad/marketing-dev.nomad > nomad/marketing-dev.nomad.job
+    - nomad job run nomad/marketing-dev.nomad.job
   only:
     - branches
   except:
@@ -43,7 +43,27 @@ stage:
   tags:
     - infra-docker
 
-prod:
+stage-goods:
+  stage: stage
+  image: debian:10
+  variables:
+    NOMAD_ADDR: http://nomad.rozetka.company:4646
+  before_script:
+    - apt-get update
+    - apt-get install curl gettext-base -y
+    - curl http://repo.dev.rozetka.com.ua/devops/nomad-0.11.3 --output /bin/nomad --silent
+    - chmod a+x /bin/nomad
+  script:
+    - envsubst < nomad/goods-dev.nomad > nomad/goods-dev.nomad.job
+    - nomad job run nomad/goods-dev.nomad.job
+  only:
+    - branches
+  except:
+    - master
+  tags:
+    - infra-docker
+
+prod-marketing:
   stage: prod
   image: debian:10
   variables:
@@ -54,8 +74,8 @@ prod:
     - curl http://repo.dev.rozetka.com.ua/devops/nomad-0.11.3 --output /bin/nomad --silent
     - chmod a+x /bin/nomad
   script:
-    - envsubst < nomad/prod.nomad > nomad/prod.nomad.job
-    - nomad job run nomad/prod.nomad.job
+    - envsubst < nomad/marketing-prod.nomad > nomad/marketing-prod.nomad.job
+    - nomad job run nomad/marketing-prod.nomad.job
   only:
     - master
   tags:
