@@ -20,7 +20,7 @@ job "dev-nimble" {
     }
 
     group "nimble" {
-        
+
         count = 1
 
         task "consumer" {
@@ -54,7 +54,7 @@ job "dev-nimble" {
                 "AMQP_MS_PORT" = "5672"
                 "AMQP_MS_USERNAME" = "admin"
                 "AMQP_MS_EXCHANGE" = "marketing.promotion_push"
-                "GQL_GOODS_SERVICE_URL" = "http://mdm-goods-prod.prod.kube/graphql"
+                "GQL_GOODS_SERVICE_URL" = "http://mdm-goods-demo.test.kube/graphql"
                 "GQL_GOODS_SERVICE_LOGIN" = "catalog"
                 "ELASTIC_HOSTS" = "10.10.29.62:9200"
                 "ELASTIC_AUTH_USER" = ""
@@ -63,7 +63,7 @@ job "dev-nimble" {
             template {
                 data = <<EOH
 AMQP_MS_PASSWORD="{{with secret "IVV/data/dev/mardrmq"}}{{.Data.data.admin}}{{end}}"
-GQL_GOODS_SERVICE_PASSWORD="{{with secret "IVV/data/prod/nimble"}}{{.Data.data.GQL_GOODS_SERVICE_PASSWORD}}{{end}}"
+GQL_GOODS_SERVICE_PASSWORD="{{with secret "IVV/data/dev/nimble"}}{{.Data.data.GQL_GOODS_SERVICE_PASSWORD}}{{end}}"
 EOH
                 destination = "/opt/nomad/file.env"
                 change_mode = "noop"

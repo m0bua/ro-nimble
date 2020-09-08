@@ -20,7 +20,7 @@ job "dev-nimble-goods" {
     }
 
     group "nimble" {
-        
+
         count = 1
 
         task "consumer" {
@@ -50,20 +50,19 @@ job "dev-nimble-goods" {
                 "REDIS_HOST" = "10.10.29.61"
                 "REDIS_PORT" = "6379"
                 "REDIS_DB" = "0"
-                "AMQP_MS_HOST" = "10.10.28.72"
-                "AMQP_MS_PORT" = "5672"
-                "AMQP_MS_USERNAME" = "admin"
-                "AMQP_MS_EXCHANGE" = "marketing.promotion_push"
-                "GQL_GOODS_SERVICE_URL" = "http://mdm-goods-prod.prod.kube/graphql"
-                "GQL_GOODS_SERVICE_LOGIN" = "catalog"
+                "AMQP_GS_HOST" = "10.10.29.204"
+                "AMQP_GS_PORT" = "5672"
+                "AMQP_GS_USERNAME" = "catalog"
+                "GQL_GOODS_SERVICE_URL" = "http://mdm-goods-demo.test.kube/graphql"
+                "GQL_GOODS_SERVICE_LOGIN" = "basic"
                 "ELASTIC_HOSTS" = "10.10.29.62:9200"
                 "ELASTIC_AUTH_USER" = ""
                 "ELASTIC_AUTH_PASS" = ""
             }
             template {
                 data = <<EOH
-AMQP_MS_PASSWORD="{{with secret "IVV/data/dev/mardrmq"}}{{.Data.data.admin}}{{end}}"
-GQL_GOODS_SERVICE_PASSWORD="{{with secret "IVV/data/prod/nimble"}}{{.Data.data.GQL_GOODS_SERVICE_PASSWORD}}{{end}}"
+AMQP_GS_PASSWORD="{{with secret "IVV/data/dev/goodsrmq"}}{{.Data.data.AMQP_GS_PASSWORD}}{{end}}"
+GQL_GOODS_SERVICE_PASSWORD="{{with secret "IVV/data/dev/nimble"}}{{.Data.data.GQL_GOODS_SERVICE_PASSWORD}}{{end}}"
 EOH
                 destination = "/opt/nomad/file.env"
                 change_mode = "noop"
