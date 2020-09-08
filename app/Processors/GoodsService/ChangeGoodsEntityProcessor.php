@@ -20,21 +20,17 @@ class ChangeGoodsEntityProcessor extends AbstractCore
         $goodsId = $this->message->getField('data.id');
         $goodsData = (array)$this->message->getField('data');
 
-        $currentData = $elasticGoodsModel->searchById($goodsId);
+        $currentData = $elasticGoodsModel->one($elasticGoodsModel->searchById($goodsId));
 
-        if (!empty($currentData)) {
-            $elasticGoodsModel->load($currentData);
-            $commonFormatter = new CommonFormatter($goodsData);
-            $commonFormatter->formatGoodsForIndex();
-            $formattedData = $commonFormatter->getFormattedData();
+        $elasticGoodsModel->load($currentData);
+        $commonFormatter = new CommonFormatter($goodsData);
+        $commonFormatter->formatGoodsForIndex();
+        $formattedData = $commonFormatter->getFormattedData();
 
-            $elasticGoodsModel
-                ->load($formattedData, ['producer_id' => 'setProducerIdWithExtra'])
-                ->index();
+        $elasticGoodsModel
+            ->load($formattedData, ['producer_id' => 'setProducerIdWithExtra'])
+            ->index();
 
-            return Processor::CODE_SUCCESS;
-        }
-
-        return Processor::CODE_SKIP;
+        return Processor::CODE_SUCCESS;
     }
 }
