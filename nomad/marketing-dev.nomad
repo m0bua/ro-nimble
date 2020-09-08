@@ -32,7 +32,7 @@ job "dev-nimble" {
                 image = "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA}"
                 force_pull = true
                 network_mode = "host"
-                args = ["ms", "promotion_goods_marketing_to_ivv_queue"]
+                args = ["ms", "promotion.push.goods"]
                 auth {
                     username = "${DEPLOY_USER}"
                     password = "${DEPLOY_PASSWORD}"
