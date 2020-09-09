@@ -64,6 +64,7 @@ job "dev-nimble" {
                 data = <<EOH
 AMQP_MS_PASSWORD="{{with secret "IVV/data/dev/mardrmq"}}{{.Data.data.admin}}{{end}}"
 GQL_GOODS_SERVICE_PASSWORD="{{with secret "IVV/data/dev/nimble"}}{{.Data.data.GQL_GOODS_SERVICE_PASSWORD}}{{end}}"
+REDIS_PASSWORD="{{with secret "IVV/data/dev/nimble"}}{{.Data.data.REDIS_PASSWORD}}{{end}}"
 EOH
                 destination = "/opt/nomad/file.env"
                 change_mode = "noop"
