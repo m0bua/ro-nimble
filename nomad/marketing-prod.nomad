@@ -70,8 +70,8 @@ EOH
                 env = true
             }
             resources {
-                memory = 3096
-                cpu = 4000
+                memory = 1024
+                cpu = 2000
             }
         }
     }
