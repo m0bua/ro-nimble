@@ -81,7 +81,25 @@ prod-marketing:
   tags:
     - infra-docker
 
-stop:
+prod-goods:
+  stage: prod
+  image: debian:10
+  variables:
+    NOMAD_ADDR: http://nomad.rozetka.company:4646
+  before_script:
+    - apt-get update
+    - apt-get install curl gettext-base -y
+    - curl http://repo.dev.rozetka.com.ua/devops/nomad-0.11.3 --output /bin/nomad --silent
+    - chmod a+x /bin/nomad
+  script:
+    - envsubst < nomad/goods-prod.nomad > nomad/goods-prod.nomad.job
+    - nomad job run nomad/goods-prod.nomad.job
+  only:
+    - master
+  tags:
+    - infra-docker
+
+stop-marketing:
   stage: stop
   image: debian:10
   variables:
@@ -99,3 +117,60 @@ stop:
   tags:
     - infra-docker
 
+stop-goods:
+  stage: stop
+  image: debian:10
+  variables:
+    NOMAD_ADDR: http://nomad.rozetka.company:4646
+  before_script:
+    - apt-get update
+    - apt-get install curl gettext-base -y
+    - curl http://repo.dev.rozetka.com.ua/devops/nomad-0.11.3 --output /bin/nomad --silent
+    - chmod a+x /bin/nomad
+  script:
+    - nomad job stop nimble-goods
+  only:
+    - master
+  when: manual
+  tags:
+    - infra-docker
+
+stop-stage-marketing:
+  stage: stop
+  image: debian:10
+  variables:
+    NOMAD_ADDR: http://nomad.rozetka.company:4646
+  before_script:
+    - apt-get update
+    - apt-get install curl gettext-base -y
+    - curl http://repo.dev.rozetka.com.ua/devops/nomad-0.11.3 --output /bin/nomad --silent
+    - chmod a+x /bin/nomad
+  script:
+    - nomad job stop dev-nimble
+  only:
+    - branches
+  except:
+    - master
+  when: manual
+  tags:
+    - infra-docker
+
+stop-stage-goods:
+  stage: stop
+  image: debian:10
+  variables:
+    NOMAD_ADDR: http://nomad.rozetka.company:4646
+  before_script:
+    - apt-get update
+    - apt-get install curl gettext-base -y
+    - curl http://repo.dev.rozetka.com.ua/devops/nomad-0.11.3 --output /bin/nomad --silent
+    - chmod a+x /bin/nomad
+  script:
+    - nomad job stop dev-nimble-goods
+  only:
+    - branches
+  except:
+    - master
+  when: manual
+  tags:
+    - infra-docker
