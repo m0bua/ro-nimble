@@ -62,7 +62,7 @@ job "nimble-goods" {
             }
             template {
                 data = <<EOH
-AMQP_MS_PASSWORD="{{with secret "IVV/data/prod/nimble"}}{{.Data.data.AMQP_GS_PASSWORD}}{{end}}"
+AMQP_GS_PASSWORD="{{with secret "IVV/data/prod/nimble"}}{{.Data.data.AMQP_GS_PASSWORD}}{{end}}"
 GQL_GOODS_SERVICE_PASSWORD="{{with secret "IVV/data/prod/nimble"}}{{.Data.data.GQL_GOODS_SERVICE_PASSWORD}}{{end}}"
 EOH
                 destination = "/opt/nomad/file.env"
