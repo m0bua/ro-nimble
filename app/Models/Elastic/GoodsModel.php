@@ -73,12 +73,12 @@ class GoodsModel extends Elastic
     /**
      * @param array $params
      * @return array|callable
-     * @throws \ReflectionException
+     * @throws Exception
      */
     public function index(array $params = [])
     {
         return parent::index(
-            array_merge($this->getFields(['id']), $params)
+            array_merge(['id' => $this->getAttribute('id')], $params)
         );
     }
 
@@ -119,16 +119,25 @@ class GoodsModel extends Elastic
      */
     public function setProducerIdWithExtra(int $producerId)
     {
-        $producer = (new ProducerOneModel())
-            ->setSelectionSet(['title', 'name'])
-            ->setArgumentsWhere(
-                'id_eq',
-                $producerId
-            )
-            ->get();
+        $producerTitle = null;
+        $producerName = null;
 
-        $this->setField('producer_title', $producer['title']);
-        $this->setField('producer_name', $producer['name']);
+        if ($producerId !== 0) {
+            $producer = (new ProducerOneModel())
+                ->setSelectionSet(['title', 'name'])
+                ->setArgumentsWhere(
+                    'id_eq',
+                    $producerId
+                )
+                ->get();
+
+            $producerTitle = $producer['title'];
+            $producerName = $producer['name'];
+        }
+
+
+        $this->setField('producer_title', $producerTitle);
+        $this->setField('producer_name', $producerName);
         $this->setField('producer_id', $producerId);
     }
 }

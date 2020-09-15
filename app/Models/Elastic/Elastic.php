@@ -41,11 +41,22 @@ abstract class Elastic extends Immutable implements ElasticInterface
     /**
      * @var ReflectionClass
      */
-    private $reflectionClass;
+    private ReflectionClass $reflectionClass;
+
+    /**
+     * @var array
+     */
+    private array $attributes = [];
 
     /**
      * Elastic constructor.
      * @throws ReflectionException
+     */
+
+    /**
+     * Elastic constructor.
+     * @throws ReflectionException
+     * @throws Exception
      */
     public function __construct()
     {
@@ -72,59 +83,26 @@ abstract class Elastic extends Immutable implements ElasticInterface
     }
 
     /**
-     * Возвращает список полей индекса текущей модели
-     *
-     * @param array $fieldNames
-     * @return array
-     * @throws ReflectionException
-     */
-    public function getFields(array $fieldNames = []): array
-    {
-        $fields = [];
-        array_map(function ($property) use (&$fields, $fieldNames) {
-            if (get_class($this) === $property->class) {
-                $property->setAccessible(true);
-                $propertyName = $property->getName();
-                $propertyValue = $property->getValue($this);
-                if (!empty($fieldNames)) {
-                    if (in_array($propertyName, $fieldNames)) {
-                        $fields[$propertyName] = $propertyValue;
-                    }
-                } else {
-                    $fields[$propertyName] = $propertyValue;
-                }
-            }
-        }, $this->reflectionClass->getProperties(\ReflectionProperty::IS_PROTECTED));
-
-        return $fields;
-    }
-
-    /**
      * @param string $name
      * @param array $arguments
      * @return $this|void
+     * @throws Exception
      */
     public function __call(string $name, array $arguments)
     {
-        try {
-            $method = new Method($name);
+        $method = new Method($name);
 
-            if (!in_array($method->getPrefix(), [Method::GET, Method::SET])) {
-                throw new MethodNotFoundException("Method {$name} not found.", get_class($this), $name);
-            }
-
-            $property = $method->getNameWithoutPrefix();
-            if ($method->isSet()) {
-                $this->setField($property, array_shift($arguments));
-                return $this;
-            }
-
-            return $this->$property;
-
-        } catch (\Throwable $t) {
-            report($t);
-            abort(500, $t->getMessage());
+        if (!in_array($method->getPrefix(), [Method::GET, Method::SET])) {
+            throw new MethodNotFoundException("Method {$name} not found.", get_class($this), $name);
         }
+
+        $property = $method->getNameWithoutPrefix();
+        if ($method->isSet()) {
+            $this->setField($property, array_shift($arguments));
+            return $this;
+        }
+
+        return $this->$property;
     }
 
     /**
@@ -134,15 +112,20 @@ abstract class Elastic extends Immutable implements ElasticInterface
      */
     public function load(array $data, array $changeSetMethod = [])
     {
-        foreach ($data as $field => $value) {
-            if (isset($changeSetMethod[$field]) && method_exists($this, $changeSetMethod[$field])) {
-                $this->{$changeSetMethod[$field]}($value);
-            } else {
-                $this->{'set_' . $field}($value);
+        try {
+            foreach ($data as $field => $value) {
+                if (isset($changeSetMethod[$field]) && method_exists($this, $changeSetMethod[$field])) {
+                    $this->{$changeSetMethod[$field]}($value);
+                } else {
+                    $this->{'set_' . $field}($value);
+                }
             }
-        }
 
-        return $this;
+            return $this;
+        } catch (\Throwable $t) {
+            report($t);
+            abort(500, $t->getMessage());
+        }
     }
 
     /**
@@ -161,7 +144,7 @@ abstract class Elastic extends Immutable implements ElasticInterface
     public function index(array $params = [])
     {
         $this->checkRequiredIsSet();
-        return $this->prepareParams(array_merge(['body' => $this->getFields()], $params))->client->index($this->params);
+        return $this->prepareParams(array_merge(['body' => $this->getAttributes()], $params))->client->index($this->params);
     }
 
     /**
@@ -207,6 +190,28 @@ abstract class Elastic extends Immutable implements ElasticInterface
     }
 
     /**
+     * @param string $attributeName
+     * @return mixed
+     * @throws Exception
+     */
+    public function getAttribute(string $attributeName)
+    {
+        if (!isset($this->attributes[$attributeName])) {
+            throw new Exception("Attribute {$attributeName} not found");
+        }
+
+        return $this->attributes[$attributeName];
+    }
+
+    /**
+     * @return array
+     */
+    public function getAttributes(): array
+    {
+        return $this->attributes;
+    }
+
+    /**
      * @param string $fieldName
      * @param $fieldValue
      * @throws Exception
@@ -228,7 +233,10 @@ abstract class Elastic extends Immutable implements ElasticInterface
             }
         }
 
-        $this->$fieldName = $fieldValue;
+        if (property_exists($this, $fieldName)) {
+            $this->$fieldName = $fieldValue;
+            $this->attributes[$fieldName] = $fieldValue;
+        }
     }
 
     /**
