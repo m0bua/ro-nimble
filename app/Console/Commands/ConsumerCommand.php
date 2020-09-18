@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 
 class ConsumerCommand extends Command
 {
-    const MAX_ERRORS_COUNT = 100;
+    const MAX_ERRORS_COUNT = 1;
 
     /**
      * @var string
@@ -41,7 +41,7 @@ class ConsumerCommand extends Command
                 $processor = new Processor($message);
                 $code = $processor->run();
 
-                if (Processor::CODE_SUCCESS === $code) {
+                if (in_array($code, [Processor::CODE_SUCCESS, Processor::CODE_SKIP])) {
                     $resolver->acknowledge($amqpMessage);
 
                     if ($errorsCount > 0) {

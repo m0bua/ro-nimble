@@ -67,6 +67,14 @@ class GoodsModel extends Elastic
                 'own_type' => 'integer',
                 'possible_types' => ['integer', 'boolean']
             ],
+            'price' => [
+                'own_type' => 'float',
+                'possible_types' => ['float', 'integer', 'string']
+            ],
+            'search_rank' => [
+                'own_type' => 'float',
+                'possible_types' => ['float', 'integer', 'string']
+            ],
         ];
     }
 

@@ -23,7 +23,7 @@ $app = new Laravel\Lumen\Application(
     dirname(__DIR__)
 );
 
-//$app->withFacades();
+$app->withFacades();
 
 $app->withFacades(true, [
     'Bschmitt\Amqp\Facades\Amqp' => 'Amqp',

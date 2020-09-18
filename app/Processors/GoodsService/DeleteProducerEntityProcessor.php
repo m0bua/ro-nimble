@@ -7,17 +7,17 @@ use App\Processors\AbstractCore;
 use App\ValueObjects\Processor;
 use Illuminate\Support\Facades\DB;
 
-class DeleteGoodsEntityProcessor extends AbstractCore
+class DeleteProducerEntityProcessor extends AbstractCore
 {
     /**
      * @inheritDoc
      */
     public function doJob()
     {
-        $goodsId = $this->message->getField('id');
+        $producerId = $this->message->getField('id');
 
-        DB::table('goods')
-            ->where(['id' => $goodsId])
+        DB::table('producers')
+            ->where(['id' => $producerId])
             ->update(['is_deleted' => 1]);
 
         return Processor::CODE_SUCCESS;

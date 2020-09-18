@@ -153,7 +153,11 @@ abstract class Elastic extends Immutable implements ElasticInterface
      */
     public function delete(array $params = [])
     {
-        return $this->prepareParams($params)->client->delete($this->params);
+        $this->prepareParams($params);
+
+        if ($this->client->exists($this->params)) {
+            return $this->client->delete($this->params);
+        }
     }
 
     /**
@@ -172,6 +176,8 @@ abstract class Elastic extends Immutable implements ElasticInterface
     }
 
     /**
+     * TODO Needs refactor
+     *
      * @param array $searchResult
      * @return array
      */
@@ -181,6 +187,8 @@ abstract class Elastic extends Immutable implements ElasticInterface
     }
 
     /**
+     * TODO Needs refactor
+     *
      * @param array $searchResult
      * @return array|array[]
      */

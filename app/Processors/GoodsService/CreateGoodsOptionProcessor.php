@@ -10,6 +10,7 @@ use App\Models\Elastic\GoodsModel;
 use App\Models\GraphQL\OptionOneModel;
 use App\Processors\AbstractCore;
 use App\ValueObjects\Processor;
+use Illuminate\Support\Facades\DB;
 
 class CreateGoodsOptionProcessor extends AbstractCore
 {
@@ -18,36 +19,19 @@ class CreateGoodsOptionProcessor extends AbstractCore
      */
     public function doJob()
     {
-        $goodsId = $this->message->getField('data.goods_id');
-        $optionId = $this->message->getField('data.option_id');
-        $optionValue = $this->message->getField('data.value');
-
-        $elasticGoodsModel = new GoodsModel();
-        $optionOneModel = new OptionOneModel();
-        $optionOne = $optionOneModel->setSelectionSet(['name', 'state', 'type'])->getById($optionId);
-
-        $goodsData = [
-            'id' => $goodsId,
-            'options' => [
-                [
-                    'details' => [
-                        'id' => $optionId,
-                        'name' => $optionOne['name'],
-                        'type' => $optionOne['type'],
-                        'state' => $optionOne['state'],
-                    ],
-                    'value' => $optionValue
-                ]
+        $data = $this->message->getField('data');
+        DB::table('goods_options')->insert(
+            [
+                'goods_id' => $data['goods_id'],
+                'option_id' => $data['option_id'],
+                'type' => $data['type'],
+                'value' => $data['value']
             ]
-        ];
+        );
 
-        $formatter = new CommonFormatter($goodsData);
-        $formatter->formatGoodsForIndex();
-        $formatter->formatOptionsForIndex();
-        $formattedData = $formatter->getFormattedData();
-        $currentData = $elasticGoodsModel->one($elasticGoodsModel->searchById($goodsId));
-        $newData = ArrayHelper::merge($currentData, $formattedData);
-        $elasticGoodsModel->load($newData)->index();
+        DB::table('goods')
+            ->where(['id' => $data['goods_id']])
+            ->update(['needs_index' => 1]);
 
         return Processor::CODE_SUCCESS;
     }
