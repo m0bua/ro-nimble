@@ -2,8 +2,6 @@
 
 namespace App\Processors\GoodsService;
 
-use App\Helpers\CommonFormatter;
-use App\Models\Elastic\GoodsModel;
 use App\Processors\AbstractCore;
 use App\ValueObjects\Processor;
 use Illuminate\Support\Facades\DB;

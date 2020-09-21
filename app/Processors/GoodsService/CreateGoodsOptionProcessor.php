@@ -4,10 +4,6 @@
 namespace App\Processors\GoodsService;
 
 
-use App\Helpers\ArrayHelper;
-use App\Helpers\CommonFormatter;
-use App\Models\Elastic\GoodsModel;
-use App\Models\GraphQL\OptionOneModel;
 use App\Processors\AbstractCore;
 use App\ValueObjects\Processor;
 use Illuminate\Support\Facades\DB;
