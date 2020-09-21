@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 
 class ConsumerCommand extends Command
 {
-    const MAX_ERRORS_COUNT = 1;
+    const MAX_ERRORS_COUNT = 100;
 
     /**
      * @var string
@@ -61,7 +61,7 @@ class ConsumerCommand extends Command
                     $errorMessage = CustomLogger::generateMessage($t, $additionalLogData)
                 );
 
-                if ($errorsCount == self::MAX_ERRORS_COUNT) {
+                if ($errorsCount == env('CONSUMER_MAX_ERRORS_COUNT', self::MAX_ERRORS_COUNT)) {
                     abort(500, $errorMessage);
                 }
 

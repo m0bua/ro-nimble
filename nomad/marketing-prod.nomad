@@ -20,7 +20,7 @@ job "nimble" {
     }
 
     group "nimble" {
-        
+
         count = 1
 
         task "consumer" {
@@ -59,6 +59,7 @@ job "nimble" {
                 "ELASTIC_HOSTS" = "10.10.12.152:9200,10.10.12.148:9200,10.10.12.149:9200"
                 "ELASTIC_AUTH_USER" = ""
                 "ELASTIC_AUTH_PASS" = ""
+                "CONSUMER_MAX_ERRORS_COUNT" = "100"
             }
             template {
                 data = <<EOH
