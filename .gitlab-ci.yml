@@ -1,176 +1,84 @@
-image: docker:19.03.8-dind
+image: registry.rozetka.company/ci:php7.4
+
+before_script:
+    - export VAULT_ADDR=https://vault.rozetka.company:8200
+    - vault read -field=PROD_PRIVATE devops/infra/rzk > /root/.ssh/id_rsa 
+    - chmod 600 /root/.ssh/id_rsa
+
 
 stages:
-  - build
-  - stage
-  - prod
+  - deploy
   - stop
 
-build:
-  stage: build
-  variables:
-    DOCKER_TLS_CERTDIR: ""
-    DOCKER_DRIVER: overlay2
-    DOCKER_HOST: tcp://localhost:2375
-  services:
-    - docker:19.03.8-dind
-  script: 
-    - docker login -u "${CI_REGISTRY_USER}" -p "${CI_REGISTRY_PASSWORD}" "${CI_REGISTRY}"
-    - docker image build --target=prod -t ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA} .
-    - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA}
-  when: manual
-  allow_failure: false
+deploy-dev:
+  stage: deploy
   tags:
-    - kube-prod
-
-stage-marketing:
-  stage: stage
-  image: debian:10
-  variables:
-    NOMAD_ADDR: http://nomad.rozetka.company:4646
-  before_script:
-    - apt-get update
-    - apt-get install curl gettext-base -y
-    - curl http://repo.dev.rozetka.com.ua/devops/nomad-0.11.3 --output /bin/nomad --silent
-    - chmod a+x /bin/nomad
+    - rozetka-shared
   script:
-    - envsubst < nomad/marketing-dev.nomad > nomad/marketing-dev.nomad.job
-    - nomad job run nomad/marketing-dev.nomad.job
+    - consul-template -template "env.dev:.env" -once
+    - dep build dev  -p -vv
+    - dep deploy dev  -p -vv
+  when: manual
   only:
     - branches
   except:
     - master
-  tags:
-    - infra-docker
 
-stage-goods:
-  stage: stage
-  image: debian:10
-  variables:
-    NOMAD_ADDR: http://nomad.rozetka.company:4646
-  before_script:
-    - apt-get update
-    - apt-get install curl gettext-base -y
-    - curl http://repo.dev.rozetka.com.ua/devops/nomad-0.11.3 --output /bin/nomad --silent
-    - chmod a+x /bin/nomad
+
+stop-dev-ms:
+  stage: stop
+  tags:
+    - rozetka-shared
   script:
-    - envsubst < nomad/goods-dev.nomad > nomad/goods-dev.nomad.job
-    - nomad job run nomad/goods-dev.nomad.job
+    - dep consumers:ms:stop dev -p -vv
+  when: manual
   only:
     - branches
   except:
     - master
-  tags:
-    - infra-docker
 
-prod-marketing:
-  stage: prod
-  image: debian:10
-  variables:
-    NOMAD_ADDR: http://nomad.rozetka.company:4646
-  before_script:
-    - apt-get update
-    - apt-get install curl gettext-base -y
-    - curl http://repo.dev.rozetka.com.ua/devops/nomad-0.11.3 --output /bin/nomad --silent
-    - chmod a+x /bin/nomad
-  script:
-    - envsubst < nomad/marketing-prod.nomad > nomad/marketing-prod.nomad.job
-    - nomad job run nomad/marketing-prod.nomad.job
-  only:
-    - master
-  tags:
-    - infra-docker
 
-prod-goods:
-  stage: prod
-  image: debian:10
-  variables:
-    NOMAD_ADDR: http://nomad.rozetka.company:4646
-  before_script:
-    - apt-get update
-    - apt-get install curl gettext-base -y
-    - curl http://repo.dev.rozetka.com.ua/devops/nomad-0.11.3 --output /bin/nomad --silent
-    - chmod a+x /bin/nomad
-  script:
-    - envsubst < nomad/goods-prod.nomad > nomad/goods-prod.nomad.job
-    - nomad job run nomad/goods-prod.nomad.job
-  only:
-    - master
-  tags:
-    - infra-docker
-
-stop-marketing:
+stop-dev-gs:
   stage: stop
-  image: debian:10
-  variables:
-    NOMAD_ADDR: http://nomad.rozetka.company:4646
-  before_script:
-    - apt-get update
-    - apt-get install curl gettext-base -y
-    - curl http://repo.dev.rozetka.com.ua/devops/nomad-0.11.3 --output /bin/nomad --silent
-    - chmod a+x /bin/nomad
+  tags:
+    - rozetka-shared
   script:
-    - nomad job stop nimble
-  only:
-    - master
+    - dep consumers:gs:stop dev -p -vv
   when: manual
-  tags:
-    - infra-docker
-
-stop-goods:
-  stage: stop
-  image: debian:10
-  variables:
-    NOMAD_ADDR: http://nomad.rozetka.company:4646
-  before_script:
-    - apt-get update
-    - apt-get install curl gettext-base -y
-    - curl http://repo.dev.rozetka.com.ua/devops/nomad-0.11.3 --output /bin/nomad --silent
-    - chmod a+x /bin/nomad
-  script:
-    - nomad job stop nimble-goods
-  only:
-    - master
-  when: manual
-  tags:
-    - infra-docker
-
-stop-stage-marketing:
-  stage: stop
-  image: debian:10
-  variables:
-    NOMAD_ADDR: http://nomad.rozetka.company:4646
-  before_script:
-    - apt-get update
-    - apt-get install curl gettext-base -y
-    - curl http://repo.dev.rozetka.com.ua/devops/nomad-0.11.3 --output /bin/nomad --silent
-    - chmod a+x /bin/nomad
-  script:
-    - nomad job stop dev-nimble
   only:
     - branches
   except:
     - master
-  when: manual
-  tags:
-    - infra-docker
 
-stop-stage-goods:
-  stage: stop
-  image: debian:10
-  variables:
-    NOMAD_ADDR: http://nomad.rozetka.company:4646
-  before_script:
-    - apt-get update
-    - apt-get install curl gettext-base -y
-    - curl http://repo.dev.rozetka.com.ua/devops/nomad-0.11.3 --output /bin/nomad --silent
-    - chmod a+x /bin/nomad
-  script:
-    - nomad job stop dev-nimble-goods
-  only:
-    - branches
-  except:
-    - master
-  when: manual
+
+deploy-prod:
+  stage: deploy
   tags:
-    - infra-docker
+    - rozetka-shared
+  script:
+    - consul-template -template "env.prod:.env" -once
+    - dep build prod -p -vv
+    - dep deploy prod -p -vv
+  when: manual
+  only:
+    - master
+
+stop-ms:
+  stage: stop
+  tags:
+    - rozetka-shared
+  script:
+    - dep consumers:ms:stop prod -p -vv
+  when: manual
+  only:
+    - master
+
+stop-gs:
+  stage: stop
+  tags:
+    - rozetka-shared
+  script:
+    - dep consumers:gs:stop prod -p -vv
+  when: manual
+  only:
+    - master
