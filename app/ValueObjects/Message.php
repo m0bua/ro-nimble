@@ -14,12 +14,12 @@ class Message implements MessageInterface
     /**
      * @var AMQPMessage
      */
-    private $message;
+    private AMQPMessage $message;
 
     /**
      * @var object
      */
-    private $body;
+    private object $body;
 
     /**
      * Message constructor.
@@ -38,6 +38,22 @@ class Message implements MessageInterface
     public function getBody(): object
     {
         return $this->body;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasError(): bool
+    {
+        return property_exists($this->body, 'json_error') ?? false;
+    }
+
+    /**
+     * @return string
+     */
+    public function getError(): string
+    {
+        return $this->hasError() ? $this->body->json_error : "";
     }
 
     /**
@@ -61,7 +77,6 @@ class Message implements MessageInterface
         foreach ($routes as $route) {
             if (!property_exists($result, $route)) {
                 throw new Exception("Field \"$route\" does not exists.");
-//                Log::channel('consumer')->warning("Field \"$route\" does not exists.");
             }
             $result = $result->$route;
         }
@@ -112,10 +127,7 @@ class Message implements MessageInterface
         }
 
         if ($error !== '') {
-            throw new Exception("$error Json was given: $json");
-//            Log::channel('consumer')->warning("$error Json was given: $json");
-//
-//            return (object)[];
+            return (object)['json_error' => "$error Json was given: $json"];
         }
 
         return $result;

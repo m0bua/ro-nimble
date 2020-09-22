@@ -4,14 +4,14 @@
 namespace App\Console\Commands;
 
 
+use App\Console\Commands\Extend\CustomCommand;
 use App\Helpers\ArrayHelper;
 use App\Helpers\CommonFormatter;
 use App\Models\Elastic\GoodsModel;
-use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
-class IndexMarkedGoodsCommand extends Command
+class IndexMarkedGoodsCommand extends CustomCommand
 {
     /**
      * @var string
@@ -49,44 +49,46 @@ class IndexMarkedGoodsCommand extends Command
      */
     public function handle()
     {
-        $goods = DB::table('goods')
-            ->leftJoin('producers', 'goods.producer_id', '=', 'producers.id')
-            ->leftJoin('goods_options as go', 'goods.id', '=', 'go.goods_id')
-            ->leftJoin('goods_options_plural as gop', 'goods.id', '=', 'gop.goods_id')
-            ->leftJoin('options as o', function($join) {
-                $join->on('go.option_id', '=', 'o.id')
-                     ->orOn('gop.option_id', '=', 'o.id');
-            })
-            ->leftJoin('option_values as ov', 'gop.value_id', '=', 'ov.id')
-            ->select([
-                'goods.*',
-                'producers.title as producer_title',
-                'producers.name as producer_name',
-                'o.id as option_id',
-                'o.name as option_name',
-                'o.type as option_type',
-                'o.state as option_state',
-                'go.value as option_value',
-                'ov.id as option_value_id',
-                'ov.name as option_value_name',
-                'ov.status as option_value_status',
-            ])
-            ->where(['goods.needs_index' => 1])
-            ->latest('goods.updated_at')
-            ->orderBy('goods.id')
-            ->limit(self::GOODS_COUNT_LIMIT);
+        $this->catchExceptions(function () {
+            $goods = DB::table('goods')
+                ->leftJoin('producers', 'goods.producer_id', '=', 'producers.id')
+                ->leftJoin('goods_options as go', 'goods.id', '=', 'go.goods_id')
+                ->leftJoin('goods_options_plural as gop', 'goods.id', '=', 'gop.goods_id')
+                ->leftJoin('options as o', function($join) {
+                    $join->on('go.option_id', '=', 'o.id')
+                        ->orOn('gop.option_id', '=', 'o.id');
+                })
+                ->leftJoin('option_values as ov', 'gop.value_id', '=', 'ov.id')
+                ->select([
+                    'goods.*',
+                    'producers.title as producer_title',
+                    'producers.name as producer_name',
+                    'o.id as option_id',
+                    'o.name as option_name',
+                    'o.type as option_type',
+                    'o.state as option_state',
+                    'go.value as option_value',
+                    'ov.id as option_value_id',
+                    'ov.name as option_value_name',
+                    'ov.status as option_value_status',
+                ])
+                ->where(['goods.needs_index' => 1])
+                ->latest('goods.updated_at')
+                ->orderBy('goods.id')
+                ->limit(self::GOODS_COUNT_LIMIT);
 
-        do {
-            $products = $goods->get();
-            $countProducts = $products->count();
+            do {
+                $products = $goods->get();
+                $countProducts = $products->count();
 
-            if ($countProducts == 0) {
-                break;
-            }
+                if ($countProducts == 0) {
+                    break;
+                }
 
-            $this->index($products);
+                $this->index($products);
 
-        } while ($countProducts == self::GOODS_COUNT_LIMIT);
+            } while ($countProducts == self::GOODS_COUNT_LIMIT);
+        });
     }
 
     /**

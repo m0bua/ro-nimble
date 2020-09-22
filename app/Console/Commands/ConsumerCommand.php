@@ -8,7 +8,6 @@ use App\ValueObjects\Processor;
 use Bschmitt\Amqp\Exception\Configuration;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use phpDocumentor\Reflection\Element;
 
 class ConsumerCommand extends Command
 {
@@ -35,11 +34,11 @@ class ConsumerCommand extends Command
 
         $consumer = app()->make('Bschmitt\Amqp\Consumer');
         $consumer->connect();
-
         $consumer->consume($this->argument('queue'), function ($amqpMessage, $resolver) use (&$errorsCount) {
             try {
-                if ($amqpMessage->body) {
-                    $message   = new Message($amqpMessage);
+
+                $message = new Message($amqpMessage);
+                if (!$message->hasError()) {
                     $processor = new Processor($message);
                     $code = $processor->run();
 
@@ -51,11 +50,17 @@ class ConsumerCommand extends Command
                         }
                     }
                 } else {
-                    Log::channel('consumer')->warning('Message body is empty');
-                    $resolver->acknowledge($amqpMessage);
+                    Log::channel('consumer')->error(
+                        CustomLogger::generateMessageFromStr(
+                            $message->getError(),
+                            [
+                                'configuration' => $this->argument('config'),
+                                'routing_key' => $message->getRoutingKey()
+                            ]
+                        )
+                    );
                 }
 
-                unset($message, $processor);
             } catch (\Throwable $t) {
                 $additionalLogData = ['configuration' => $this->argument('config')];
                 if (isset($message)) {

@@ -4,11 +4,12 @@
 namespace App\Console\Commands;
 
 
+use App\Console\Commands\Extend\CustomCommand;
 use App\Models\Elastic\GoodsModel;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
-class DeleteMarkedGoodsCommand extends Command
+class DeleteMarkedGoodsCommand extends CustomCommand
 {
     /**
      * @var string
@@ -43,27 +44,29 @@ class DeleteMarkedGoodsCommand extends Command
      */
     public function handle()
     {
-        $goodsQuery = DB::table('goods')
-            ->select('id')
-            ->where(['is_deleted' => 1])
-            ->limit(self::GOODS_COUNT_LIMIT);
+        $this->catchExceptions(function () {
+            $goodsQuery = DB::table('goods')
+                ->select('id')
+                ->where(['is_deleted' => 1])
+                ->limit(self::GOODS_COUNT_LIMIT);
 
-        do {
-            $goods = $goodsQuery->get();
-            $countGoods = $goods->count();
+            do {
+                $goods = $goodsQuery->get();
+                $countGoods = $goods->count();
 
-            if ($countGoods == 0) {
-                break;
-            }
+                if ($countGoods == 0) {
+                    break;
+                }
 
-            $deletedGoods = [];
-            $goods->map(function ($product) use (&$deletedGoods) {
-                $this->elasticGoods->delete(['id' => $product->id]);
+                $deletedGoods = [];
+                $goods->map(function ($product) use (&$deletedGoods) {
+                    $this->elasticGoods->delete(['id' => $product->id]);
 
-                $deletedGoods[] = $product->id;
-            });
+                    $deletedGoods[] = $product->id;
+                });
 
-            DB::table('goods')->whereIn('id', $deletedGoods)->delete();
-        } while($countGoods == self::GOODS_COUNT_LIMIT);
+                DB::table('goods')->whereIn('id', $deletedGoods)->delete();
+            } while($countGoods == self::GOODS_COUNT_LIMIT);
+        });
     }
 }
