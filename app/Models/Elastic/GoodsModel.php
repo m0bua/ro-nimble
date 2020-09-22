@@ -73,7 +73,7 @@ class GoodsModel extends Elastic
             ],
             'search_rank' => [
                 'own_type' => 'float',
-                'possible_types' => ['float', 'integer', 'string']
+                'possible_types' => ['float', 'integer', 'string', 'double']
             ],
         ];
     }
