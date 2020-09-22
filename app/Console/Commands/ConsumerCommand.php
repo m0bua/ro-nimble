@@ -38,7 +38,7 @@ class ConsumerCommand extends Command
 
         $consumer->consume($this->argument('queue'), function ($amqpMessage, $resolver) use (&$errorsCount) {
             try {
-                if (!empty($amqpMessage->body)) {
+                if ($amqpMessage->body) {
                     $message   = new Message($amqpMessage);
                     $processor = new Processor($message);
                     $code = $processor->run();

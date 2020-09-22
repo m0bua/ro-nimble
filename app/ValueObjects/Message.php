@@ -57,15 +57,13 @@ class Message implements MessageInterface
     {
         $result = $this->body;
 
-        if (!empty((array)$result)) {
-            $routes = explode('.', $fieldRoute);
-            foreach ($routes as $route) {
-                if (!property_exists($result, $route)) {
-//                throw new Exception("Field \"$route\" does not exists.");
-                    Log::channel('consumer')->warning("Field \"$route\" does not exists.");
-                }
-                $result = $result->$route;
+        $routes = explode('.', $fieldRoute);
+        foreach ($routes as $route) {
+            if (!property_exists($result, $route)) {
+                throw new Exception("Field \"$route\" does not exists.");
+//                Log::channel('consumer')->warning("Field \"$route\" does not exists.");
             }
+            $result = $result->$route;
         }
 
         return $result;
@@ -109,15 +107,15 @@ class Message implements MessageInterface
                 $error = 'A value of a type that cannot be encoded was given.';
                 break;
             default:
-                $error = 'Unknown JSON error occured.';
+                $error = 'Unknown JSON error occurred.';
                 break;
         }
 
         if ($error !== '') {
-//            throw new Exception("$error Json was given: $json");
-            Log::channel('consumer')->warning("$error Json was given: $json");
-
-            return (object)[];
+            throw new Exception("$error Json was given: $json");
+//            Log::channel('consumer')->warning("$error Json was given: $json");
+//
+//            return (object)[];
         }
 
         return $result;
