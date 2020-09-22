@@ -13,7 +13,7 @@ class DeleteOptionEntityProcessor extends AbstractCore
      */
     public function doJob()
     {
-        $optionId = $this->message->getField('id');
+        $optionId = $this->message->getField('data.id');
 
         DB::table('options')
             ->where(['id' => $optionId])
