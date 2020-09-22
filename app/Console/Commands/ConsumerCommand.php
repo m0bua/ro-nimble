@@ -59,6 +59,8 @@ class ConsumerCommand extends Command
                             ]
                         )
                     );
+
+                    $resolver->acknowledge($amqpMessage);
                 }
 
             } catch (\Throwable $t) {
