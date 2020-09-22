@@ -6,6 +6,7 @@ namespace App\ValueObjects;
 
 use App\Interfaces\MessageInterface;
 use Exception;
+use Illuminate\Support\Facades\Log;
 use PhpAmqpLib\Message\AMQPMessage;
 
 class Message implements MessageInterface
@@ -55,12 +56,16 @@ class Message implements MessageInterface
     public function getField(string $fieldRoute)
     {
         $result = $this->body;
-        $routes = explode('.', $fieldRoute);
-        foreach ($routes as $route) {
-            if (!property_exists($result, $route)) {
-                throw new Exception("Field \"$route\" does not exists.");
+
+        if (!empty((array)$result)) {
+            $routes = explode('.', $fieldRoute);
+            foreach ($routes as $route) {
+                if (!property_exists($result, $route)) {
+//                throw new Exception("Field \"$route\" does not exists.");
+                    Log::channel('consumer')->warning("Field \"$route\" does not exists.");
+                }
+                $result = $result->$route;
             }
-            $result = $result->$route;
         }
 
         return $result;
@@ -109,7 +114,10 @@ class Message implements MessageInterface
         }
 
         if ($error !== '') {
-            throw new Exception("$error Json was given: $json");
+//            throw new Exception("$error Json was given: $json");
+            Log::channel('consumer')->warning("$error Json was given: $json");
+
+            return (object)[];
         }
 
         return $result;

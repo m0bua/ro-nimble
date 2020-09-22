@@ -31,7 +31,6 @@ class CreateProducerEntityProcessor extends AbstractCore
                 'attachments' => $producerData['attachments'],
                 'disable_filter_series' => $producerData['disable_filter_series'],
                 'order_for_promotion' => $producerData['order_for_promotion'],
-                'series_id' => $producerData['series_id'],
                 'producer_rank' => $producerData['producer_rank'],
             ]
         );

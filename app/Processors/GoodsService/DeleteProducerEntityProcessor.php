@@ -13,7 +13,7 @@ class DeleteProducerEntityProcessor extends AbstractCore
      */
     public function doJob()
     {
-        $producerId = $this->message->getField('data.id');
+        $producerId = $this->message->getField('id');
 
         DB::table('producers')
             ->where(['id' => $producerId])
