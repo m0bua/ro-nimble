@@ -34,22 +34,35 @@ class ConsumerCommand extends Command
 
         $consumer = app()->make('Bschmitt\Amqp\Consumer');
         $consumer->connect();
-
         $consumer->consume($this->argument('queue'), function ($amqpMessage, $resolver) use (&$errorsCount) {
             try {
-                $message   = new Message($amqpMessage);
-                $processor = new Processor($message);
-                $code = $processor->run();
 
-                if (Processor::CODE_SUCCESS === $code) {
-                    $resolver->acknowledge($amqpMessage);
+                $message = new Message($amqpMessage);
+                if (!$message->hasError()) {
+                    $processor = new Processor($message);
+                    $code = $processor->run();
 
-                    if ($errorsCount > 0) {
-                        $errorsCount = 0;
+                    if (in_array($code, [Processor::CODE_SUCCESS, Processor::CODE_SKIP])) {
+                        $resolver->acknowledge($amqpMessage);
+
+                        if ($errorsCount > 0) {
+                            $errorsCount = 0;
+                        }
                     }
+                } else {
+                    Log::channel('consumer')->error(
+                        CustomLogger::generateMessageFromStr(
+                            $message->getError(),
+                            [
+                                'configuration' => $this->argument('config'),
+                                'routing_key' => $message->getRoutingKey()
+                            ]
+                        )
+                    );
+
+                    $resolver->acknowledge($amqpMessage);
                 }
 
-                unset($message, $processor);
             } catch (\Throwable $t) {
                 $additionalLogData = ['configuration' => $this->argument('config')];
                 if (isset($message)) {
@@ -61,7 +74,7 @@ class ConsumerCommand extends Command
                     $errorMessage = CustomLogger::generateMessage($t, $additionalLogData)
                 );
 
-                if ($errorsCount == self::MAX_ERRORS_COUNT) {
+                if ($errorsCount == env('CONSUMER_MAX_ERRORS_COUNT', self::MAX_ERRORS_COUNT)) {
                     abort(500, $errorMessage);
                 }
 

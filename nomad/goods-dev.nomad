@@ -58,6 +58,7 @@ job "dev-nimble-goods" {
                 "ELASTIC_HOSTS" = "10.10.29.62:9200"
                 "ELASTIC_AUTH_USER" = ""
                 "ELASTIC_AUTH_PASS" = ""
+                "CONSUMER_MAX_ERRORS_COUNT" = "1"
             }
             template {
                 data = <<EOH

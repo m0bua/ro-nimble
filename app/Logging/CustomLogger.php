@@ -18,6 +18,11 @@ class CustomLogger
         }
     }
 
+    /**
+     * @param \Throwable $t
+     * @param array $additionalData
+     * @return string
+     */
     public static function generateMessage(\Throwable $t, array $additionalData = []): string
     {
         return json_encode(
@@ -27,6 +32,24 @@ class CustomLogger
                     'error_message' => $t->getMessage(),
                     'file' => $t->getFile(),
                     'line' => $t->getLine()
+                ],
+                $additionalData
+            )
+        );
+    }
+
+    /**
+     * @param string $str
+     * @param array $additionalData
+     * @return string
+     */
+    public static function generateMessageFromStr(string $str, array $additionalData = []): string
+    {
+        return json_encode(
+            array_merge(
+                [
+                    'datetime' => date('Y-m-d\TH:i:sP'),
+                    'error_message' => $str,
                 ],
                 $additionalData
             )

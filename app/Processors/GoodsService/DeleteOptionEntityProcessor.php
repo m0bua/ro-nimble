@@ -6,18 +6,18 @@ use App\Processors\AbstractCore;
 use App\ValueObjects\Processor;
 use Illuminate\Support\Facades\DB;
 
-class DeleteGoodsEntityProcessor extends AbstractCore
+class DeleteOptionEntityProcessor extends AbstractCore
 {
     /**
      * @inheritDoc
      */
     public function doJob()
     {
-        $goodsId = $this->message->getField('id');
+        $optionId = $this->message->getField('id');
 
-        DB::table('goods')
-            ->where(['id' => $goodsId])
-            ->update(['is_deleted' => 1]);
+        DB::table('options')
+            ->where(['id' => $optionId])
+            ->delete();
 
         return Processor::CODE_SUCCESS;
     }

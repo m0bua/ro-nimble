@@ -1,5 +1,18 @@
 <?php
 return [
+    'migrations' => 'migrations',
+    'connections' => [
+        'driver'   => 'pgsql',
+        'host'     => env('DB_HOST', 'localhost'),
+        'database' => env('DB_DATABASE', 'postgres'),
+        'port'     => env('DB_PORT', 5432),
+        'username' => env('DB_USERNAME', 'postgres'),
+        'password' => env('DB_PASSWORD', 'postgres'),
+        'charset'  => 'utf8',
+        'prefix'   => '',
+        'schema'   => 'public',
+        'options' => [PDO::ATTR_EMULATE_PREPARES => true]
+    ],
     'redis' => [
         'client' => env('REDIS_CLIENT', 'phpredis'),
         'default' => [
@@ -15,5 +28,5 @@ return [
             'username' => env('ELASTIC_AUTH_USER'),
             'password' => env('ELASTIC_AUTH_PASS'),
         ]
-    ]
+    ],
 ];

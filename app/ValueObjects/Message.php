@@ -6,6 +6,7 @@ namespace App\ValueObjects;
 
 use App\Interfaces\MessageInterface;
 use Exception;
+use Illuminate\Support\Facades\Log;
 use PhpAmqpLib\Message\AMQPMessage;
 
 class Message implements MessageInterface
@@ -13,12 +14,12 @@ class Message implements MessageInterface
     /**
      * @var AMQPMessage
      */
-    private $message;
+    private AMQPMessage $message;
 
     /**
      * @var object
      */
-    private $body;
+    private object $body;
 
     /**
      * Message constructor.
@@ -40,6 +41,22 @@ class Message implements MessageInterface
     }
 
     /**
+     * @return bool
+     */
+    public function hasError(): bool
+    {
+        return property_exists($this->body, 'json_error') ?? false;
+    }
+
+    /**
+     * @return string
+     */
+    public function getError(): string
+    {
+        return $this->hasError() ? $this->body->json_error : "";
+    }
+
+    /**
      * @return string
      */
     public function getRoutingKey(): string
@@ -55,6 +72,7 @@ class Message implements MessageInterface
     public function getField(string $fieldRoute)
     {
         $result = $this->body;
+
         $routes = explode('.', $fieldRoute);
         foreach ($routes as $route) {
             if (!property_exists($result, $route)) {
@@ -104,12 +122,12 @@ class Message implements MessageInterface
                 $error = 'A value of a type that cannot be encoded was given.';
                 break;
             default:
-                $error = 'Unknown JSON error occured.';
+                $error = 'Unknown JSON error occurred.';
                 break;
         }
 
         if ($error !== '') {
-            throw new Exception("$error Json was given: $json");
+            return (object)['json_error' => "$error Json was given: $json"];
         }
 
         return $result;
