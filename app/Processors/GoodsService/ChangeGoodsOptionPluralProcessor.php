@@ -16,9 +16,11 @@ class ChangeGoodsOptionPluralProcessor extends AbstractCore
         $data = (array)$this->message->getField('data');
 
         DB::table('goods_options_plural')->updateOrInsert(
-            ['goods_id' => $data['goods_id']],
             [
+                'goods_id' => $data['goods_id'],
                 'option_id' => $data['option_id'],
+            ],
+            [
                 'value_id' => $data['value_id'],
                 'updated_at' => date('Y-m-d H:i:s'),
             ]

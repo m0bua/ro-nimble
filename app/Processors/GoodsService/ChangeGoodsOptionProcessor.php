@@ -16,9 +16,11 @@ class ChangeGoodsOptionProcessor extends AbstractCore
         $data = (array)$this->message->getField('data');
 
         DB::table('goods_options')->updateOrInsert(
-            ['goods_id' => $data['goods_id']],
             [
+                'goods_id' => $data['goods_id'],
                 'option_id' => $data['option_id'],
+            ],
+            [
                 'type' => $data['type'],
                 'value' => $data['value'],
                 'updated_at' => date('Y-m-d H:i:s'),
