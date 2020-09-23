@@ -8,6 +8,7 @@
         "php": "^7.4",
         "ext-json": "*",
         "bschmitt/laravel-amqp": "^2.0",
+        "doctrine/dbal": "^2.11",
         "elasticsearch/elasticsearch": "^7.7",
         "fxp/composer-asset-plugin": "dev-master",
         "gmostafa/php-graphql-client": "^1.6",

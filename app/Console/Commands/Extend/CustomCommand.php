@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Log;
 
 class CustomCommand extends Command
 {
+    /**
+     * @param \Closure $callback
+     */
     protected function catchExceptions(\Closure $callback)
     {
         try {
