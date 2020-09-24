@@ -58,7 +58,7 @@ class IndexGoodsConstructors extends CustomCommand
                 $constructorIDs = [];
                 $constructorsData = [];
                 $constructors->map(function ($constructor) use (&$constructorsData, &$constructorIDs) {
-                    $constructorIDs[] = $constructor->id;
+                    $constructorIDs[$constructor->goods_id] = $constructor->id;
                     $constructorsData[$constructor->goods_id][] = [
                         'id' => $constructor->id,
                         'promotion_id' => $constructor->promotion_id,
@@ -81,7 +81,16 @@ class IndexGoodsConstructors extends CustomCommand
                     ];
                 }
 
-                $this->elasticGoods->bulk($updateData);
+                $bulkResult = $this->elasticGoods->bulk($updateData);
+                if ($bulkResult['errors']) {
+                    foreach ($bulkResult['items'] as $item) {
+                        if ($item['update']['status'] !== 200) {
+                            $itemId = (int)$item['update']['_id'];
+                            unset($constructorIDs[$itemId]);
+                        }
+                    }
+                }
+
                 DB::table('promotion_constructors')
                     ->whereIn('id', $constructorIDs)
                     ->update(['needs_index' => 0]);
