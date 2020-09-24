@@ -6,8 +6,10 @@ use App\Console\Commands\ConsumerCommand;
 use App\Console\Commands\DeleteMarkedGoodsCommand;
 use App\Console\Commands\IndexGoodsConstructors;
 use App\Console\Commands\IndexMarkedGoodsCommand;
+use App\Console\Commands\MigrateGoodsCommand;
 use App\Console\Commands\MigrateOptionsCommand;
 use App\Console\Commands\MigrateOptionValuesCommand;
+use App\Console\Commands\MigrateProducersCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Laravel\Lumen\Console\Kernel as ConsoleKernel;
 
@@ -25,6 +27,8 @@ class Kernel extends ConsoleKernel
         MigrateOptionsCommand::class,
         MigrateOptionValuesCommand::class,
         IndexGoodsConstructors::class,
+        MigrateProducersCommand::class,
+        MigrateGoodsCommand::class,
     ];
 
     /**
