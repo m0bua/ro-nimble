@@ -39,7 +39,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('db:index-marked-goods')->everyFifteenMinutes()->runInBackground();
+        $schedule->command('db:migrate-goods')->everyFifteenMinutes()->runInBackground();
+        $schedule->command('db:index-marked-goods')->everyFiveMinutes()->runInBackground();
+        $schedule->command('db:index-goods-constructors')->everyFiveMinutes();
+
         $schedule->command('db:delete-marked-goods')->hourly();
     }
 }

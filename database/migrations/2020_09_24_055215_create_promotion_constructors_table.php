@@ -17,12 +17,14 @@ class CreatePromotionConstructorsTable extends Migration
             $table->bigInteger('id');
             $table->bigInteger('promotion_id');
             $table->bigInteger('gift_id')->nullable();
+            $table->smallInteger('needs_index')->default(1);
             $table->smallInteger('is_deleted')->default(0);
             $table->timestamp('created_at')->default('now()');
             $table->timestamp('updated_at')->default('now()');
 
             $table->primary('id');
             $table->index('promotion_id');
+            $table->index('needs_index');
         });
     }
 

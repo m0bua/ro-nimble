@@ -14,14 +14,6 @@ class ChangePromotionConstructorProcessor extends AbstractCore
      */
     public function doJob()
     {
-        app('redis')->set(
-            $this->message->getField('fields_data.id'),
-            json_encode([
-                'promotion_id' => $this->message->getField('fields_data.promotion_id'),
-                'gift_id' => $this->message->getField('fields_data.gift_id'),
-            ])
-        );
-
         DB::table('promotion_constructors')
             ->updateOrInsert([
                 'id' => $this->message->getField('fields_data.id'),

@@ -17,11 +17,13 @@ class CreatePromotionGroupsConstructorsTable extends Migration
             $table->id();
             $table->bigInteger('constructor_id');
             $table->bigInteger('group_id');
+            $table->smallInteger('needs_index')->default(1);
             $table->smallInteger('is_deleted')->default(0);
             $table->timestamp('created_at')->default('now()');
             $table->timestamp('updated_at')->default('now()');
 
             $table->index(['constructor_id', 'group_id']);
+            $table->index('needs_index');
         });
     }
 

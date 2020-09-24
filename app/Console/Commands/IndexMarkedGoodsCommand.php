@@ -70,8 +70,6 @@ class IndexMarkedGoodsCommand extends CustomCommand
                 }
 
                 $this->index($products);
-
-                dump($countProducts);
             } while ($countProducts == self::GOODS_COUNT_LIMIT);
         });
     }
