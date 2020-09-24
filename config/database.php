@@ -1,17 +1,32 @@
 <?php
 return [
     'migrations' => 'migrations',
+    'default' => 'nimble',
     'connections' => [
-        'driver'   => 'pgsql',
-        'host'     => env('DB_HOST', 'localhost'),
-        'database' => env('DB_DATABASE', 'postgres'),
-        'port'     => env('DB_PORT', 5432),
-        'username' => env('DB_USERNAME', 'postgres'),
-        'password' => env('DB_PASSWORD', 'postgres'),
-        'charset'  => 'utf8',
-        'prefix'   => '',
-        'schema'   => 'public',
-        'options' => [PDO::ATTR_EMULATE_PREPARES => true]
+        'nimble' => [
+            'driver'   => 'pgsql',
+            'host'     => env('DB_HOST', 'localhost'),
+            'database' => env('DB_DATABASE', 'postgres'),
+            'port'     => env('DB_PORT', 5432),
+            'username' => env('DB_USERNAME', 'postgres'),
+            'password' => env('DB_PASSWORD', 'postgres'),
+            'charset'  => 'utf8',
+            'prefix'   => '',
+            'schema'   => 'public',
+            'options' => [PDO::ATTR_EMULATE_PREPARES => true],
+        ],
+        'store' => [
+            'driver'   => 'pgsql',
+            'host'     => env('DB_STORE_HOST', 'localhost'),
+            'database' => env('DB_STORE_DATABASE', 'postgres'),
+            'port'     => env('DB_STORE_PORT', 5432),
+            'username' => env('DB_STORE_USERNAME', 'postgres'),
+            'password' => env('DB_STORE_PASSWORD', 'postgres'),
+            'charset'  => 'utf8',
+            'prefix'   => '',
+            'schema'   => 'public',
+            'options' => [PDO::ATTR_EMULATE_PREPARES => true],
+        ],
     ],
     'redis' => [
         'client' => env('REDIS_CLIENT', 'phpredis'),

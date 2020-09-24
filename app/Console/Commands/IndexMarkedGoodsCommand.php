@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 
 
 use App\Console\Commands\Extend\CustomCommand;
-use App\Helpers\ArrayHelper;
 use App\Helpers\CommonFormatter;
 use App\Models\Elastic\GoodsModel;
 use Illuminate\Support\Collection;
@@ -50,31 +49,16 @@ class IndexMarkedGoodsCommand extends CustomCommand
     public function handle()
     {
         $this->catchExceptions(function () {
+
             $goods = DB::table('goods')
-                ->leftJoin('producers', 'goods.producer_id', '=', 'producers.id')
-                ->leftJoin('goods_options as go', 'goods.id', '=', 'go.goods_id')
-                ->leftJoin('goods_options_plural as gop', 'goods.id', '=', 'gop.goods_id')
-                ->leftJoin('options as o', function($join) {
-                    $join->on('go.option_id', '=', 'o.id')
-                        ->orOn('gop.option_id', '=', 'o.id');
-                })
-                ->leftJoin('option_values as ov', 'gop.value_id', '=', 'ov.id')
                 ->select([
                     'goods.*',
-                    'producers.title as producer_title',
                     'producers.name as producer_name',
-                    'o.id as option_id',
-                    'o.name as option_name',
-                    'o.type as option_type',
-                    'o.state as option_state',
-                    'go.value as option_value',
-                    'ov.id as option_value_id',
-                    'ov.name as option_value_name',
-                    'ov.status as option_value_status',
+                    'producers.title as producer_title',
                 ])
+                ->leftJoin('producers', 'producers.id', '=', 'goods.producer_id')
                 ->where(['goods.needs_index' => 1])
-                ->latest('goods.updated_at')
-                ->orderBy('goods.id')
+                ->latest()
                 ->limit(self::GOODS_COUNT_LIMIT);
 
             do {
@@ -87,81 +71,122 @@ class IndexMarkedGoodsCommand extends CustomCommand
 
                 $this->index($products);
 
+                dump($countProducts);
             } while ($countProducts == self::GOODS_COUNT_LIMIT);
         });
     }
 
-    /**
-     * @param Collection $products
-     */
     private function index(Collection $products)
     {
-        $productData = [];
-        $goodsIndexed = [];
-
-        $products->map(function ($product) use (&$productData) {
-            $productData[$product->id]['id'] = $product->id;
-            $productData[$product->id]['category_id'] = $product->category_id;
-            $productData[$product->id]['mpath'] = $product->mpath;
-            $productData[$product->id]['price'] = $product->price;
-            $productData[$product->id]['sell_status'] = $product->sell_status;
-            $productData[$product->id]['producer_id'] = $product->producer_id;
-            $productData[$product->id]['seller_id'] = $product->seller_id;
-            $productData[$product->id]['group_id'] = $product->group_id;
-            $productData[$product->id]['is_group_primary'] = $product->is_group_primary;
-            $productData[$product->id]['status_inherited'] = $product->status_inherited;
-            $productData[$product->id]['order'] = $product->order;
-            $productData[$product->id]['state'] = $product->state;
-            $productData[$product->id]['rank'] = $product->rank;
-            $productData[$product->id]['producer_id'] = $product->producer_id;
-            $productData[$product->id]['producer_name'] = $product->producer_name;
-            $productData[$product->id]['producer_title'] = $product->producer_title;
-
-            if (!is_null($product->option_id)) {
-                $productData[$product->id]['options'][$product->option_id] = [
-                    'details' => [
-                        'id' => $product->option_id,
-                        'name' => $product->option_name,
-                        'type' => $product->option_type,
-                        'state' => $product->option_state,
-                    ],
-                ];
-
-                if (!is_null($product->option_value)) {
-                    $productData[$product->id]['options'][$product->option_id]['value'] = $product->option_value;
-                }
-
-                if (!is_null($product->option_value_id)) {
-                    $productData[$product->id]['options'][$product->option_id]['values'][] = [
-                        'id' => $product->option_value_id,
-                        'name' => $product->option_value_name,
-                        'status' => $product->option_value_status,
-                    ];
-                }
-            } else {
-                $productData[$product->id]['options'] = [];
-            }
+        $productsData = [];
+        $products->map(function ($product) use (&$productsData) {
+            /**
+             * Common info
+             */
+            $productsData[$product->id]['id'] = $product->id;
+            $productsData[$product->id]['category_id'] = $product->category_id;
+            $productsData[$product->id]['mpath'] = $product->mpath;
+            $productsData[$product->id]['price'] = $product->price;
+            $productsData[$product->id]['sell_status'] = $product->sell_status;
+            $productsData[$product->id]['producer_id'] = $product->producer_id;
+            $productsData[$product->id]['seller_id'] = $product->seller_id;
+            $productsData[$product->id]['group_id'] = $product->group_id;
+            $productsData[$product->id]['is_group_primary'] = $product->is_group_primary;
+            $productsData[$product->id]['status_inherited'] = $product->status_inherited;
+            $productsData[$product->id]['order'] = $product->order;
+            $productsData[$product->id]['state'] = $product->state;
+            $productsData[$product->id]['rank'] = $product->rank;
+            $productsData[$product->id]['producer_id'] = $product->producer_id;
+            $productsData[$product->id]['producer_name'] = $product->producer_name;
+            $productsData[$product->id]['producer_title'] = $product->producer_title;
+            $productsData[$product->id]['options'] = [];
         });
 
-        array_map(function ($singleProduct) use (&$goodsIndexed) {
-            $formatter = new CommonFormatter($singleProduct);
+        /**
+         * Options info
+         */
+        $options = DB::table('options')
+            ->select([
+                'options.id',
+                'options.name',
+                'options.type',
+                'options.state',
+                'go.value as value',
+                'go.goods_id'
+            ])
+            ->join('goods_options as go', 'go.option_id', '=', 'options.id')
+            ->where('go.type', '!=', 'unknown')
+            ->whereIn('go.goods_id', array_keys($productsData))
+            ->get();
+
+        $options->map(function ($option) use (&$productsData) {
+            $productsData[$option->goods_id]['options'][$option->id]['details'] = [
+                'id' => $option->id,
+                'name' => $option->name,
+                'type' => $option->type,
+                'state' => $option->state,
+            ];
+            $productsData[$option->goods_id]['options'][$option->id]['value'] = $option->value;;
+        });
+
+        /**
+         * Options plural info
+         */
+        $optionsPlural = DB::table('options')
+            ->select([
+                'options.id',
+                'options.name',
+                'options.type',
+                'options.state',
+                'gop.goods_id',
+                'ov.id as value_id',
+                'ov.name as value_name',
+                'ov.status as value_status',
+            ])
+            ->join('goods_options_plural as gop', 'gop.option_id', '=', 'options.id')
+            ->join('option_values as ov', 'gop.value_id', '=', 'ov.id')
+            ->whereIn('gop.goods_id', array_keys($productsData))
+            ->get();
+
+        $optionsPlural->map(function ($option) use (&$productsData) {
+            $productsData[$option->goods_id]['options'][$option->id]['details'] = [
+                'id' => $option->id,
+                'name' => $option->name,
+                'type' => $option->type,
+                'state' => $option->state,
+            ];
+            $productsData[$option->goods_id]['options'][$option->id]['values'][] = [
+                'id' => $option->value_id,
+                'name' => $option->value_name,
+                'status' => $option->value_status,
+            ];
+        });
+
+        /**
+         * Format and index data
+         */
+        $formattedData = ['body' => []];
+        array_map(function ($productData) use (&$formattedData) {
+            $formatter = new CommonFormatter($productData);
             $formatter->formatGoodsForIndex();
             $formatter->formatOptionsForIndex();
-            $formattedData = $formatter->getFormattedData();
 
-            $currentData = $this->elasticGoods->one(
-                $this->elasticGoods->searchById($singleProduct['id'])
-            );
+            $formattedData['body'][] = [
+                'index' => [
+                    '_index' => $this->elasticGoods->indexName(),
+                    '_id' => $productData['id'],
+                ],
+            ];
+            $formattedData['body'][] = $formatter->getFormattedData();
+        }, $productsData);
 
-            $this->elasticGoods->load(
-                ArrayHelper::merge($currentData, $formattedData)
-            )->index();
+        $this->elasticGoods->bulk($formattedData);
 
-            $goodsIndexed[] = $singleProduct['id'];
-        }, $productData);
-
+        /**
+         * Mark goods as indexed
+         */
         DB::table('goods')
-            ->whereIn('id', $goodsIndexed)
+            ->whereIn('id', array_keys($productsData))
             ->update(['needs_index' => 0]);
     }
 }
