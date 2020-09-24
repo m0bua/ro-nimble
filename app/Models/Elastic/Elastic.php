@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\Elastic;
 
+use App\Helpers\ArrayHelper;
 use App\Helpers\Immutable;
 use App\Interfaces\ElasticInterface;
 use App\ValueObjects\Method;
@@ -151,6 +152,24 @@ abstract class Elastic extends Immutable implements ElasticInterface
      * @param array $params
      * @return array|callable
      */
+    public function update(array $params = [])
+    {
+        return $this->prepareParams(['_id' => $params['id'], 'body' => ['doc' => $params]])->client->update($this->params);
+    }
+
+    /**
+     * @param array $params
+     * @return array|callable
+     */
+    public function bulk(array $params = [])
+    {
+        return $this->client->bulk($params);
+    }
+
+    /**
+     * @param array $params
+     * @return array|callable
+     */
     public function delete(array $params = [])
     {
         $this->prepareParams($params);
@@ -228,7 +247,7 @@ abstract class Elastic extends Immutable implements ElasticInterface
     {
         $typeIndication = $this->typeIndication();
 
-        if (array_key_exists($fieldName, $typeIndication)) {
+        if (!is_null($fieldValue) && array_key_exists($fieldName, $typeIndication)) {
             $ownType = $typeIndication[$fieldName]['own_type'];
             $incomingType = gettype($fieldValue);
 

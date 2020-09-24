@@ -98,7 +98,7 @@ class GoodsModel extends Elastic
      */
     public function searchById(int $goodsId)
     {
-        return $this->searchTermByField('id', $goodsId);
+        return $this->searchTermByField('_id', $goodsId);
     }
 
     /**

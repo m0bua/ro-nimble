@@ -15,10 +15,20 @@ class CommonFormatter
     /**
      * ResponseHelper constructor.
      * @param $incomeData
+     *
+     * @deprecated $incomeData in constructor will remove in future
      */
-    public function __construct(array $incomeData)
+    public function __construct(array $incomeData = [])
     {
         $this->incomeData = $incomeData;
+    }
+
+    /**
+     * @param array $data
+     */
+    public function setIncomeData(array $data)
+    {
+        $this->incomeData = $data;
     }
 
     /**
