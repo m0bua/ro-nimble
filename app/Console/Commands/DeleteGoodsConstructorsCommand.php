@@ -73,7 +73,7 @@ class DeleteGoodsConstructorsCommand extends CustomCommand
                 ->where(['is_deleted' => 1])
                 ->delete();
 
-        }, true);
+        });
     }
 
 }
