@@ -18,13 +18,18 @@ class ChangePromotionConstructorGroupProcessor extends AbstractCore
      */
     public function doJob()
     {
+        $constructorId = $this->message->getField('fields_data.promotion_constructor_id');
         DB::table('promotion_groups_constructors')
             ->updateOrInsert([
-                'constructor_id' => $this->message->getField('fields_data.promotion_constructor_id'),
+                'constructor_id' => $constructorId,
                 'group_id' => $this->message->getField('fields_data.group_id')
             ], [
                 'updated_at' => date('Y-m-d H:i:s'),
             ]);
+
+        DB::table('promotion_constructors')
+            ->where(['id' => $constructorId])
+            ->update(['needs_index' => 1]);
 
         return Processor::CODE_SUCCESS;
     }

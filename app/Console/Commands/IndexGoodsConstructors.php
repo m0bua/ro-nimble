@@ -51,11 +51,14 @@ class IndexGoodsConstructors extends CustomCommand
                     'pc.gift_id',
                     'pgc.goods_id',
                 ])
-                ->join('promotion_goods_constructors as pgc', 'pc.id', '=', 'pgc.constructor_id');
+                ->join('promotion_goods_constructors as pgc', 'pc.id', '=', 'pgc.constructor_id')
+                ->where(['pc.needs_index' => 1]);
 
             QueryBuilderHelper::chunk(500, $constructorsQuery, function ($constructors) {
+                $constructorIDs = [];
                 $constructorsData = [];
-                $constructors->map(function ($constructor) use (&$constructorsData) {
+                $constructors->map(function ($constructor) use (&$constructorsData, &$constructorIDs) {
+                    $constructorIDs[] = $constructor->id;
                     $constructorsData[$constructor->goods_id][] = [
                         'id' => $constructor->id,
                         'promotion_id' => $constructor->promotion_id,
@@ -79,6 +82,9 @@ class IndexGoodsConstructors extends CustomCommand
                 }
 
                 $this->elasticGoods->bulk($updateData);
+                DB::table('promotion_constructors')
+                    ->whereIn('id', $constructorIDs)
+                    ->update(['needs_index' => 0]);
             });
         });
     }
