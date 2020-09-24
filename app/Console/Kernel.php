@@ -4,6 +4,7 @@ namespace App\Console;
 
 use App\Console\Commands\ConsumerCommand;
 use App\Console\Commands\DeleteMarkedGoodsCommand;
+use App\Console\Commands\IndexGoodsConstructors;
 use App\Console\Commands\IndexMarkedGoodsCommand;
 use App\Console\Commands\MigrateOptionsCommand;
 use App\Console\Commands\MigrateOptionValuesCommand;
@@ -23,6 +24,7 @@ class Kernel extends ConsoleKernel
         DeleteMarkedGoodsCommand::class,
         MigrateOptionsCommand::class,
         MigrateOptionValuesCommand::class,
+        IndexGoodsConstructors::class,
     ];
 
     /**

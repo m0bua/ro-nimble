@@ -154,7 +154,7 @@ abstract class Elastic extends Immutable implements ElasticInterface
      */
     public function update(array $params = [])
     {
-        return $this->prepareParams(['_id' => $params['id'], 'body' => ['doc' => $params]])->client->update($this->params);
+        return $this->client->update($params);
     }
 
     /**

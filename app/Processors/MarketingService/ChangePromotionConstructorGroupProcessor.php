@@ -9,6 +9,7 @@ use App\Processors\AbstractCore;
 use App\ValueObjects\Processor;
 use App\ValueObjects\PromotionConstructor;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class ChangePromotionConstructorGroupProcessor extends AbstractCore
 {
@@ -24,6 +25,14 @@ class ChangePromotionConstructorGroupProcessor extends AbstractCore
         $promotionId = null;
         $groupId = $this->message->getField('fields_data.group_id');
         $constructorId = $this->message->getField('fields_data.promotion_constructor_id');
+
+        DB::table('promotion_groups_constructors')
+            ->updateOrInsert([
+                'constructor_id' => $constructorId,
+                'group_id' => $groupId
+            ], [
+                'updated_at' => date('Y-m-d H:i:s'),
+            ]);
 
         $constructorInfo = json_decode(
             app('redis')->get($constructorId)
