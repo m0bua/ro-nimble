@@ -3,6 +3,9 @@
 namespace App\Console;
 
 use App\Console\Commands\ConsumerCommand;
+use App\Console\Commands\DeleteConstructorsCommand;
+use App\Console\Commands\DeleteGoodsConstructorsCommand;
+use App\Console\Commands\DeleteGroupsConstructorsCommand;
 use App\Console\Commands\DeleteMarkedGoodsCommand;
 use App\Console\Commands\IndexGoodsConstructors;
 use App\Console\Commands\IndexGoodsGroupsConstructors;
@@ -33,6 +36,9 @@ class Kernel extends ConsoleKernel
         MigrateGoodsCommand::class,
         IndexGoodsGroupsConstructors::class,
         MigrateGoodsGroupsCommand::class,
+        DeleteGoodsConstructorsCommand::class,
+        DeleteGroupsConstructorsCommand::class,
+        DeleteConstructorsCommand::class,
     ];
 
     /**
@@ -45,10 +51,14 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('db:migrate-goods')->everyFiveMinutes()->runInBackground();
         $schedule->command('db:migrate-goods-groups')->everyFiveMinutes()->runInBackground();
+
         $schedule->command('db:index-marked-goods')->everyFiveMinutes()->runInBackground();
         $schedule->command('db:index-goods-constructors')->everyFiveMinutes();
         $schedule->command('db:index-goods-groups-constructors')->everyFiveMinutes();
 
         $schedule->command('db:delete-marked-goods')->hourly();
+        $schedule->command('db:delete-constructors')->everyFifteenMinutes();
+        $schedule->command('db:delete-groups-constructors')->everyFifteenMinutes();
+        $schedule->command('db:delete-goods-constructors')->everyFifteenMinutes();
     }
 }

@@ -161,6 +161,15 @@ abstract class Elastic extends Immutable implements ElasticInterface
      * @param array $params
      * @return array|callable
      */
+    public function scroll(array $params = [])
+    {
+        return $this->client->scroll($params);
+    }
+
+    /**
+     * @param array $params
+     * @return array|callable
+     */
     public function bulk(array $params = [])
     {
         return $this->client->bulk($params);

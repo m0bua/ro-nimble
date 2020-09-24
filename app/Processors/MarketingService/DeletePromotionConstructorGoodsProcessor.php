@@ -6,6 +6,7 @@ use App\Models\Elastic\GoodsModel;
 use App\Processors\AbstractCore;
 use App\ValueObjects\Processor;
 use App\ValueObjects\PromotionConstructor;
+use Illuminate\Support\Facades\DB;
 use ReflectionException;
 
 class DeletePromotionConstructorGoodsProcessor extends AbstractCore
@@ -15,26 +16,12 @@ class DeletePromotionConstructorGoodsProcessor extends AbstractCore
      */
     public function doJob()
     {
-        $elasticGoodsModel = new GoodsModel();
-
-        $goodsData = $elasticGoodsModel->one(
-            $elasticGoodsModel->searchById(
-                $this->message->getField('fields_data.goods_id')
-            )
-        );
-
-        if (!empty($goodsData)) {
-            $constructorId = $this->message->getField('fields_data.promotion_constructor_id');
-
-            $elasticGoodsModel->load($goodsData);
-            $elasticGoodsModel->set_promotion_constructors(
-                PromotionConstructor::remove($constructorId, $elasticGoodsModel->get_promotion_constructors())
-            );
-
-            $elasticGoodsModel->index();
-        }
-
-        unset($elasticGoodsModel, $message);
+        DB::table('promotion_goods_constructors')
+            ->where([
+                ['constructor_id', '=', $this->message->getField('fields_data.promotion_constructor_id')],
+                ['goods_id', '=', $this->message->getField('fields_data.goods_id')]
+            ])
+            ->update(['is_deleted' => 1]);
 
         return Processor::CODE_SUCCESS;
     }
