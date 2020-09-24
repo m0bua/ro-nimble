@@ -24,6 +24,7 @@ class ChangePromotionConstructorGroupProcessor extends AbstractCore
                 'constructor_id' => $constructorId,
                 'group_id' => $this->message->getField('fields_data.group_id')
             ], [
+                'needs_index' => 1,
                 'updated_at' => date('Y-m-d H:i:s'),
             ]);
 

@@ -20,6 +20,7 @@ class ChangePromotionConstructorProcessor extends AbstractCore
             ], [
                 'promotion_id' => $this->message->getField('fields_data.promotion_id'),
                 'gift_id' => $this->message->getField('fields_data.gift_id'),
+                'needs_index' => 1,
                 'updated_at' => date('Y-m-d H:i:s'),
             ]);
 
