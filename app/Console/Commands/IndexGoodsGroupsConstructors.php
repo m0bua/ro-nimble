@@ -52,7 +52,7 @@ class IndexGoodsGroupsConstructors extends CustomCommand
                     'pgc.group_id',
                 ])
                 ->join('promotion_groups_constructors as pgc', 'pc.id', '=', 'pgc.constructor_id')
-                ->where(['needs_index' => 1]);
+                ->where(['pc.needs_index' => 1]);
 
             QueryBuilderHelper::chunk(500, $constructorsQuery, function ($constructors) {
                 $constructorIDs = [];
