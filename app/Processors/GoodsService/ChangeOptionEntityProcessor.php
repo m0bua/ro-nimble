@@ -32,7 +32,7 @@ class ChangeOptionEntityProcessor extends AbstractCore
                 'record_type' => $option['record_type'],
                 'option_record_comparable' => $option['option_record_comparable'],
                 'option_record_status' => $option['option_record_status'],
-                'affect_group_photo' => $option['affect_group_photo'],
+                'affect_group_photo' => ($option['affect_group_photo']) ? 't': 'f',
                 'updated_at' => date('Y-m-d H:i:s'),
             ]
         );
