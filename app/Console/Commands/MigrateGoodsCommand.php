@@ -5,7 +5,9 @@ namespace App\Console\Commands;
 
 
 use App\Console\Commands\Extend\CustomCommand;
+use App\Helpers\CommonFormatter;
 use App\Helpers\QueryBuilderHelper;
+use App\Models\GraphQL\GoodsBatchModel;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -21,6 +23,22 @@ class MigrateGoodsCommand extends CustomCommand
      * @var string
      */
     protected $description = 'Migrate goods from db store to db nimble';
+
+    /**
+     * @var GoodsBatchModel
+     */
+    protected GoodsBatchModel $goodsBatch;
+
+    /**
+     * MigrateGoodsCommand constructor.
+     * @param GoodsBatchModel $goodsBatch
+     */
+    public function __construct(GoodsBatchModel $goodsBatch)
+    {
+        $this->goodsBatch = $goodsBatch;
+
+        parent::__construct();
+    }
 
     /**
      *
@@ -39,45 +57,38 @@ class MigrateGoodsCommand extends CustomCommand
                     $goodsIds[] = $item->goods_id;
                 });
 
-                $goods = DB::connection('store')
-                    ->table('goods')
-                    ->select([
-                        'goods.id',
-                        'title',
-                        'name',
-                        'category_id',
-                        'mpath',
-                        'price',
-                        'gr.search_rank as rank',
-                        'sell_status',
-                        'producer_id',
-                        'seller_id',
-                        'group_id',
-                        'is_group_primary',
-                        'status_inherited',
-                        'order',
-                        'series_id',
-                        'state',
-                        'is_deleted',
-                        'created_at',
-                        'updated_at',
-                    ])
-                    ->leftJoin('goods_ranks as gr', 'goods.id', '=', 'gr.id')
-                    ->whereIn('goods.id', $goodsIds)
-                    ->get();
+                $goods = $this->goodsBatch->getDefaultDataByGoodsIds($goodsIds);
 
+                $dataArray = [
+                    'goods' => [],
+                    'goods_options' => [],
+                    'goods_options_plural' => [],
+                    'options' => [],
+                    'option_values' => [],
+                    'producers' => [],
+                ];
 
-                $dataArray = [];
-                array_map(function ($product) use (&$dataArray) {
-                    $dataArray[] = (array)$product;
-                }, $goods->toArray());
+                foreach ($goods as $productData) {
+                    $dataArray['goods'][] = CommonFormatter::t_Goods($productData);
+                    $producers = CommonFormatter::t_Producers($productData);
+                    if (!empty($producers)) {
+                        $dataArray['producers'][] = $producers;
+                    }
+                    $dataArray['options'] = array_merge($dataArray['options'], CommonFormatter::t_Options($productData));
+                    $dataArray['option_values'] = array_merge($dataArray['option_values'], CommonFormatter::t_OptionValues($productData));
+                    $dataArray['goods_options'] = array_merge($dataArray['goods_options'], CommonFormatter::t_GoodsOptions($productData));
+                    $dataArray['goods_options_plural'] = array_merge($dataArray['goods_options_plural'], CommonFormatter::t_GoodsOptionsPlural($productData));
+                }
 
-                DB::table('goods')->insertOrIgnore($dataArray);
+                foreach ($dataArray as $table => $data) {
+                    DB::table($table)->insertOrIgnore($data);
+                }
+
                 DB::table('promotion_goods_constructors')
                     ->whereIn('goods_id', $goodsIds)
                     ->update(['needs_index' => 0]);
             });
 
-        });
+        }, true);
     }
 }

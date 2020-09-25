@@ -105,6 +105,10 @@ abstract class GraphQL implements GraphQLInterface
      */
     public function setArgumentsWhere($fieldName, $value): self
     {
+        if (is_array($value)) {
+            $value = '[' . join(',', $value) . ']';
+        }
+
         $this->query->setArguments(['where' => new RawObject("{{$fieldName}: {$value}}")]);
 
         return $this;
