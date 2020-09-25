@@ -13,7 +13,7 @@ class ChangeOptionEntityProcessor extends AbstractCore
      */
     public function doJob()
     {
-        $option = $this->message->getField('data');
+        $option = (array)$this->message->getField('data');
 
         DB::table('options')->updateOrInsert(
             ['id' => $option['id']],
