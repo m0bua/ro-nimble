@@ -20,7 +20,7 @@ class CustomCommand extends Command
             $callback();
         } catch (\Throwable $t) {
             Log::channel('consumer')->warning(
-                CustomLogger::generateMessage($t)
+                CustomLogger::generateMessage($t, ['signature' => $this->signature])
             );
 
             if ($abortWhenError) {
