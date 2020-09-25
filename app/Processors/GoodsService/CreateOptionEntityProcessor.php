@@ -13,7 +13,7 @@ class CreateOptionEntityProcessor extends AbstractCore
      */
     public function doJob()
     {
-        $option = $this->message->getField('data');
+        $option = (array)$this->message->getField('data');
 
         DB::table('options')->insertOrIgnore(
             [
