@@ -7,6 +7,7 @@ namespace App\Console\Commands;
 use App\Console\Commands\Extend\CustomCommand;
 use App\Models\Elastic\GoodsModel;
 use Illuminate\Support\Facades\DB;
+use function FastRoute\TestFixtures\empty_options_cached;
 
 class DeleteGoodsConstructorsCommand extends CustomCommand
 {
@@ -67,7 +68,9 @@ class DeleteGoodsConstructorsCommand extends CustomCommand
                 ];
             });
 
-            $this->elasticGoods->bulk($params);
+            if (!empty($params['body'])) {
+                $this->elasticGoods->bulk($params);
+            }
 
             DB::table('promotion_goods_constructors')
                 ->where(['is_deleted' => 1])

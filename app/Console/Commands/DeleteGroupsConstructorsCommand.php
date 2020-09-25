@@ -76,7 +76,9 @@ class DeleteGroupsConstructorsCommand extends CustomCommand
                 });
             });
 
-            $this->elasticGoods->bulk($params);
+            if (!empty($params['body'])) {
+                $this->elasticGoods->bulk($params);
+            }
 
             DB::table('promotion_groups_constructors')
                 ->where(['is_deleted' => 1])
