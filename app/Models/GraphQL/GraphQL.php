@@ -35,16 +35,6 @@ abstract class GraphQL implements GraphQLInterface
     protected Query $query;
 
     /**
-     * @var array
-     */
-    protected array $arguments = [];
-
-    /**
-     * @var array
-     */
-    protected array $selectionSet = [];
-
-    /**
      * GraphQL constructor.
      */
     public function __construct()
