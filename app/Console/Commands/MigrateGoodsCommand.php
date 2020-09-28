@@ -29,7 +29,7 @@ class MigrateGoodsCommand extends CustomCommand
      */
     protected GoodsBatchModel $goodsBatch;
 
-    protected const CHUNK_SIZE = 100;
+    protected const CHUNK_SIZE = 500;
 
     /**
      * MigrateGoodsCommand constructor.
@@ -86,7 +86,7 @@ class MigrateGoodsCommand extends CustomCommand
                         DB::table($table)->insertOrIgnore($data);
                     }
 
-                }, self::CHUNK_SIZE);
+                });
 
                 DB::table('promotion_goods_constructors')
                     ->whereIn('goods_id', $goodsIds)
@@ -94,6 +94,6 @@ class MigrateGoodsCommand extends CustomCommand
 
             });
 
-        }, true);
+        });
     }
 }
