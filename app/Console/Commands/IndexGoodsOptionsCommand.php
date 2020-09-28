@@ -58,11 +58,13 @@ class IndexGoodsOptionsCommand extends CustomCommand
                     ['go.needs_index', '=', 1],
                     ['o.state', '=', 'active'],
                 ])
-                ->whereIn('o.type', ['CheckBox', 'Integer', 'Decimal']);
+                ->whereIn('o.type', ['CheckBox', 'Integer', 'Decimal'])
+                ->orderBy('go.goods_id');
 
             QueryBuilderHelper::chunk(500, $baseQuery, function ($goodsOptions) {
                 $options = [];
-                $goodsOptions->map(function ($item) use (&$options) {
+                $optsForUpdate = [];
+                $goodsOptions->map(function ($item) use (&$options, &$optsForUpdate) {
                     if (in_array($item->type, Options::OPTIONS_BY_TYPES['integers'])) {
                         $options[$item->goods_id]['option_sliders'][] = [
                             'id' => $item->option_id,
@@ -73,6 +75,8 @@ class IndexGoodsOptionsCommand extends CustomCommand
                         $options[$item->goods_id]['option_checked'][] = $item->option_id;
                         $options[$item->goods_id]['option_checked_names'][] = $item->name;
                     }
+
+                    $optsForUpdate[$item->goods_id][] = $item->option_id;
                 });
 
                 $updateData = ['body' => []];
@@ -98,9 +102,12 @@ class IndexGoodsOptionsCommand extends CustomCommand
                     }
                 }
 
-                DB::table('goods_options')
-                    ->whereIn('goods_id', array_keys($options))
-                    ->update(['needs_index' => 0]);
+                foreach ($optsForUpdate as $goodsId => $optIds) {
+                    DB::table('goods_options')
+                        ->where(['goods_id' => $goodsId])
+                        ->whereIn('option_id', $optIds)
+                        ->update(['needs_index' => 0]);
+                }
             });
         });
     }
