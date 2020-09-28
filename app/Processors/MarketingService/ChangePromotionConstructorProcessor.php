@@ -5,6 +5,7 @@ namespace App\Processors\MarketingService;
 use App\Processors\AbstractCore;
 use App\ValueObjects\Processor;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class ChangePromotionConstructorProcessor extends AbstractCore
 {
@@ -13,13 +14,15 @@ class ChangePromotionConstructorProcessor extends AbstractCore
      */
     public function doJob()
     {
-        app('redis')->set(
-            $this->message->getField('fields_data.id'),
-            json_encode([
+        DB::table('promotion_constructors')
+            ->updateOrInsert([
+                'id' => $this->message->getField('fields_data.id'),
+            ], [
                 'promotion_id' => $this->message->getField('fields_data.promotion_id'),
                 'gift_id' => $this->message->getField('fields_data.gift_id'),
-            ])
-        );
+                'needs_index' => 1,
+                'updated_at' => date('Y-m-d H:i:s'),
+            ]);
 
         return Processor::CODE_SUCCESS;
     }

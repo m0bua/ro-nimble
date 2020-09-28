@@ -15,7 +15,7 @@ class CreateGoodsOptionPluralProcessor extends AbstractCore
      */
     public function doJob()
     {
-        $data = $this->message->getField('data');
+        $data = (array)$this->message->getField('data');
 
         DB::table('goods_options_plural')->insert(
             [

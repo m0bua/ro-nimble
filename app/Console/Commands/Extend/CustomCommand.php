@@ -12,15 +12,20 @@ class CustomCommand extends Command
 {
     /**
      * @param \Closure $callback
+     * @param bool $abortWhenError
      */
-    protected function catchExceptions(\Closure $callback)
+    protected function catchExceptions(\Closure $callback, bool $abortWhenError = false)
     {
         try {
             $callback();
         } catch (\Throwable $t) {
             Log::channel('consumer')->warning(
-                CustomLogger::generateMessage($t)
+                CustomLogger::generateMessage($t, ['signature' => $this->signature])
             );
+
+            if ($abortWhenError) {
+                abort(500, "Error: {$t->getMessage()}. File: {$t->getFile()}. Line: {$t->getLine()}");
+            }
         }
     }
 }

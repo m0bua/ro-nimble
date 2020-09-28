@@ -30,7 +30,11 @@ class GoodsManyModel extends GraphQL
      */
     public function getByGroupId(int $groupId): array
     {
-        return $this->setArgumentsWhere('group_id_eq', $groupId)->get();
+        $this->query->setArguments(
+            $this->where('group_id_eq', $groupId)
+        );
+
+        return $this->get();
     }
 
     /**
@@ -39,8 +43,10 @@ class GoodsManyModel extends GraphQL
      */
     public function getDefaultDataByGroupId(int $groupId): array
     {
-        return $this->setSelectionSet([
+        $this->query->setSelectionSet([
             $this->query('nodes')->setSelectionSet($this->defaultSelectionSet())
-        ])->getByGroupId($groupId)['nodes'];
+        ]);
+
+        return $this->getByGroupId($groupId)['nodes'];
     }
 }

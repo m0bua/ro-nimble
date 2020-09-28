@@ -15,7 +15,7 @@ class CreateGoodsOptionProcessor extends AbstractCore
      */
     public function doJob()
     {
-        $data = $this->message->getField('data');
+        $data = (array)$this->message->getField('data');
         DB::table('goods_options')->insert(
             [
                 'goods_id' => $data['goods_id'],

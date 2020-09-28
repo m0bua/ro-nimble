@@ -77,37 +77,35 @@ abstract class GraphQL implements GraphQLInterface
     }
 
     /**
-     * @param array $selectionSet
-     * @return $this
-     */
-    public function setSelectionSet(array $selectionSet): self
-    {
-        $this->query->setSelectionSet($selectionSet);
-
-        return $this;
-    }
-
-    /**
-     * @param array $arguments
-     * @return $this
-     */
-    public function setArguments(array $arguments): self
-    {
-        $this->query->setArguments($arguments);
-
-        return $this;
-    }
-
-    /**
-     * @param $fieldName
+     * @param string $fieldName
      * @param $value
-     * @return $this
+     * @return array|RawObject[]
      */
-    public function setArgumentsWhere($fieldName, $value): self
+    public function where(string $fieldName, $value): array
     {
-        $this->query->setArguments(['where' => new RawObject("{{$fieldName}: {$value}}")]);
+        return ['where' => new RawObject("{{$fieldName}_eq: {$value}}")];
+    }
 
-        return $this;
+    /**
+     * @param string $fieldName
+     * @param array $values
+     * @return array|RawObject[]
+     */
+    public function whereIn(string $fieldName, array $values): array
+    {
+        $valuesStr = '[' . join(',', $values) . ']';
+
+        return ['where' => new RawObject("{{$fieldName}_in: {$valuesStr}}")];
+    }
+
+    /**
+     * @param int $batchSize
+     * @param int $batchId
+     * @return array|RawObject[]
+     */
+    public function batch(int $batchSize, int $batchId): array
+    {
+        return ['batch' => new RawObject("{batchSize: $batchSize batchID: $batchId}")];
     }
 
     /**
@@ -126,6 +124,10 @@ abstract class GraphQL implements GraphQLInterface
      */
     public function getById(int $id): array
     {
-        return $this->setArgumentsWhere('id_eq', $id)->get();
+        $this->query->setArguments(
+            $this->where('id', $id)
+        );
+
+        return $this->get();
     }
 }

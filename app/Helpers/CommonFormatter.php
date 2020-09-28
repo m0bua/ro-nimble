@@ -89,6 +89,152 @@ class CommonFormatter
     }
 
     /**
+     * @param array $productData
+     * @return array
+     */
+    public static function t_Goods(array $productData): array
+    {
+        $specData = [];
+        $specData['needs_index'] = 1;
+        $specData['producer_id'] = 0;
+        $specData['rank'] = null;
+
+        if (!empty($productData['producer'])) {
+            $specData['producer_id'] = $productData['producer']['producer_id'];
+        }
+        if (!empty($productData['rank'])) {
+            $specData['rank'] = $productData['rank']['search_rank'];
+        }
+
+        unset(
+            $productData['producer'],
+            $productData['options'],
+            $productData['tags'],
+            $productData['pl_bonus_charge_pcs']
+        );
+
+        return array_merge($productData, $specData);
+    }
+
+    /**
+     * @param array $productData
+     * @return array
+     */
+    public static function t_Producers(array $productData): array
+    {
+        $producerData = [];
+        if (!empty($productData['producer'])) {
+            $producerData = [
+                'id' => $productData['producer']['producer_id'],
+                'name' => $productData['producer']['producer_name'],
+                'title' => $productData['producer']['producer_title'],
+            ];
+        }
+
+        return $producerData;
+    }
+
+    /**
+     * @param array $productData
+     * @return array
+     */
+    public static function t_Options(array $productData): array
+    {
+        $optRecords = [];
+        if (!empty($productData['options'])) {
+            $options = $productData['options'];
+            unset($productData);
+
+            foreach ($options as $option) {
+                $optRecords[$option['details']['id']] = $option['details'];
+            }
+        }
+
+        return $optRecords;
+    }
+
+    /**
+     * @param array $productData
+     * @return array
+     */
+    public static function t_OptionValues(array $productData): array
+    {
+        $valRecords = [];
+        if (!empty($productData['options'])) {
+            $options = $productData['options'];
+            unset($productData);
+
+            foreach ($options as $option) {
+                if (!empty($option['values'])) {
+                    foreach ($option['values'] as $value) {
+                        $valRecords[$value['id']] = $value;
+                    }
+                }
+            }
+        }
+
+        return $valRecords;
+    }
+
+    /**
+     * @param array $productData
+     * @return array
+     */
+    public static function t_GoodsOptions(array $productData): array
+    {
+        $goodsOptRecords = [];
+        if (!empty($productData['options'])) {
+            $goodsId = $productData['id'];
+            $options = $productData['options'];
+            unset($productData);
+
+            foreach ($options as $option) {
+                if (isset($option['values'])) {
+                    continue;
+                }
+
+                $goodsOptRecords[] = [
+                    'goods_id' => $goodsId,
+                    'option_id' => $option['details']['id'],
+                    'type' => $option['details']['type'],
+                    'value' => $option['value'],
+                ];
+            }
+        }
+
+        return $goodsOptRecords;
+    }
+
+    /**
+     * @param array $productData
+     * @return array
+     */
+    public static function t_GoodsOptionsPlural(array $productData): array
+    {
+        $goodsOptPluralRecord = [];
+        if (!empty($productData['options'])) {
+            $goodsId = $productData['id'];
+            $options = $productData['options'];
+            unset($productData);
+
+            foreach ($options as $option) {
+                if (!empty($option['values'])) {
+                    foreach ($option['values'] as $value) {
+                        $goodsOptPluralRecord[] = [
+                            'goods_id' => $goodsId,
+                            'option_id' => $option['details']['id'],
+                            'value_id' => $value['id'],
+                        ];
+                    }
+
+                }
+            }
+        }
+
+        return $goodsOptPluralRecord;
+    }
+
+    /**
      * @return array
      */
     public function getFormattedData(): array
