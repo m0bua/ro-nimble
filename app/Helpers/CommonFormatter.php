@@ -140,12 +140,14 @@ class CommonFormatter
      */
     public static function t_Options(array $productData): array
     {
-        $options = $productData['options'];
-        unset($productData);
-
         $optRecords = [];
-        foreach ($options as $option) {
-            $optRecords[$option['details']['id']] = $option['details'];
+        if (!empty($productData['options'])) {
+            $options = $productData['options'];
+            unset($productData);
+
+            foreach ($options as $option) {
+                $optRecords[$option['details']['id']] = $option['details'];
+            }
         }
 
         return $optRecords;
@@ -157,14 +159,16 @@ class CommonFormatter
      */
     public static function t_OptionValues(array $productData): array
     {
-        $options = $productData['options'];
-        unset($productData);
-
         $valRecords = [];
-        foreach ($options as $option) {
-            if (!empty($option['values'])) {
-                foreach ($option['values'] as $value) {
-                    $valRecords[$value['id']] = $value;
+        if (!empty($productData['options'])) {
+            $options = $productData['options'];
+            unset($productData);
+
+            foreach ($options as $option) {
+                if (!empty($option['values'])) {
+                    foreach ($option['values'] as $value) {
+                        $valRecords[$value['id']] = $value;
+                    }
                 }
             }
         }
@@ -178,22 +182,24 @@ class CommonFormatter
      */
     public static function t_GoodsOptions(array $productData): array
     {
-        $goodsId = $productData['id'];
-        $options = $productData['options'];
-        unset($productData);
-
         $goodsOptRecords = [];
-        foreach ($options as $option) {
-            if (isset($option['values'])) {
-                continue;
-            }
+        if (!empty($productData['options'])) {
+            $goodsId = $productData['id'];
+            $options = $productData['options'];
+            unset($productData);
 
-            $goodsOptRecords[] = [
-                'goods_id' => $goodsId,
-                'option_id' => $option['details']['id'],
-                'type' => $option['details']['type'],
-                'value' => $option['value'],
-            ];
+            foreach ($options as $option) {
+                if (isset($option['values'])) {
+                    continue;
+                }
+
+                $goodsOptRecords[] = [
+                    'goods_id' => $goodsId,
+                    'option_id' => $option['details']['id'],
+                    'type' => $option['details']['type'],
+                    'value' => $option['value'],
+                ];
+            }
         }
 
         return $goodsOptRecords;
@@ -205,21 +211,23 @@ class CommonFormatter
      */
     public static function t_GoodsOptionsPlural(array $productData): array
     {
-        $goodsId = $productData['id'];
-        $options = $productData['options'];
-        unset($productData);
-
         $goodsOptPluralRecord = [];
-        foreach ($options as $option) {
-            if (!empty($option['values'])) {
-                foreach ($option['values'] as $value) {
-                    $goodsOptPluralRecord[] = [
-                        'goods_id' => $goodsId,
-                        'option_id' => $option['details']['id'],
-                        'value_id' => $value['id'],
-                    ];
-                }
+        if (!empty($productData['options'])) {
+            $goodsId = $productData['id'];
+            $options = $productData['options'];
+            unset($productData);
 
+            foreach ($options as $option) {
+                if (!empty($option['values'])) {
+                    foreach ($option['values'] as $value) {
+                        $goodsOptPluralRecord[] = [
+                            'goods_id' => $goodsId,
+                            'option_id' => $option['details']['id'],
+                            'value_id' => $value['id'],
+                        ];
+                    }
+
+                }
             }
         }
 
