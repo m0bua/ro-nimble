@@ -23,6 +23,7 @@ class ChangeGoodsOptionProcessor extends AbstractCore
             [
                 'type' => $data['type'],
                 'value' => $data['value'],
+                'needs_index' => 1,
                 'updated_at' => date('Y-m-d H:i:s'),
             ]
         );

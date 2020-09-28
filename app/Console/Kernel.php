@@ -9,6 +9,8 @@ use App\Console\Commands\DeleteGroupsConstructorsCommand;
 use App\Console\Commands\DeleteMarkedGoodsCommand;
 use App\Console\Commands\IndexGoodsConstructors;
 use App\Console\Commands\IndexGoodsGroupsConstructors;
+use App\Console\Commands\IndexGoodsOptionsCommand;
+use App\Console\Commands\IndexGoodsOptionsPluralCommand;
 use App\Console\Commands\IndexMarkedGoodsCommand;
 use App\Console\Commands\MigrateGoodsCommand;
 use App\Console\Commands\MigrateGoodsGroupsCommand;
@@ -32,6 +34,8 @@ class Kernel extends ConsoleKernel
         MigrateOptionsCommand::class,
         MigrateOptionValuesCommand::class,
         IndexGoodsConstructors::class,
+        IndexGoodsOptionsCommand::class,
+        IndexGoodsOptionsPluralCommand::class,
         MigrateProducersCommand::class,
         MigrateGoodsCommand::class,
         IndexGoodsGroupsConstructors::class,
@@ -53,6 +57,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('db:migrate-goods-groups')->everyFiveMinutes();
 
         $schedule->command('db:index-marked-goods')->everyFiveMinutes();
+        $schedule->command('db:index-goods-options')->everyFiveMinutes();
+        $schedule->command('db:index-goods-options-plural')->everyFiveMinutes();
         $schedule->command('db:index-goods-constructors')->everyFiveMinutes();
         $schedule->command('db:index-goods-groups-constructors')->everyFiveMinutes();
 
