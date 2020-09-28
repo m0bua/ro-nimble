@@ -22,6 +22,7 @@ class ChangeGoodsOptionPluralProcessor extends AbstractCore
                 'value_id' => $data['value_id'],
             ],
             [
+                'needs_index' => 1,
                 'updated_at' => date('Y-m-d H:i:s'),
             ]
         );
