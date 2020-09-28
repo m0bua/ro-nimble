@@ -30,6 +30,8 @@ class GoodsOneModel extends GraphQL
      */
     public function getDefaultDataById(int $id): array
     {
-        return $this->setSelectionSet($this->defaultSelectionSet())->getById($id);
+        $this->query->setSelectionSet($this->defaultSelectionSet());
+
+        return $this->getById($id);
     }
 }

@@ -30,7 +30,11 @@ class GoodsBatchModel extends GraphQL
      */
     public function getByIds(array $goodsIds): array
     {
-        return $this->setArgumentsWhere('id_in', $goodsIds)->get();
+        $this->query->setArguments(
+            $this->whereIn('id', $goodsIds)
+        );
+
+        return $this->get();
     }
 
     /**
@@ -39,8 +43,41 @@ class GoodsBatchModel extends GraphQL
      */
     public function getDefaultDataByGoodsIds(array $goodsIds): array
     {
-        return $this->setSelectionSet([
+        $this->query->setSelectionSet([
             $this->query('nodes')->setSelectionSet($this->defaultSelectionSet())
-        ])->getByIds($goodsIds)['nodes'];
+        ]);
+
+        return $this->getByIds($goodsIds)['nodes'];
+    }
+
+    /**
+     * @param array $goodsIds
+     * @param \Closure $callback
+     * @param int $batchSize
+     */
+    public function getByBatch(array $goodsIds, \Closure $callback, int $batchSize = 100)
+    {
+        $batchId = 0;
+        do {
+            $this->query->setSelectionSet([
+                $this->query('nodes')->setSelectionSet($this->defaultSelectionSet()),
+                $this->query('batchInfo')->setSelectionSet(['batchSize', 'lastID']),
+            ]);
+
+            $this->query->setArguments(array_merge(
+                $this->whereIn('id', $goodsIds),
+                $this->batch($batchSize, $batchId)
+            ));
+
+            $result = $this->get();
+
+            if ($result['batchInfo']['batchSize'] == 0) {
+                break;
+            }
+
+            $callback($result['nodes']);
+
+            $batchId = $result['batchInfo']['lastID'];
+        } while($result['batchInfo']['batchSize'] == $batchSize);
     }
 }
