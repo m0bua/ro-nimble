@@ -28,7 +28,7 @@ class ChangeProducerEntityProcessor extends AbstractCore
                 'text' => $producerData['text'],
                 'status' => $producerData['status'],
                 'show_background' => ($producerData['show_background'] ? 't' : 'f'),
-                'show_logo' => $producerData['show_logo'],
+                'show_logo' => ($producerData['show_logo'] ? 't' : 'f'),
                 'attachments' => $producerData['attachments'],
                 'disable_filter_series' => $producerData['disable_filter_series'],
                 'order_for_promotion' => $producerData['order_for_promotion'],
