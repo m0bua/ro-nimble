@@ -29,7 +29,7 @@ class CreateProducerEntityProcessor extends AbstractCore
                 'show_background' => ($producerData['show_background'] ? 't' : 'f'),
                 'show_logo' => ($producerData['show_logo'] ? 't' : 'f'),
                 'attachments' => $producerData['attachments'],
-                'disable_filter_series' => $producerData['disable_filter_series'],
+                'disable_filter_series' => ($producerData['disable_filter_series'] ? 't' : 'f'),
                 'order_for_promotion' => $producerData['order_for_promotion'],
                 'producer_rank' => $producerData['producer_rank'],
             ]
