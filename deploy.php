@@ -43,7 +43,6 @@ task('build', function () {
     run('composer.phar install');
 })->local();
 
-
 task('consumers:ms:stop', function () {
     run("sudo /usr/bin/systemctl stop ms-consumer@*");
 });
@@ -66,6 +65,10 @@ task('consumers:gs:start', function () {
     }
 });
 
+task('deploy:migratedb', function () {
+    run('{{bin/php}} {{release_path}}/artisan migrate');
+})->once();
+
 task('consumers:ms:restart', [
     'consumers:ms:stop',
     'consumers:ms:start'
@@ -75,8 +78,6 @@ task('consumers:gs:restart', [
     'consumers:gs:stop',
     'consumers:gs:start'
 ]);
-
-
 
 task('upload', function () {
     upload(__DIR__ . '/', '{{release_path}}');
@@ -88,6 +89,7 @@ task('release', [
     'upload',
     'deploy:shared',
     'deploy:writable',
+    'deploy:migratedb',
 ]);
 
 task('symlink', [
@@ -100,7 +102,6 @@ task('deploy', [
     'cleanup',
     'success'
 ]);
-
 
 after('deploy:symlink', 'consumers:ms:restart');
 after('deploy:symlink', 'consumers:gs:restart');
