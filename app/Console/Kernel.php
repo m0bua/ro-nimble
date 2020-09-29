@@ -52,19 +52,19 @@ class Kernel extends ConsoleKernel
      * @return void
      */
     protected function schedule(Schedule $schedule)
-    {
-        $schedule->command('db:migrate-goods')->everyFiveMinutes();
-        $schedule->command('db:migrate-goods-groups')->everyFiveMinutes();
+    {;
+        $schedule->command('db:migrate-goods')->runInBackground()->withoutOverlapping();
+        $schedule->command('db:migrate-goods-groups')->runInBackground()->withoutOverlapping();
 
-        $schedule->command('db:index-marked-goods')->everyFiveMinutes()->withoutOverlapping();
-        $schedule->command('db:index-goods-options')->everyFiveMinutes()->withoutOverlapping();
-        $schedule->command('db:index-goods-options-plural')->everyFiveMinutes()->withoutOverlapping();
-        $schedule->command('db:index-goods-constructors')->everyFiveMinutes()->withoutOverlapping();
-        $schedule->command('db:index-goods-groups-constructors')->everyFiveMinutes()->withoutOverlapping();
+        $schedule->command('db:index-marked-goods')->runInBackground()->withoutOverlapping();
+        $schedule->command('db:index-goods-options')->runInBackground()->withoutOverlapping();
+        $schedule->command('db:index-goods-options-plural')->runInBackground()->withoutOverlapping();
+        $schedule->command('db:index-goods-constructors')->runInBackground()->withoutOverlapping();
+        $schedule->command('db:index-goods-groups-constructors')->runInBackground()->withoutOverlapping();
 
-        $schedule->command('db:delete-marked-goods')->hourly();
-        $schedule->command('db:delete-constructors')->everyFifteenMinutes();
-        $schedule->command('db:delete-groups-constructors')->everyFifteenMinutes();
-        $schedule->command('db:delete-goods-constructors')->everyFifteenMinutes();
+        $schedule->command('db:delete-marked-goods')->runInBackground()->withoutOverlapping();
+        $schedule->command('db:delete-constructors')->runInBackground()->withoutOverlapping();
+        $schedule->command('db:delete-groups-constructors')->runInBackground()->withoutOverlapping();
+        $schedule->command('db:delete-goods-constructors')->runInBackground()->withoutOverlapping();
     }
 }
