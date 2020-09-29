@@ -51,7 +51,7 @@ class MigrateGoodsCommand extends CustomCommand
 
             $promoGoodsQuery = DB::table('promotion_goods_constructors')
                 ->select(['goods_id'])
-                ->where(['needs_index' => 0]);
+                ->where(['needs_index' => 1]);
 
             QueryBuilderHelper::chunk($promoGoodsQuery, function ($data) {
                 $goodsIds = array_map(function ($item) {
