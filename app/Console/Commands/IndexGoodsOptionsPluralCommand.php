@@ -61,19 +61,18 @@ class IndexGoodsOptionsPluralCommand extends CustomCommand
                     ['gol.needs_index', '=', 1],
                     ['o.state', '=', 'active'],
                 ])
-                ->whereIn('o.type', Options::OPTIONS_BY_TYPES['values'])
-                ->orderBy('gol.goods_id');
+                ->whereIn('o.type', Options::OPTIONS_BY_TYPES['values']);
 
-            QueryBuilderHelper::chunk(500, $baseQuery, function ($goodsOptions) {
+            QueryBuilderHelper::chunk($baseQuery, function ($goodsOptions) {
                 $options = [];
-                $goodsOptions->map(function ($item) use (&$options) {
+                array_map(function ($item) use (&$options) {
                     $options[$item->goods_id]['options'][] = $item->option_id;
                     $options[$item->goods_id]['option_names'][] = $item->option_name;
                     if ($item->value_status == 'active') {
                         $options[$item->goods_id]['option_values'][] = $item->value_id;
                         $options[$item->goods_id]['option_values_name'][] = $item->value_name;
                     }
-                });
+                }, $goodsOptions);
 
                 /**
                  * Clear duplicates

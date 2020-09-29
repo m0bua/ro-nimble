@@ -32,7 +32,7 @@ class MigrateProducersCommand extends CustomCommand
             $producersQuery = DB::connection('store')
                 ->table('producers');
 
-            QueryBuilderHelper::chunk(500, $producersQuery, function ($producers) {
+            QueryBuilderHelper::chunk($producersQuery, function ($producers) {
                 $producersArray = [];
 
                 array_map(function ($producer) use (&$producersArray) {
@@ -41,7 +41,7 @@ class MigrateProducersCommand extends CustomCommand
                     $data['show_background'] = ($data['show_background'] ? 't' : 'f');
                     unset($data['attachments']);
                     $producersArray[] = $data;
-                }, $producers->toArray());
+                }, $producers);
 
                 DB::table('producers')->insertOrIgnore($producersArray);
             });

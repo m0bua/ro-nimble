@@ -51,13 +51,12 @@ class MigrateGoodsCommand extends CustomCommand
 
             $promoGoodsQuery = DB::table('promotion_goods_constructors')
                 ->select(['goods_id'])
-                ->where(['needs_index' => 1]);
+                ->where(['needs_index' => 0]);
 
-            QueryBuilderHelper::chunk(self::CHUNK_SIZE, $promoGoodsQuery, function (Collection $data) {
-
-                $goodsIds = $data->map(function ($item) {
+            QueryBuilderHelper::chunk($promoGoodsQuery, function ($data) {
+                $goodsIds = array_map(function ($item) {
                     return $item->goods_id;
-                })->all();
+                }, $data);
 
                 $this->goodsBatch->getByBatch($goodsIds, function ($nodes) {
 
