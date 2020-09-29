@@ -56,11 +56,11 @@ class Kernel extends ConsoleKernel
         $schedule->command('db:migrate-goods')->everyFiveMinutes();
         $schedule->command('db:migrate-goods-groups')->everyFiveMinutes();
 
-        $schedule->command('db:index-marked-goods')->everyFiveMinutes()->runInBackground();
-        $schedule->command('db:index-goods-options')->everyFiveMinutes()->runInBackground();
-        $schedule->command('db:index-goods-options-plural')->everyFiveMinutes()->runInBackground();
-        $schedule->command('db:index-goods-constructors')->everyFiveMinutes()->runInBackground();
-        $schedule->command('db:index-goods-groups-constructors')->everyFiveMinutes()->runInBackground();
+        $schedule->command('db:index-marked-goods')->everyFiveMinutes();
+        $schedule->command('db:index-goods-options')->everyFiveMinutes();
+        $schedule->command('db:index-goods-options-plural')->everyFiveMinutes();
+        $schedule->command('db:index-goods-constructors')->everyFiveMinutes();
+        $schedule->command('db:index-goods-groups-constructors')->everyFiveMinutes();
 
         $schedule->command('db:delete-marked-goods')->hourly();
         $schedule->command('db:delete-constructors')->everyFifteenMinutes();
