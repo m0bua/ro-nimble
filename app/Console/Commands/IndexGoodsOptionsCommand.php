@@ -58,13 +58,12 @@ class IndexGoodsOptionsCommand extends CustomCommand
                     ['go.needs_index', '=', 1],
                     ['o.state', '=', 'active'],
                 ])
-                ->whereIn('o.type', ['CheckBox', 'Integer', 'Decimal'])
-                ->orderBy('go.goods_id');
+                ->whereIn('o.type', ['CheckBox', 'Integer', 'Decimal']);
 
-            QueryBuilderHelper::chunk(500, $baseQuery, function ($goodsOptions) {
+            QueryBuilderHelper::chunk($baseQuery, function ($goodsOptions) {
                 $options = [];
                 $optsForUpdate = [];
-                $goodsOptions->map(function ($item) use (&$options, &$optsForUpdate) {
+                foreach ($goodsOptions as $item) {
                     if (in_array($item->type, Options::OPTIONS_BY_TYPES['integers'])) {
                         $options[$item->goods_id]['option_sliders'][] = [
                             'id' => $item->option_id,
@@ -77,7 +76,7 @@ class IndexGoodsOptionsCommand extends CustomCommand
                     }
 
                     $optsForUpdate[$item->goods_id][] = $item->option_id;
-                });
+                }
 
                 $updateData = ['body' => []];
                 foreach ($options as $goodsId => $optionsData) {
@@ -109,6 +108,6 @@ class IndexGoodsOptionsCommand extends CustomCommand
                         ->update(['needs_index' => 0]);
                 }
             });
-        });
+        },true);
     }
 }

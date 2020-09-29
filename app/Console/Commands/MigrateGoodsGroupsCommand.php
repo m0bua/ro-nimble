@@ -33,11 +33,11 @@ class MigrateGoodsGroupsCommand extends CustomCommand
                 ->select(['group_id'])
                 ->where(['needs_index' => 1]);
 
-            QueryBuilderHelper::chunk(500, $promoGroupsQuery, function ($data) {
+            QueryBuilderHelper::chunk($promoGroupsQuery, function ($data) {
                 $groupIds = [];
-                $data->map(function ($item) use (&$groupIds) {
+                array_map(function ($item) use (&$groupIds) {
                     $groupIds[] = $item->group_id;
-                });
+                }, $data);
 
                 $goods = DB::connection('store')
                     ->table('goods')

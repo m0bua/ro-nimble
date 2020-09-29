@@ -32,7 +32,7 @@ class MigrateOptionsCommand extends CustomCommand
             $optQuery = DB::connection('store')
                 ->table('options');
 
-            QueryBuilderHelper::chunk(500, $optQuery, function ($options) {
+            QueryBuilderHelper::chunk($optQuery, function ($options) {
                 $optionsArray = [];
 
                 array_map(function ($option) use (&$optionsArray){
@@ -40,7 +40,7 @@ class MigrateOptionsCommand extends CustomCommand
                     $opt['affect_group_photo'] = ($opt['affect_group_photo'] ? 't' : 'f');
                     unset($opt['copy_forbid']);
                     return $optionsArray[] = $opt;
-                }, $options->toArray());
+                }, $options);
 
                 DB::table('options')->insertOrIgnore($optionsArray);
             });

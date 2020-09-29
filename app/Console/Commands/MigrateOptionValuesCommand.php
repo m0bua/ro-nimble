@@ -30,11 +30,11 @@ class MigrateOptionValuesCommand extends CustomCommand
             $optValQuery = DB::connection('store')
                 ->table('options_values');
 
-            QueryBuilderHelper::chunk(500, $optValQuery, function ($optValues) {
+            QueryBuilderHelper::chunk($optValQuery, function ($optValues) {
                 $valuesArray = [];
                 array_map(function ($value) use (&$valuesArray) {
                     $valuesArray[] = (array)$value;
-                }, $optValues->toArray());
+                }, $optValues);
 
                 DB::table('option_values')->insertOrIgnore($valuesArray);
             });

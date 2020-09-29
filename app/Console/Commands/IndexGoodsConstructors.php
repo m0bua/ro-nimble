@@ -54,17 +54,17 @@ class IndexGoodsConstructors extends CustomCommand
                 ->join('promotion_goods_constructors as pgc', 'pc.id', '=', 'pgc.constructor_id')
                 ->where(['pc.needs_index' => 1]);
 
-            QueryBuilderHelper::chunk(500, $constructorsQuery, function ($constructors) {
+            QueryBuilderHelper::chunk($constructorsQuery, function ($constructors) {
                 $constructorIDs = [];
                 $constructorsData = [];
-                $constructors->map(function ($constructor) use (&$constructorsData, &$constructorIDs) {
+                array_map(function ($constructor) use (&$constructorsData, &$constructorIDs) {
                     $constructorIDs[$constructor->goods_id] = $constructor->id;
                     $constructorsData[$constructor->goods_id][] = [
                         'id' => $constructor->id,
                         'promotion_id' => $constructor->promotion_id,
                         'gift_id' => $constructor->gift_id,
                     ];
-                });
+                }, $constructors);
 
                 $updateData = ['body' => []];
                 foreach ($constructorsData as $goodsId => $constructors) {
