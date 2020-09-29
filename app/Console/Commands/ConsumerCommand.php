@@ -36,20 +36,8 @@ class ConsumerCommand extends Command
         $consumer->connect();
         $consumer->consume($this->argument('queue'), function ($amqpMessage, $resolver) use (&$errorsCount) {
             try {
-
                 $message = new Message($amqpMessage);
-                if (!$message->hasError()) {
-                    $processor = new Processor($message);
-                    $code = $processor->run();
-
-                    if (in_array($code, [Processor::CODE_SUCCESS, Processor::CODE_SKIP])) {
-                        $resolver->acknowledge($amqpMessage);
-
-                        if ($errorsCount > 0) {
-                            $errorsCount = 0;
-                        }
-                    }
-                } else {
+                if ($message->hasError()) {
                     Log::channel('consumer')->error(
                         CustomLogger::generateMessageFromStr(
                             $message->getError(),
@@ -59,8 +47,13 @@ class ConsumerCommand extends Command
                             ]
                         )
                     );
+                }
 
-                    $resolver->acknowledge($amqpMessage);
+                $processor = new Processor($message);
+                $processor->run();
+                $resolver->acknowledge($amqpMessage);
+                if ($errorsCount > 0) {
+                    $errorsCount = 0;
                 }
 
             } catch (\Throwable $t) {
