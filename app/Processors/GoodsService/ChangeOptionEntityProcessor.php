@@ -15,9 +15,9 @@ class ChangeOptionEntityProcessor extends AbstractCore
     {
         $option = (array)$this->message->getField('data');
 
-        DB::table('options')->updateOrInsert(
-            ['id' => $option['id']],
-            [
+        DB::table('options')
+            ->where(['id' => $option['id']])
+            ->update([
                 'title' => $option['title'],
                 'name' => $option['name'],
                 'type' => $option['type'],
@@ -34,8 +34,7 @@ class ChangeOptionEntityProcessor extends AbstractCore
                 'option_record_status' => $option['option_record_status'],
                 'affect_group_photo' => ($option['affect_group_photo']) ? 't': 'f',
                 'updated_at' => date('Y-m-d H:i:s'),
-            ]
-        );
+            ]);
 
         return Processor::CODE_SUCCESS;
     }
