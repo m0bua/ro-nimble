@@ -4,8 +4,8 @@ namespace Deployer;
 
 require 'recipe/common.php';
 
-set('ms_consumer_threads', 10);
-set('gs_consumer_threads', 20);
+set('ms_consumer_threads', 5);
+set('gs_consumer_threads', 10);
 
 // Project name
 set('application', 'ivv-nimble');
