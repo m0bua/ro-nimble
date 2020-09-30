@@ -68,17 +68,22 @@ class IndexGoodsConstructors extends CustomCommand
 
                 $updateData = ['body' => []];
                 foreach ($constructorsData as $goodsId => $constructors) {
-                    $updateData['body'][] = [
-                        'update' => [
-                            '_index' => $this->elasticGoods->indexName(),
-                            '_id' => $goodsId
-                        ],
-                    ];
-                    $updateData['body'][] = [
-                        'doc' => [
-                            'promotion_constructors' => $constructors
-                        ]
-                    ];
+                    foreach ($constructors as $constructor) {
+                        $updateData['body'][] = [
+                            'update' => [
+                                '_index' => $this->elasticGoods->indexName(),
+                                '_id' => $goodsId
+                            ],
+                        ];
+                        $updateData['body'][] = [
+                            'script' => [
+                                'source' => 'if (!ctx._source.promotion_constructors.contains(params.constructor)) { ctx._source.promotion_constructors.add(params.constructor) }',
+                                'params' => [
+                                    'constructor' => $constructor,
+                                ],
+                            ],
+                        ];
+                    }
                 }
 
                 $bulkResult = $this->elasticGoods->bulk($updateData);
