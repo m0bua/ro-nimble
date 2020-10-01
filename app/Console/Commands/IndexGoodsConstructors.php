@@ -77,9 +77,18 @@ class IndexGoodsConstructors extends CustomCommand
                         ];
                         $updateData['body'][] = [
                             'script' => [
-                                'source' => 'if (!ctx._source.promotion_constructors.contains(params.constructor)) { ctx._source.promotion_constructors.add(params.constructor) }',
+                                'lang' => "painless",
+                                'source' => <<< EOF
+                                    if (ctx._source.promotion_constructors != null) {
+                                        ctx._source.promotion_constructors.removeIf(promotion_constructors -> promotion_constructors.id == params.constructor_id);
+                                        ctx._source.promotion_constructors.add(params.constructor);
+                                    } else {
+                                        ctx._source['promotion_constructors'] = [params.constructor];
+                                    }
+                                 EOF,
                                 'params' => [
                                     'constructor' => $constructor,
+                                    'constructor_id' => $constructor['id']
                                 ],
                             ],
                         ];
