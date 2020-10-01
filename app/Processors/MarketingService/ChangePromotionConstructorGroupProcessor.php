@@ -32,7 +32,7 @@ class ChangePromotionConstructorGroupProcessor extends AbstractCore
             ]);
 
         if ($updated == 0) {
-            DB::table('promotion_goods_constructors')
+            DB::table('promotion_groups_constructors')
                 ->insert([
                     'constructor_id' => $constructorId,
                     'group_id' => $groupId,
