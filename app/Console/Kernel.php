@@ -13,7 +13,6 @@ use App\Console\Commands\IndexGoodsOptionsCommand;
 use App\Console\Commands\IndexGoodsOptionsPluralCommand;
 use App\Console\Commands\IndexMarkedGoodsCommand;
 use App\Console\Commands\MigrateGoodsCommand;
-use App\Console\Commands\MigrateGoodsGroupsCommand;
 use App\Console\Commands\MigrateOptionsCommand;
 use App\Console\Commands\MigrateOptionValuesCommand;
 use App\Console\Commands\MigrateProducersCommand;
@@ -39,7 +38,6 @@ class Kernel extends ConsoleKernel
         MigrateProducersCommand::class,
         MigrateGoodsCommand::class,
         IndexGoodsGroupsConstructors::class,
-        MigrateGoodsGroupsCommand::class,
         DeleteGoodsConstructorsCommand::class,
         DeleteGroupsConstructorsCommand::class,
         DeleteConstructorsCommand::class,
@@ -52,9 +50,9 @@ class Kernel extends ConsoleKernel
      * @return void
      */
     protected function schedule(Schedule $schedule)
-    {;
+    {
         $schedule->command('db:migrate-goods')->runInBackground()->withoutOverlapping();
-        $schedule->command('db:migrate-goods-groups')->runInBackground()->withoutOverlapping();
+        $schedule->command('db:migrate-goods --entity=groups')->runInBackground()->withoutOverlapping();
 
         $schedule->command('db:index-marked-goods')->runInBackground()->withoutOverlapping();
         $schedule->command('db:index-goods-options')->runInBackground()->withoutOverlapping();
