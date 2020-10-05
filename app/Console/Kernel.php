@@ -11,6 +11,7 @@ use App\Console\Commands\IndexGoodsConstructors;
 use App\Console\Commands\IndexGoodsGroupsConstructors;
 use App\Console\Commands\IndexGoodsOptionsCommand;
 use App\Console\Commands\IndexGoodsOptionsPluralCommand;
+use App\Console\Commands\IndexGoodsProducersCommand;
 use App\Console\Commands\IndexMarkedGoodsCommand;
 use App\Console\Commands\MigrateGoodsCommand;
 use App\Console\Commands\MigrateOptionsCommand;
@@ -35,6 +36,7 @@ class Kernel extends ConsoleKernel
         IndexGoodsConstructors::class,
         IndexGoodsOptionsCommand::class,
         IndexGoodsOptionsPluralCommand::class,
+        IndexGoodsProducersCommand::class,
         MigrateProducersCommand::class,
         MigrateGoodsCommand::class,
         IndexGoodsGroupsConstructors::class,
@@ -59,6 +61,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('db:index-goods-options-plural')->runInBackground()->withoutOverlapping();
         $schedule->command('db:index-goods-constructors')->runInBackground()->withoutOverlapping();
         $schedule->command('db:index-goods-groups-constructors')->runInBackground()->withoutOverlapping();
+        $schedule->command('db:index-goods-producers')->runInBackground()->withoutOverlapping();
 
         $schedule->command('db:delete-marked-goods')->runInBackground()->withoutOverlapping();
         $schedule->command('db:delete-constructors')->runInBackground()->withoutOverlapping();
