@@ -32,12 +32,9 @@ class CreateProducerEntityProcessor extends AbstractCore
                 'disable_filter_series' => ($producerData['disable_filter_series'] ? 't' : 'f'),
                 'order_for_promotion' => $producerData['order_for_promotion'],
                 'producer_rank' => $producerData['producer_rank'],
+                'needs_index' => 1
             ]
         );
-
-        DB::table('goods')
-            ->where(['producer_id' => $producerData['id']])
-            ->update(['needs_index' => 1]);
 
         return Processor::CODE_SUCCESS;
     }
