@@ -54,11 +54,14 @@ class IndexGoodsConstructors extends CustomCommand
                 ->join('promotion_goods_constructors as pgc', 'pc.id', '=', 'pgc.constructor_id')
                 ->where(['pc.needs_index' => 1]);
 
-            QueryBuilderHelper::chunk($constructorsQuery, function ($constructors) {
-                $constructorIDs = [];
+            $constructorIDs = [];
+
+            QueryBuilderHelper::chunk($constructorsQuery, function ($constructors) use (&$constructorIDs) {
                 $constructorsData = [];
+                $errorConstructorsIDs = [];
+
                 array_map(function ($constructor) use (&$constructorsData, &$constructorIDs) {
-                    $constructorIDs[$constructor->goods_id] = $constructor->id;
+                    $constructorIDs[$constructor->id] = $constructor->id;
                     $constructorsData[$constructor->goods_id][] = [
                         'id' => $constructor->id,
                         'promotion_id' => $constructor->promotion_id,
@@ -77,7 +80,7 @@ class IndexGoodsConstructors extends CustomCommand
                         ];
                         $updateData['body'][] = [
                             'script' => [
-                                'lang' => "painless",
+                                'lang' => 'painless',
                                 'source' => <<< EOF
                                     if (ctx._source.promotion_constructors != null) {
                                         ctx._source.promotion_constructors.removeIf(promotion_constructors -> promotion_constructors.id == params.constructor_id);
@@ -96,19 +99,30 @@ class IndexGoodsConstructors extends CustomCommand
                 }
 
                 $bulkResult = $this->elasticGoods->bulk($updateData);
+
                 if ($bulkResult['errors']) {
                     foreach ($bulkResult['items'] as $item) {
                         if ($item['update']['status'] !== 200) {
                             $itemId = (int)$item['update']['_id'];
-                            unset($constructorIDs[$itemId]);
+                            $errorConstructorsIDs[$itemId] = $itemId;
                         }
                     }
                 }
 
-                DB::table('promotion_constructors')
-                    ->whereIn('id', $constructorIDs)
-                    ->update(['needs_index' => 0]);
+                if ($errorConstructorsIDs) {
+                    DB::table('goods')
+                        ->whereIn('id', $errorConstructorsIDs)
+                        ->update(['needs_index' => 1]);
+                }
             });
+
+            if ($constructorIDs) {
+                foreach (array_chunk($constructorIDs, 500) as $ids) {
+                    DB::table('promotion_constructors')
+                        ->whereIn('id', $ids)
+                        ->update(['needs_index' => 0]);
+                }
+            }
         });
     }
 }
