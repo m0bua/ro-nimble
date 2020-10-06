@@ -11,6 +11,8 @@ trait GSDefaultSelectionTrait
     {
         return [
             'id',
+            'name',
+            'title',
             'category_id',
             'mpath',
             'price',

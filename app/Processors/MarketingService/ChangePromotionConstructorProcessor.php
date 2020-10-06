@@ -23,17 +23,15 @@ class ChangePromotionConstructorProcessor extends AbstractCore
             ->update([
                 'promotion_id' => $promotionId,
                 'gift_id' => $giftId,
-                'needs_index' => 1,
                 'updated_at' => date('Y-m-d H:i:s'),
             ]);
-        
+
         if ($updated == 0) {
             DB::table('promotion_constructors')
                 ->insert([
                     'id' => $id,
                     'promotion_id' => $promotionId,
                     'gift_id' => $giftId,
-                    'needs_index' => 1,
                 ]);
         }
 

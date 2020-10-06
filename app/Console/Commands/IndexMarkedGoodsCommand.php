@@ -65,6 +65,7 @@ class IndexMarkedGoodsCommand extends CustomCommand
                      * Common info
                      */
                     $productsData[$product->id]['id'] = $product->id;
+                    $productsData[$product->id]['promotion_constructors'] = [];
                     $productsData[$product->id]['category_id'] = $product->category_id;
                     $productsData[$product->id]['mpath'] = $product->mpath;
                     $productsData[$product->id]['price'] = $product->price;
@@ -143,14 +144,61 @@ class IndexMarkedGoodsCommand extends CustomCommand
                     ];
                 });
 
+                $goodsConstructors = DB::table('promotion_goods_constructors as pgs')
+                    ->select([
+                        'pgs.goods_id',
+                        'pc.id',
+                        'pc.promotion_id',
+                        'pc.gift_id',
+                    ])
+                    ->join('promotion_constructors as pc', 'pgs.constructor_id', '=', 'pc.id')
+                    ->where(['pgs.is_deleted' => 0])
+                    ->whereIn('pgs.goods_id', array_keys($productsData))
+                    ->get();
+
+                $goodsConstructors->map(function ($constructor) use (&$productsData) {
+                    $productsData[$constructor->goods_id]['promotion_constructors'][] = [
+                        'gift_id' => $constructor->gift_id,
+                        'promotion_id' => $constructor->promotion_id,
+                        'id' => $constructor->id,
+                    ];
+                });
+
+                $groupsIds = array_values(array_filter(array_unique(array_column($productsData, 'group_id'))));
+                $groupsConstructors = [];
+
+                if ($groupsIds) {
+                    $groupsData = DB::table('promotion_groups_constructors as pgs')
+                        ->select([
+                            'pgs.group_id',
+                            'pc.id',
+                            'pc.promotion_id',
+                            'pc.gift_id',
+                        ])
+                        ->join('promotion_constructors as pc', 'pgs.constructor_id', '=', 'pc.id')
+                        ->where(['pgs.is_deleted' => 0])
+                        ->whereIn('pgs.group_id', $groupsIds)
+                        ->get();
+
+
+                    $groupsData->map(function ($constructor) use (&$groupsConstructors) {
+                        $groupsConstructors[$constructor->group_id][] = [
+                            'gift_id' => $constructor->gift_id,
+                            'promotion_id' => $constructor->promotion_id,
+                            'id' => $constructor->id,
+                        ];
+                    });
+                }
+
                 /**
                  * Format and index data
                  */
                 $formattedData = ['body' => []];
-                array_map(function ($productData) use (&$formattedData) {
+                array_map(function ($productData) use (&$formattedData, $groupsConstructors) {
                     $formatter = new CommonFormatter($productData);
                     $formatter->formatGoodsForIndex();
                     $formatter->formatOptionsForIndex();
+                    $formatter->formatGroupsForIndex($groupsConstructors);
 
                     $formattedData['body'][] = [
                         'update' => [
@@ -175,7 +223,6 @@ class IndexMarkedGoodsCommand extends CustomCommand
                     ->whereIn('id', array_keys($productsData))
                     ->update(['needs_index' => 0]);
             });
-
         });
     }
 }
