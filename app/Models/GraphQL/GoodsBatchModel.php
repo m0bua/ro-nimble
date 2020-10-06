@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Models\GraphQL;
 
@@ -8,20 +9,75 @@ class GoodsBatchModel extends GraphQL
 {
     use GSDefaultSelectionTrait;
 
+    /** @var int */
+    public const DEFAULT_BATCH_SIZE = 100;
+
+    /** @var string */
+    protected string $whereInField = 'id';
+
+    /** @var int */
+    protected int $batchSize = self::DEFAULT_BATCH_SIZE;
+
     /**
-     * @inheritDoc
+     * Конструктор GoodsBatchModel
+     * @param string|null $whereInField
+     * @param int|null $batchSize
      */
+    public function __construct(?string $whereInField = null, ?int $batchSize = null)
+    {
+        if ($whereInField) {
+            $this->whereInField = $whereInField;
+        }
+
+        if ($batchSize) {
+            $this->batchSize = $batchSize;
+        }
+
+        parent::__construct();
+    }
+
+    /** @inheritDoc */
     public function serviceName(): string
     {
         return 'goods';
     }
 
-    /**
-     * @inheritDoc
-     */
+    /** @inheritDoc */
     public function entityName(): string
     {
         return 'goodsBatch';
+    }
+
+    /**
+     * @param string $whereInField
+     * * @return self
+     */
+    public function setWhereInField(string $whereInField): self
+    {
+        $this->whereInField = $whereInField;
+        return $this;
+    }
+
+    /**
+     * @param int $batchSize
+     * @return self
+     */
+    public function setBatchSize(int $batchSize): self
+    {
+        $this->batchSize = $batchSize;
+        return $this;
+    }
+
+    /**
+     * @param string $whereInField
+     * @param int $batchSize
+     * @return $this
+     */
+    public function setBatchConfig(string $whereInField, int $batchSize): self
+    {
+        $this->whereInField = $whereInField;
+        $this->batchSize = $batchSize;
+        return $this;
     }
 
     /**
@@ -51,11 +107,10 @@ class GoodsBatchModel extends GraphQL
     }
 
     /**
-     * @param array $goodsIds
+     * @param array $ids
      * @param \Closure $callback
-     * @param int $batchSize
      */
-    public function getByBatch(array $goodsIds, \Closure $callback, int $batchSize = 100)
+    public function getByBatch(array $ids, \Closure $callback)
     {
         $batchId = 0;
         do {
@@ -65,8 +120,8 @@ class GoodsBatchModel extends GraphQL
             ]);
 
             $this->query->setArguments(array_merge(
-                $this->whereIn('id', $goodsIds),
-                $this->batch($batchSize, $batchId)
+                $this->whereIn($this->whereInField, $ids),
+                $this->batch($this->batchSize, $batchId)
             ));
 
             $result = $this->get();
@@ -78,6 +133,6 @@ class GoodsBatchModel extends GraphQL
             $callback($result['nodes']);
 
             $batchId = $result['batchInfo']['lastID'];
-        } while($result['batchInfo']['batchSize'] == $batchSize);
+        } while($result['batchInfo']['batchSize'] == $this->batchSize);
     }
 }

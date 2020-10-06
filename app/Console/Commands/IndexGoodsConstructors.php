@@ -44,21 +44,25 @@ class IndexGoodsConstructors extends CustomCommand
     {
         $this->catchExceptions(function () {
 
-            $constructorsQuery = DB::table('promotion_constructors as pc')
+            $constructorsGoodsQuery = DB::table('promotion_goods_constructors as pgc')
                 ->select([
                     'pc.id',
                     'pc.promotion_id',
                     'pc.gift_id',
                     'pgc.goods_id',
+                    'pgc.id as pgc_id',
                 ])
-                ->join('promotion_goods_constructors as pgc', 'pc.id', '=', 'pgc.constructor_id')
-                ->where(['pc.needs_index' => 1]);
+                ->join('promotion_constructors as pc', 'pgc.constructor_id', '=', 'pc.id')
+                ->where(['pgc.needs_index' => 1]);
 
-            QueryBuilderHelper::chunk($constructorsQuery, function ($constructors) {
-                $constructorIDs = [];
+            $promotionGoodsConstructorsIDs = [];
+
+            QueryBuilderHelper::chunk($constructorsGoodsQuery, function ($constructors) use (&$promotionGoodsConstructorsIDs) {
                 $constructorsData = [];
-                array_map(function ($constructor) use (&$constructorsData, &$constructorIDs) {
-                    $constructorIDs[$constructor->goods_id] = $constructor->id;
+                $errorConstructorsIDs = [];
+
+                array_map(function ($constructor) use (&$constructorsData, &$promotionGoodsConstructorsIDs) {
+                    $promotionGoodsConstructorsIDs[$constructor->pgc_id] = $constructor->pgc_id;
                     $constructorsData[$constructor->goods_id][] = [
                         'id' => $constructor->id,
                         'promotion_id' => $constructor->promotion_id,
@@ -77,7 +81,7 @@ class IndexGoodsConstructors extends CustomCommand
                         ];
                         $updateData['body'][] = [
                             'script' => [
-                                'lang' => "painless",
+                                'lang' => 'painless',
                                 'source' => <<< EOF
                                     if (ctx._source.promotion_constructors != null) {
                                         ctx._source.promotion_constructors.removeIf(promotion_constructors -> promotion_constructors.id == params.constructor_id);
@@ -96,19 +100,30 @@ class IndexGoodsConstructors extends CustomCommand
                 }
 
                 $bulkResult = $this->elasticGoods->bulk($updateData);
+
                 if ($bulkResult['errors']) {
                     foreach ($bulkResult['items'] as $item) {
                         if ($item['update']['status'] !== 200) {
                             $itemId = (int)$item['update']['_id'];
-                            unset($constructorIDs[$itemId]);
+                            $errorConstructorsIDs[$itemId] = $itemId;
                         }
                     }
                 }
 
-                DB::table('promotion_constructors')
-                    ->whereIn('id', $constructorIDs)
-                    ->update(['needs_index' => 0]);
+                if ($errorConstructorsIDs) {
+                    DB::table('goods')
+                        ->whereIn('id', $errorConstructorsIDs)
+                        ->update(['needs_index' => 1]);
+                }
             });
+
+            if ($promotionGoodsConstructorsIDs) {
+                foreach (array_chunk($promotionGoodsConstructorsIDs, 500) as $ids) {
+                    DB::table('promotion_goods_constructors')
+                        ->whereIn('id', $ids)
+                        ->update(['needs_index' => 0]);
+                }
+            }
         });
     }
 }

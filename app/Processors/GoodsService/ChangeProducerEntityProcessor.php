@@ -34,11 +34,8 @@ class ChangeProducerEntityProcessor extends AbstractCore
                 'order_for_promotion' => $producerData['order_for_promotion'],
                 'producer_rank' => $producerData['producer_rank'],
                 'updated_at' => date('Y-m-d H:i:s'),
+                'needs_index' => 1
             ]);
-
-        DB::table('goods')
-            ->where(['producer_id' => $producerData['id']])
-            ->update(['needs_index' => 1]);
 
         return Processor::CODE_SUCCESS;
     }
