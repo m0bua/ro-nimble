@@ -28,6 +28,7 @@ class ChangePromotionConstructorGroupProcessor extends AbstractCore
             ])
             ->update([
                 'needs_index' => 1,
+                'needs_migrate' => 1,
                 'updated_at' => date('Y-m-d H:i:s'),
             ]);
 
@@ -37,12 +38,9 @@ class ChangePromotionConstructorGroupProcessor extends AbstractCore
                     'constructor_id' => $constructorId,
                     'group_id' => $groupId,
                     'needs_index' => 1,
+                    'needs_migrate' => 1,
                 ]);
         }
-
-        DB::table('promotion_constructors')
-            ->where(['id' => $constructorId])
-            ->update(['needs_index' => 1]);
 
         return Processor::CODE_SUCCESS;
     }

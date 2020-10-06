@@ -95,7 +95,7 @@ class MigrateGoodsCommand extends CustomCommand
 
                 DB::table($config['table'])
                     ->whereIn($config['field'], \array_column($data, $config['field']))
-                    ->update(['needs_index' => 0]);
+                    ->update(['needs_migrate' => 0]);
             });
         });
     }
@@ -116,7 +116,7 @@ class MigrateGoodsCommand extends CustomCommand
             case self::ENTITY_GROUPS:
                 $query = DB::table($table)
                     ->select([$searchField])
-                    ->where(['needs_index' => $indexCondition]);
+                    ->where(['needs_migrate' => $indexCondition]);
                 break;
             case self::ENTITY_GOODS:
                 $query = DB::table("{$table} as main_table")
@@ -130,7 +130,7 @@ class MigrateGoodsCommand extends CustomCommand
                         '=',
                         "goods.{$joinField}"
                     )
-                    ->where(['main_table.needs_index' => $indexCondition]);
+                    ->where(['main_table.needs_migrate' => $indexCondition]);
         }
 
         return $query;

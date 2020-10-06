@@ -41,25 +41,26 @@ class IndexGoodsGroupsConstructors extends CustomCommand
     {
         $this->catchExceptions(function () {
 
-            $constructorsQuery = DB::table('promotion_constructors as pc')
+            $constructorsGroupsQuery = DB::table('promotion_groups_constructors as pgc')
                 ->select([
                     'pc.id',
                     'pc.promotion_id',
                     'pc.gift_id',
                     'g.id as goods_id',
+                    'pgc.id as pgc_id',
                 ])
-                ->join('promotion_groups_constructors as pgc', 'pc.id', '=', 'pgc.constructor_id')
+                ->join('promotion_constructors as pc', 'pgc.constructor_id', '=', 'pc.id')
                 ->join('goods as g', 'pgc.group_id', '=', 'g.group_id')
-                ->where(['pc.needs_index' => 1]);
+                ->where(['pgc.needs_index' => 1]);
 
-            $constructorIDs = [];
+            $promotionGroupsConstructorsIDs = [];
 
-            QueryBuilderHelper::chunk($constructorsQuery, function ($constructors) use (&$constructorIDs) {
+            QueryBuilderHelper::chunk($constructorsGroupsQuery, function ($constructors) use (&$promotionGroupsConstructorsIDs) {
                 $constructorsData = [];
                 $errorConstructorsIDs = [];
 
-                array_map(function ($constructor) use (&$constructorsData, &$constructorIDs) {
-                    $constructorIDs[$constructor->id] = $constructor->id;
+                array_map(function ($constructor) use (&$constructorsData, &$promotionGroupsConstructorsIDs) {
+                    $promotionGroupsConstructorsIDs[$constructor->pgc_id] = $constructor->pgc_id;
                     $constructorsData[$constructor->goods_id] = [
                         'id' => $constructor->id,
                         'promotion_id' => $constructor->promotion_id,
@@ -111,9 +112,9 @@ class IndexGoodsGroupsConstructors extends CustomCommand
                 }
             });
 
-            if ($constructorIDs) {
-                foreach (array_chunk($constructorIDs, 500) as $ids) {
-                    DB::table('promotion_constructors')
+            if ($promotionGroupsConstructorsIDs) {
+                foreach (array_chunk($promotionGroupsConstructorsIDs, 500) as $ids) {
+                    DB::table('promotion_groups_constructors')
                         ->whereIn('id', $ids)
                         ->update(['needs_index' => 0]);
                 }

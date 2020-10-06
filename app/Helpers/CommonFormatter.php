@@ -235,6 +235,22 @@ class CommonFormatter
     }
 
     /**
+     * @param $groups
+     * @return $this
+     */
+    public function formatGroupsForIndex($groups)
+    {
+        if (!empty($this->formattedData['group_id']) && !empty($groups[$this->formattedData['group_id']])) {
+            $this->formattedData['promotion_constructors'] = array_merge(
+                $this->formattedData['promotion_constructors'],
+                $groups[$this->formattedData['group_id']]
+            );
+        }
+
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function getFormattedData(): array

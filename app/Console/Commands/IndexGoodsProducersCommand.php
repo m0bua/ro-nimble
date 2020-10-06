@@ -47,7 +47,7 @@ class IndexGoodsProducersCommand extends CustomCommand
                     'p.name',
                     'p.title',
                 ])
-                ->join('goods as g', 'p.id', '=', 'g.producer_id')
+                ->leftJoin('goods as g', 'p.id', '=', 'g.producer_id')
                 ->where(['p.needs_index' => 1]);
 
             $producerIDs = [];
@@ -58,42 +58,47 @@ class IndexGoodsProducersCommand extends CustomCommand
 
                 array_map(function ($producer) use (&$producersData, &$producerIDs) {
                     $producerIDs[$producer->id] = $producer->id;
-                    $producersData[$producer->goods_id] = [
-                        'producer_id' => $producer->id,
-                        'producer_title' => $producer->title,
-                        'producer_name' => $producer->name,
-                    ];
+
+                    if ($producer->goods_id) {
+                        $producersData[$producer->goods_id] = [
+                            'producer_id' => $producer->id,
+                            'producer_title' => $producer->title,
+                            'producer_name' => $producer->name,
+                        ];
+                    }
                 }, $producers);
 
-                $updateData = ['body' => []];
+                if ($producersData) {
+                    $updateData = ['body' => []];
 
-                foreach ($producersData as $goodsId => $producerData) {
-                    $updateData['body'][] = [
-                        'update' => [
-                            '_index' => $this->elasticGoods->indexName(),
-                            '_id' => $goodsId
-                        ],
-                    ];
-                    $updateData['body'][] = [
-                        'doc' => $producerData
-                    ];
-                }
+                    foreach ($producersData as $goodsId => $producerData) {
+                        $updateData['body'][] = [
+                            'update' => [
+                                '_index' => $this->elasticGoods->indexName(),
+                                '_id' => $goodsId
+                            ],
+                        ];
+                        $updateData['body'][] = [
+                            'doc' => $producerData
+                        ];
+                    }
 
-                $bulkResult = $this->elasticGoods->bulk($updateData);
+                    $bulkResult = $this->elasticGoods->bulk($updateData);
 
-                if ($bulkResult['errors']) {
-                    foreach ($bulkResult['items'] as $item) {
-                        if ($item['update']['status'] !== 200) {
-                            $itemId = (int)$item['update']['_id'];
-                            $errorGoodsIDs[$itemId] = $itemId;
+                    if ($bulkResult['errors']) {
+                        foreach ($bulkResult['items'] as $item) {
+                            if ($item['update']['status'] !== 200) {
+                                $itemId = (int)$item['update']['_id'];
+                                $errorGoodsIDs[$itemId] = $itemId;
+                            }
                         }
                     }
-                }
 
-                if ($errorGoodsIDs) {
-                    DB::table('goods')
-                        ->whereIn('id', $errorGoodsIDs)
-                        ->update(['needs_index' => 1]);
+                    if ($errorGoodsIDs) {
+                        DB::table('goods')
+                            ->whereIn('id', $errorGoodsIDs)
+                            ->update(['needs_index' => 1]);
+                    }
                 }
             });
 
