@@ -34,7 +34,7 @@ class QueryBuilderHelper
         DB::commit();
     }
 
-    public static function chunkByPrimary(Builder $query, \Closure $callback, int $chunkSize = 3)
+    public static function chunkByPrimary(Builder $query, \Closure $callback, int $chunkSize = 500)
     {
         $startId = 0;
 
@@ -45,7 +45,7 @@ class QueryBuilderHelper
                 ->limit($chunkSize)
                 ->get();
 
-            $resultCount = count($result);
+            $resultCount = $result->count();
 
             if ($resultCount == 0) {
                 break;

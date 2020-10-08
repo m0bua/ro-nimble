@@ -95,7 +95,7 @@ class MigrateGoodsCommand extends CustomCommand
 
                 DB::table($config['table'])
                     ->whereIn($config['field'], \array_column($data, $config['field']))
-                    ->update(['needs_migrate' => 3]);
+                    ->update(['needs_migrate' => 0]);
             });
         });
     }
@@ -114,8 +114,11 @@ class MigrateGoodsCommand extends CustomCommand
         $query = null;
         switch ($this->entity) {
             case self::ENTITY_GROUPS:
-                $query = DB::table($table)
-                    ->select([$searchField])
+                $query = DB::table("{$table} as main_table")
+                    ->select([
+                        'main_table.id as primary_id',
+                        "main_table.{$searchField}",
+                    ])
                     ->where(['needs_migrate' => $indexCondition]);
                 break;
             case self::ENTITY_GOODS:
