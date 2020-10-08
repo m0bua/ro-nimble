@@ -33,4 +33,27 @@ class QueryBuilderHelper
         DB::select("CLOSE {$cursorName}");
         DB::commit();
     }
+
+    public static function chunkByPrimary(Builder $query, \Closure $callback, int $chunkSize = 3)
+    {
+        $startId = 0;
+
+        do {
+            $result = $query
+                ->where('main_table.id', '>', $startId)
+                ->orderBy('primary_id', 'asc')
+                ->limit($chunkSize)
+                ->get();
+
+            $resultCount = count($result);
+
+            if ($resultCount == 0) {
+                break;
+            }
+
+            $startId = $result->max('primary_id');
+
+            $callback($result->toArray());
+        } while($resultCount == $chunkSize);
+    }
 }
