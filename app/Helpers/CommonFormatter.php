@@ -146,7 +146,9 @@ class CommonFormatter
             unset($productData);
 
             foreach ($options as $option) {
-                $optRecords[$option['details']['id']] = $option['details'];
+                if (!empty($option['details']) && !empty($option['details']['id'])) {
+                    $optRecords[$option['details']['id']] = $option['details'];
+                }
             }
         }
 

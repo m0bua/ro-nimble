@@ -70,7 +70,7 @@ class MigrateGoodsCommand extends CustomCommand
                 return;
             }
 
-            QueryBuilderHelper::chunk($query, function ($data) use ($config): void {
+            QueryBuilderHelper::chunkByPrimary($query, function ($data) use ($config): void {
                 $ids = \array_map(function ($item) use ($config) {
                     if ($this->entity === self::ENTITY_GOODS) {
                         $property = $config['goods_join_field'];
@@ -114,13 +114,17 @@ class MigrateGoodsCommand extends CustomCommand
         $query = null;
         switch ($this->entity) {
             case self::ENTITY_GROUPS:
-                $query = DB::table($table)
-                    ->select([$searchField])
+                $query = DB::table("{$table} as main_table")
+                    ->select([
+                        'main_table.id as primary_id',
+                        "main_table.{$searchField}",
+                    ])
                     ->where(['needs_migrate' => $indexCondition]);
                 break;
             case self::ENTITY_GOODS:
                 $query = DB::table("{$table} as main_table")
                     ->select([
+                        'main_table.id as primary_id',
                         "main_table.{$searchField}",
                         "goods.{$joinField}"
                     ])
