@@ -28,7 +28,13 @@ class QueryBuilderHelper
                 break;
             }
 
-            $callback($result);
+            try {
+                $callback($result);
+            } catch (\Throwable $t) {
+                Log::channel('consumer')->warning(
+                    CustomLogger::generateMessage($t)
+                );
+            }
 
         } while($resultCount == $chunkSize);
 
