@@ -49,7 +49,7 @@ class QueryBuilderHelper
         do {
             $result = $query
                 ->where('main_table.id', '>', $startId)
-                ->orderBy('primary_id', 'asc')
+                ->orderBy('primary_id')
                 ->limit($chunkSize)
                 ->get();
 
