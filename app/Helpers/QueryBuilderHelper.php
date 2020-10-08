@@ -4,8 +4,10 @@
 namespace App\Helpers;
 
 
+use App\Logging\CustomLogger;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class QueryBuilderHelper
 {
@@ -53,7 +55,14 @@ class QueryBuilderHelper
 
             $startId = $result->max('primary_id');
 
-            $callback($result->toArray());
+            try {
+                $callback($result->toArray());
+            } catch (\Throwable $t) {
+                Log::channel('consumer')->warning(
+                    CustomLogger::generateMessage($t)
+                );
+            }
+
         } while($resultCount == $chunkSize);
     }
 }
