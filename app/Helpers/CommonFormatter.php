@@ -195,12 +195,14 @@ class CommonFormatter
                     continue;
                 }
 
-                $goodsOptRecords[] = [
-                    'goods_id' => $goodsId,
-                    'option_id' => $option['details']['id'],
-                    'type' => $option['details']['type'],
-                    'value' => $option['value'],
-                ];
+                if (!empty($option['details'])) {
+                    $goodsOptRecords[] = [
+                        'goods_id' => $goodsId,
+                        'option_id' => $option['details']['id'],
+                        'type' => $option['details']['type'],
+                        'value' => $option['value'],
+                    ];
+                }
             }
         }
 
@@ -220,7 +222,7 @@ class CommonFormatter
             unset($productData);
 
             foreach ($options as $option) {
-                if (!empty($option['values'])) {
+                if (!empty($option['values']) && !empty($option['details'])) {
                     foreach ($option['values'] as $value) {
                         $goodsOptPluralRecord[] = [
                             'goods_id' => $goodsId,
