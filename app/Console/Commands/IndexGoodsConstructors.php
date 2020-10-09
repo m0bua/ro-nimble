@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 
 
 use App\Console\Commands\Extend\CustomCommand;
-use App\Helpers\QueryBuilderHelper;
+use App\Helpers\Chunks\ChunkCursor;
 use App\Models\Elastic\GoodsModel;
 use Illuminate\Support\Facades\DB;
 
@@ -57,7 +57,7 @@ class IndexGoodsConstructors extends CustomCommand
 
             $promotionGoodsConstructorsIDs = [];
 
-            QueryBuilderHelper::chunk($constructorsGoodsQuery, function ($constructors) use (&$promotionGoodsConstructorsIDs) {
+            ChunkCursor::iterate($constructorsGoodsQuery, function ($constructors) use (&$promotionGoodsConstructorsIDs) {
                 $constructorsData = [];
                 $errorConstructorsIDs = [];
 

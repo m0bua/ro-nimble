@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 
 
 use App\Console\Commands\Extend\CustomCommand;
-use App\Helpers\QueryBuilderHelper;
+use App\Helpers\Chunks\ChunkCursor;
 use App\Models\Elastic\GoodsModel;
 use App\ValueObjects\Options;
 use Illuminate\Support\Facades\DB;
@@ -63,7 +63,7 @@ class IndexGoodsOptionsPluralCommand extends CustomCommand
                 ])
                 ->whereIn('o.type', Options::OPTIONS_BY_TYPES['values']);
 
-            QueryBuilderHelper::chunk($baseQuery, function ($goodsOptions) {
+            ChunkCursor::iterate($baseQuery, function ($goodsOptions) {
                 $options = [];
                 array_map(function ($item) use (&$options) {
                     $options[$item->goods_id]['options'][] = $item->option_id;

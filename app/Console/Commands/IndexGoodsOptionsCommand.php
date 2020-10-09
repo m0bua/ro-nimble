@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 
 
 use App\Console\Commands\Extend\CustomCommand;
-use App\Helpers\QueryBuilderHelper;
+use App\Helpers\Chunks\ChunkCursor;
 use App\Models\Elastic\GoodsModel;
 use App\ValueObjects\Options;
 use Illuminate\Support\Facades\DB;
@@ -60,7 +60,7 @@ class IndexGoodsOptionsCommand extends CustomCommand
                 ])
                 ->whereIn('o.type', ['CheckBox', 'Integer', 'Decimal']);
 
-            QueryBuilderHelper::chunk($baseQuery, function ($goodsOptions) {
+            ChunkCursor::iterate($baseQuery, function ($goodsOptions) {
                 $options = [];
                 $optsForUpdate = [];
                 foreach ($goodsOptions as $item) {

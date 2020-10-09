@@ -5,10 +5,9 @@ namespace App\Console\Commands;
 
 
 use App\Console\Commands\Extend\CustomCommand;
+use App\Helpers\Chunks\ChunkCursor;
 use App\Helpers\CommonFormatter;
-use App\Helpers\QueryBuilderHelper;
 use App\Models\Elastic\GoodsModel;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class IndexMarkedGoodsCommand extends CustomCommand
@@ -57,7 +56,7 @@ class IndexMarkedGoodsCommand extends CustomCommand
                 ->leftJoin('producers', 'producers.id', '=', 'goods.producer_id')
                 ->where(['goods.needs_index' => 1]);
 
-            QueryBuilderHelper::chunk($goodsQuery, function ($products) {
+            ChunkCursor::iterate($goodsQuery, function ($products) {
 
                 $productsData = [];
                 array_map(function ($product) use (&$productsData) {

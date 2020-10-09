@@ -5,9 +5,7 @@ namespace App\Console\Commands;
 
 
 use App\Console\Commands\Extend\CustomCommand;
-use App\Helpers\QueryBuilderHelper;
-use Illuminate\Database\Query\Builder;
-use Illuminate\Support\Collection;
+use App\Helpers\Chunks\ChunkCursor;
 use Illuminate\Support\Facades\DB;
 
 class MigrateProducersCommand extends CustomCommand
@@ -32,7 +30,7 @@ class MigrateProducersCommand extends CustomCommand
             $producersQuery = DB::connection('store')
                 ->table('producers');
 
-            QueryBuilderHelper::chunk($producersQuery, function ($producers) {
+            ChunkCursor::iterate($producersQuery, function ($producers) {
                 $producersArray = [];
 
                 array_map(function ($producer) use (&$producersArray) {
@@ -46,6 +44,6 @@ class MigrateProducersCommand extends CustomCommand
                 DB::table('producers')->insertOrIgnore($producersArray);
             });
 
-        }, true);
+        });
     }
 }

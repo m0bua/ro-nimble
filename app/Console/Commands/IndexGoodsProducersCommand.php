@@ -2,7 +2,7 @@
 namespace App\Console\Commands;
 
 use App\Console\Commands\Extend\CustomCommand;
-use App\Helpers\QueryBuilderHelper;
+use App\Helpers\Chunks\ChunkCursor;
 use App\Models\Elastic\GoodsModel;
 use Illuminate\Support\Facades\DB;
 
@@ -52,7 +52,7 @@ class IndexGoodsProducersCommand extends CustomCommand
 
             $producerIDs = [];
 
-            QueryBuilderHelper::chunk($producersQuery, function ($producers) use (&$producerIDs) {
+            ChunkCursor::iterate($producersQuery, function ($producers) use (&$producerIDs) {
                 $producersData = [];
                 $errorGoodsIDs = [];
 

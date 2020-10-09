@@ -3,13 +3,10 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Helpers\QueryBuilderHelper;
-
+use App\Helpers\Chunks\ChunkPrimary;
 use App\Console\Commands\Extend\CustomCommand;
-
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Query\Builder;
-
 use App\Models\GraphQL\GoodsBatchModel;
 use App\Traits\MigrateGoodsCommandTrait;
 use Symfony\Component\Console\Input\InputOption;
@@ -70,7 +67,7 @@ class MigrateGoodsCommand extends CustomCommand
                 return;
             }
 
-            QueryBuilderHelper::chunkByPrimary($query, function ($data) use ($config): void {
+            ChunkPrimary::iterate($query, function ($data) use ($config): void {
                 $ids = \array_map(function ($item) use ($config) {
                     if ($this->entity === self::ENTITY_GOODS) {
                         $property = $config['goods_join_field'];

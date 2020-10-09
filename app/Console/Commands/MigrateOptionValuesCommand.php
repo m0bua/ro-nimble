@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 
 
 use App\Console\Commands\Extend\CustomCommand;
-use App\Helpers\QueryBuilderHelper;
+use App\Helpers\Chunks\ChunkCursor;
 use Illuminate\Support\Facades\DB;
 
 class MigrateOptionValuesCommand extends CustomCommand
@@ -30,7 +30,7 @@ class MigrateOptionValuesCommand extends CustomCommand
             $optValQuery = DB::connection('store')
                 ->table('options_values');
 
-            QueryBuilderHelper::chunk($optValQuery, function ($optValues) {
+            ChunkCursor::iterate($optValQuery, function ($optValues) {
                 $valuesArray = [];
                 array_map(function ($value) use (&$valuesArray) {
                     $valuesArray[] = (array)$value;
