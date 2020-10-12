@@ -1,12 +1,8 @@
 <?php
 
-
 namespace App\Logging;
 
-
-use App\Interfaces\DefaultLogInterface;
 use App\Traits\DefaultLogFormatterTrait;
-use Illuminate\Support\Facades\Log;
 
 class DefaultLogger
 {
