@@ -3,7 +3,6 @@
 namespace App\Helpers\Chunks;
 
 use App\Interfaces\ChunkInterface;
-use App\Logging\CustomLogger;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\Log;
 
@@ -34,9 +33,10 @@ class ChunkPrimary implements ChunkInterface
             try {
                 $callback($result->toArray());
             } catch (\Throwable $t) {
-                Log::channel('consumer')->warning(
-                    CustomLogger::generateMessage($t)
-                );
+                Log::error($t->getMessage(), [
+                    'file' => $t->getFile(),
+                    'line' => $t->getLine()
+                ]);
             }
 
         } while($resultCount == $chunkSize);

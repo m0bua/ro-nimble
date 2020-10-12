@@ -2,7 +2,6 @@
 
 use App\Cores\ConsumerCore\Loggers\ConsumerErrorLogger;
 use App\Cores\ConsumerCore\Loggers\ConsumerInfoLogger;
-use App\Logging\CustomLogger;
 
 use App\Logging\DefaultLogger;
 use Monolog\Handler\NullHandler;
@@ -13,13 +12,6 @@ return [
 
     'default' => env('LOG_CHANNEL', 'stack'),
     'channels' => [
-        'consumer' => [
-            'driver' => 'daily',
-            'tap' => [CustomLogger::class],
-            'path' => storage_path('logs/lumen.log'),
-            'level' => 'debug',
-            'days' => 14,
-        ],
 
         'default' => [
             'driver' => 'daily',

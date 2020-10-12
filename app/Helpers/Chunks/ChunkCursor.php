@@ -5,7 +5,6 @@ namespace App\Helpers\Chunks;
 
 
 use App\Interfaces\ChunkInterface;
-use App\Logging\CustomLogger;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -36,9 +35,10 @@ class ChunkCursor implements ChunkInterface
             try {
                 $callback($result);
             } catch (\Throwable $t) {
-                Log::channel('consumer')->warning(
-                    CustomLogger::generateMessage($t)
-                );
+                Log::error($t->getMessage(), [
+                    'file' => $t->getFile(),
+                    'line' => $t->getLine()
+                ]);
             }
 
         } while($resultCount == $chunkSize);

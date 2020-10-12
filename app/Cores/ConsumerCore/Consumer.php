@@ -3,9 +3,7 @@
 
 namespace App\Cores\ConsumerCore;
 use App\Cores\ConsumerCore\Loggers\ConsumerErrorLogger;
-use App\Logging\CustomLogger;
 use Bschmitt\Amqp\Consumer as BaseConsumer;
-use Illuminate\Support\Facades\Log;
 
 class Consumer
 {

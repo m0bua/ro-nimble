@@ -6,7 +6,6 @@ use App\Cores\ConsumerCore\Consumer;
 use App\Cores\ConsumerCore\Interfaces\MessageInterface;
 use App\Cores\ConsumerCore\Loggers\ConsumerInfoLogger;
 use App\Cores\ConsumerCore\Processor;
-use App\Logging\ConsumerLogger;
 use Illuminate\Console\Command;
 
 class ConsumerCommand extends Command

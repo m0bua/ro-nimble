@@ -12,7 +12,7 @@ trait DefaultLogFormatterTrait
     {
         foreach ($logger->getHandlers() as $handler) {
             $handler->setFormatter(new LineFormatter(
-                '{"datetime":"%datetime%","message":"%message%","context":%context%}' . PHP_EOL
+                '{"datetime":"%datetime%","level":"%level_name%","message":"%message%","context":%context%}' . PHP_EOL
             ));
         }
     }
