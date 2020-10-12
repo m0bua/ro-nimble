@@ -3,13 +3,10 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Helpers\QueryBuilderHelper;
-
-use App\Console\Commands\Extend\CustomCommand;
-
+use App\Console\Commands\Extend\ExtCommand;
+use App\Helpers\Chunks\ChunkPrimary;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Query\Builder;
-
 use App\Models\GraphQL\GoodsBatchModel;
 use App\Traits\MigrateGoodsCommandTrait;
 use Symfony\Component\Console\Input\InputOption;
@@ -18,7 +15,7 @@ use Symfony\Component\Console\Input\InputOption;
  * Class MigrateGoodsCommand
  * @package App\Console\Commands
  */
-class MigrateGoodsCommand extends CustomCommand
+class MigrateGoodsCommand extends ExtCommand
 {
     use MigrateGoodsCommandTrait;
 
@@ -57,46 +54,44 @@ class MigrateGoodsCommand extends CustomCommand
     }
 
     /** @return void */
-    public function handle(): void
+    protected function extHandle(): void
     {
         $this->entity = $this->option('entity') ?: self::ENTITY_GOODS;
         $config = $this->getEntityConfig();
         $this->batch->setWhereInField($config['batch_field']);
 
-        $this->catchExceptions(function () use ($config) {
-            $query = $this->getQuery($config);
-            if (!$query) {
-                $this->error('An error occurred while generating the query.');
-                return;
-            }
+        $query = $this->getQuery($config);
+        if (!$query) {
+            $this->error('An error occurred while generating the query.');
+            return;
+        }
 
-            QueryBuilderHelper::chunkByPrimary($query, function ($data) use ($config): void {
-                $ids = \array_map(function ($item) use ($config) {
-                    if ($this->entity === self::ENTITY_GOODS) {
-                        $property = $config['goods_join_field'];
-                        if ($item->$property) {
-                            return null;
-                        }
+        ChunkPrimary::iterate($query, function ($data) use ($config): void {
+            $ids = \array_map(function ($item) use ($config) {
+                if ($this->entity === self::ENTITY_GOODS) {
+                    $property = $config['goods_join_field'];
+                    if ($item->$property) {
+                        return null;
                     }
-
-                    $property = $config['field'];
-                    return $item->$property;
-                }, $data);
-                $ids = \array_filter(\array_unique($ids));
-
-                if ($ids) {
-                    $this->batch->getByBatch($ids, function ($nodes): void {
-                        $dataArray = $this->formatGoodsNodes($nodes);
-                        foreach ($dataArray as $table => $data) {
-                            DB::table($table)->insertOrIgnore($data);
-                        }
-                    });
                 }
 
-                DB::table($config['table'])
-                    ->whereIn($config['field'], \array_column($data, $config['field']))
-                    ->update(['needs_migrate' => 0]);
-            });
+                $property = $config['field'];
+                return $item->$property;
+            }, $data);
+            $ids = \array_filter(\array_unique($ids));
+
+            if ($ids) {
+                $this->batch->getByBatch($ids, function ($nodes): void {
+                    $dataArray = $this->formatGoodsNodes($nodes);
+                    foreach ($dataArray as $table => $data) {
+                        DB::table($table)->insertOrIgnore($data);
+                    }
+                });
+            }
+
+            DB::table($config['table'])
+                ->whereIn($config['field'], \array_column($data, $config['field']))
+                ->update(['needs_migrate' => 0]);
         });
     }
 

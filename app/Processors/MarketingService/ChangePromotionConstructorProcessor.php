@@ -2,21 +2,18 @@
 
 namespace App\Processors\MarketingService;
 
-use App\Processors\AbstractCore;
-use App\ValueObjects\Processor;
-use Exception;
+use App\Cores\ConsumerCore\Interfaces\MessageInterface;
+use App\Cores\ConsumerCore\Interfaces\ProcessorInterface;
+use App\Cores\Shared\Codes;
 use Illuminate\Support\Facades\DB;
 
-class ChangePromotionConstructorProcessor extends AbstractCore
+class ChangePromotionConstructorProcessor implements ProcessorInterface
 {
-    /**
-     * @throws Exception
-     */
-    public function doJob()
+    public function processMessage(MessageInterface $message): int
     {
-        $id = $this->message->getField('fields_data.id');
-        $promotionId = $this->message->getField('fields_data.promotion_id');
-        $giftId = $this->message->getField('fields_data.gift_id');
+        $id = $message->getField('fields_data.id');
+        $promotionId = $message->getField('fields_data.promotion_id');
+        $giftId = $message->getField('fields_data.gift_id');
 
         $updated = DB::table('promotion_constructors')
             ->where(['id' => $id])
@@ -35,6 +32,6 @@ class ChangePromotionConstructorProcessor extends AbstractCore
                 ]);
         }
 
-        return Processor::CODE_SUCCESS;
+        return Codes::SUCCESS;
     }
 }

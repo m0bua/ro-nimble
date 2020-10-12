@@ -2,20 +2,16 @@
 
 namespace App\Processors\GoodsService;
 
-use App\Processors\AbstractCore;
-use App\ValueObjects\Processor;
-use Exception;
+use App\Cores\ConsumerCore\Interfaces\MessageInterface;
+use App\Cores\ConsumerCore\Interfaces\ProcessorInterface;
+use App\Cores\Shared\Codes;
 use Illuminate\Support\Facades\DB;
 
-class ChangeProducerEntityProcessor extends AbstractCore
+class ChangeProducerEntityProcessor implements ProcessorInterface
 {
-    /**
-     * @return int
-     * @throws Exception
-     */
-    public function doJob()
+    public function processMessage(MessageInterface $message): int
     {
-        $producerData = (array)$this->message->getField('data');
+        $producerData = (array)$message->getField('data');
 
         DB::table('producers')
             ->where(['id' => $producerData['id']])
@@ -37,6 +33,6 @@ class ChangeProducerEntityProcessor extends AbstractCore
                 'needs_index' => 1
             ]);
 
-        return Processor::CODE_SUCCESS;
+        return Codes::SUCCESS;
     }
 }

@@ -4,11 +4,11 @@
 namespace App\Console\Commands;
 
 
-use App\Console\Commands\Extend\CustomCommand;
-use App\Helpers\QueryBuilderHelper;
+use App\Console\Commands\Extend\ExtCommand;
+use App\Helpers\Chunks\ChunkCursor;
 use Illuminate\Support\Facades\DB;
 
-class MigrateOptionValuesCommand extends CustomCommand
+class MigrateOptionValuesCommand extends ExtCommand
 {
     /**
      * @var string
@@ -23,22 +23,18 @@ class MigrateOptionValuesCommand extends CustomCommand
     /**
      *
      */
-    public function handle()
+    protected function extHandle()
     {
-        $this->catchExceptions(function () {
+        $optValQuery = DB::connection('store')
+            ->table('options_values');
 
-            $optValQuery = DB::connection('store')
-                ->table('options_values');
+        ChunkCursor::iterate($optValQuery, function ($optValues) {
+            $valuesArray = [];
+            array_map(function ($value) use (&$valuesArray) {
+                $valuesArray[] = (array)$value;
+            }, $optValues);
 
-            QueryBuilderHelper::chunk($optValQuery, function ($optValues) {
-                $valuesArray = [];
-                array_map(function ($value) use (&$valuesArray) {
-                    $valuesArray[] = (array)$value;
-                }, $optValues);
-
-                DB::table('option_values')->insertOrIgnore($valuesArray);
-            });
-
+            DB::table('option_values')->insertOrIgnore($valuesArray);
         });
     }
 

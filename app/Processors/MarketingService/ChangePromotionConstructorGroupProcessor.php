@@ -2,24 +2,17 @@
 
 namespace App\Processors\MarketingService;
 
-use App\Helpers\CommonFormatter;
-use App\Models\Elastic\GoodsModel as ElasticGoodsModel;
-use App\Models\GraphQL\GoodsManyModel;
-use App\Processors\AbstractCore;
-use App\ValueObjects\Processor;
-use App\ValueObjects\PromotionConstructor;
-use Exception;
+use App\Cores\ConsumerCore\Interfaces\MessageInterface;
+use App\Cores\ConsumerCore\Interfaces\ProcessorInterface;
+use App\Cores\Shared\Codes;
 use Illuminate\Support\Facades\DB;
 
-class ChangePromotionConstructorGroupProcessor extends AbstractCore
+class ChangePromotionConstructorGroupProcessor implements ProcessorInterface
 {
-    /**
-     * @throws Exception
-     */
-    public function doJob()
+    public function processMessage(MessageInterface $message): int
     {
-        $constructorId = $this->message->getField('fields_data.promotion_constructor_id');
-        $groupId = $this->message->getField('fields_data.group_id');
+        $constructorId = $message->getField('fields_data.promotion_constructor_id');
+        $groupId = $message->getField('fields_data.group_id');
 
         $updated = DB::table('promotion_groups_constructors')
             ->where([
@@ -42,6 +35,6 @@ class ChangePromotionConstructorGroupProcessor extends AbstractCore
                 ]);
         }
 
-        return Processor::CODE_SUCCESS;
+        return Codes::SUCCESS;
     }
 }

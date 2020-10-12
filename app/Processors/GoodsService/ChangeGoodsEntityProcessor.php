@@ -2,20 +2,16 @@
 
 namespace App\Processors\GoodsService;
 
-use App\Processors\AbstractCore;
-use App\ValueObjects\Processor;
-use Exception;
+use App\Cores\ConsumerCore\Interfaces\MessageInterface;
+use App\Cores\ConsumerCore\Interfaces\ProcessorInterface;
+use App\Cores\Shared\Codes;
 use Illuminate\Support\Facades\DB;
 
-class ChangeGoodsEntityProcessor extends AbstractCore
+class ChangeGoodsEntityProcessor implements ProcessorInterface
 {
-    /**
-     * @return int
-     * @throws Exception
-     */
-    public function doJob()
+    public function processMessage(MessageInterface $message): int
     {
-        $goodsData = (array)$this->message->getField('data');
+        $goodsData = (array)$message->getField('data');
 
         DB::table('goods')
             ->where(['id' => $goodsData['id']])
@@ -39,6 +35,6 @@ class ChangeGoodsEntityProcessor extends AbstractCore
                 'updated_at' => date('Y-m-d H:i:s'),
             ]);
 
-        return Processor::CODE_SUCCESS;
+        return Codes::SUCCESS;
     }
 }
