@@ -4,11 +4,11 @@
 namespace App\Console\Commands;
 
 
-use App\Console\Commands\Extend\CustomCommand;
+use App\Console\Commands\Extend\ExtCommand;
 use App\Helpers\Chunks\ChunkCursor;
 use Illuminate\Support\Facades\DB;
 
-class MigrateOptionsCommand extends CustomCommand
+class MigrateOptionsCommand extends ExtCommand
 {
     /**
      * @var string
@@ -23,26 +23,22 @@ class MigrateOptionsCommand extends CustomCommand
     /**
      *
      */
-    public function handle()
+    protected function extHandle()
     {
-        $this->catchExceptions(function () {
+        $optQuery = DB::connection('store')
+            ->table('options');
 
-            $optQuery = DB::connection('store')
-                ->table('options');
+        ChunkCursor::iterate($optQuery, function ($options) {
+            $optionsArray = [];
 
-            ChunkCursor::iterate($optQuery, function ($options) {
-                $optionsArray = [];
+            array_map(function ($option) use (&$optionsArray){
+                $opt = (array)$option;
+                $opt['affect_group_photo'] = ($opt['affect_group_photo'] ? 't' : 'f');
+                unset($opt['copy_forbid']);
+                return $optionsArray[] = $opt;
+            }, $options);
 
-                array_map(function ($option) use (&$optionsArray){
-                    $opt = (array)$option;
-                    $opt['affect_group_photo'] = ($opt['affect_group_photo'] ? 't' : 'f');
-                    unset($opt['copy_forbid']);
-                    return $optionsArray[] = $opt;
-                }, $options);
-
-                DB::table('options')->insertOrIgnore($optionsArray);
-            });
-
+            DB::table('options')->insertOrIgnore($optionsArray);
         });
     }
 }

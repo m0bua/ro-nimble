@@ -4,18 +4,16 @@
 namespace App\Processors\GoodsService;
 
 
-use App\Processors\AbstractCore;
-use App\ValueObjects\Processor;
+use App\Cores\ConsumerCore\Interfaces\MessageInterface;
+use App\Cores\ConsumerCore\Interfaces\ProcessorInterface;
+use App\Cores\Shared\Codes;
 use Illuminate\Support\Facades\DB;
 
-class CreateGoodsOptionProcessor extends AbstractCore
+class CreateGoodsOptionProcessor implements ProcessorInterface
 {
-    /**
-     * @inheritDoc
-     */
-    public function doJob()
+    public function processMessage(MessageInterface $message): int
     {
-        $data = (array)$this->message->getField('data');
+        $data = (array)$message->getField('data');
         DB::table('goods_options')->insert(
             [
                 'goods_id' => $data['goods_id'],
@@ -29,6 +27,6 @@ class CreateGoodsOptionProcessor extends AbstractCore
             ->where(['id' => $data['goods_id']])
             ->update(['needs_index' => 1]);
 
-        return Processor::CODE_SUCCESS;
+        return Codes::SUCCESS;
     }
 }

@@ -2,17 +2,15 @@
 
 namespace App\Console\Commands;
 
-use App\Logging\CustomLogger;
-use App\ValueObjects\Message;
-use App\ValueObjects\Processor;
-use Bschmitt\Amqp\Exception\Configuration;
+use App\Cores\ConsumerCore\Consumer;
+use App\Cores\ConsumerCore\Interfaces\MessageInterface;
+use App\Cores\ConsumerCore\Loggers\ConsumerInfoLogger;
+use App\Cores\ConsumerCore\Processor;
+use App\Logging\ConsumerLogger;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 
 class ConsumerCommand extends Command
 {
-    const MAX_ERRORS_COUNT = 100;
-
     /**
      * @var string
      */
@@ -24,55 +22,33 @@ class ConsumerCommand extends Command
     protected $description = 'RabbitMQ consumer';
 
     /**
-     * @throws Configuration
+     * Handle command
+     *
+     * @throws \Exception
      */
     public function handle()
     {
-        config(['amqp.use' => $this->argument('config')]);
+        $queue = $this->argument('queue');
+        $config = $this->argument('config');
 
-        $errorsCount = 0;
+        $consumer = new Consumer($config);
+        $consumer->consume($queue, function (MessageInterface $message, string $iterationHash) use ($config, $queue) {
+            $message->onError()->throwException();
+            $processor = new Processor($message);
 
-        $consumer = app()->make('Bschmitt\Amqp\Consumer');
-        $consumer->connect();
-        $consumer->consume($this->argument('queue'), function ($amqpMessage, $resolver) use (&$errorsCount) {
-            try {
-                $message = new Message($amqpMessage);
-                if ($message->hasError()) {
-                    Log::channel('consumer')->error(
-                        CustomLogger::generateMessageFromStr(
-                            $message->getError(),
-                            [
-                                'configuration' => $this->argument('config'),
-                                'routing_key' => $message->getRoutingKey()
-                            ]
-                        )
-                    );
-                }
+            ConsumerInfoLogger::log(
+                $message->getRoutingKey(),
+                $config,
+                [
+                    'hash' => $iterationHash,
+                    'queue' => $queue,
+                    'configuration' => $config,
+                    'processor_name' => $processor->getName(),
+                    'body' => $message->getBody(),
+                ]
+            );
 
-                $processor = new Processor($message);
-                $processor->run();
-                $resolver->acknowledge($amqpMessage);
-                if ($errorsCount > 0) {
-                    $errorsCount = 0;
-                }
-
-            } catch (\Throwable $t) {
-                $additionalLogData = ['configuration' => $this->argument('config')];
-                if (isset($message)) {
-                    $additionalLogData['consumer_got_message'] = $message->getBody();
-                    $additionalLogData['routing_key'] = $message->getRoutingKey();
-                }
-
-                Log::channel('consumer')->error(
-                    $errorMessage = CustomLogger::generateMessage($t, $additionalLogData)
-                );
-
-                if ($errorsCount == env('CONSUMER_MAX_ERRORS_COUNT', self::MAX_ERRORS_COUNT)) {
-                    abort(500, $errorMessage);
-                }
-
-                $errorsCount++;
-            }
+            $processor->start();
         });
     }
 }

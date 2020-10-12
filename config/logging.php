@@ -1,7 +1,10 @@
 <?php
 
+use App\Cores\ConsumerCore\Loggers\ConsumerErrorLogger;
+use App\Cores\ConsumerCore\Loggers\ConsumerInfoLogger;
 use App\Logging\CustomLogger;
 
+use App\Logging\DefaultLogger;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
@@ -15,6 +18,28 @@ return [
             'tap' => [CustomLogger::class],
             'path' => storage_path('logs/lumen.log'),
             'level' => 'debug',
+            'days' => 14,
+        ],
+
+        'default' => [
+            'driver' => 'daily',
+            'tap' => [DefaultLogger::class],
+            'path' => storage_path('logs/lumen.log'),
+            'level' => 'debug',
+            'days' => 14,
+        ],
+
+        'consumer_message' => [
+            'driver' => 'daily',
+            'tap' => [ConsumerInfoLogger::class],
+            'path' => storage_path('logs/consumer-messages.log'),
+            'days' => 7,
+        ],
+
+        'consumer_error_message' => [
+            'driver' => 'daily',
+            'tap' => [ConsumerErrorLogger::class],
+            'path' => storage_path('logs/lumen.log'),
             'days' => 14,
         ],
 
