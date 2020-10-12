@@ -2,24 +2,19 @@
 
 namespace App\Processors\MarketingService;
 
-use App\Models\Elastic\GoodsModel;
-use App\Processors\AbstractCore;
-use App\ValueObjects\Processor;
-use App\ValueObjects\PromotionConstructor;
-use Exception;
+use App\Cores\ConsumerCore\Interfaces\MessageInterface;
+use App\Cores\ConsumerCore\Interfaces\ProcessorInterface;
+use App\Cores\Shared\Codes;
 use Illuminate\Support\Facades\DB;
 
-class DeletePromotionConstructorProcessor extends AbstractCore
+class DeletePromotionConstructorProcessor implements ProcessorInterface
 {
-    /**
-     * @throws Exception
-     */
-    public function doJob()
+    public function processMessage(MessageInterface $message): int
     {
         DB::table('promotion_constructors')
-            ->where(['id' => $this->message->getField('fields_data.id')])
+            ->where(['id' => $message->getField('fields_data.id')])
             ->update(['is_deleted' => 1]);
 
-        return Processor::CODE_SUCCESS;
+        return Codes::SUCCESS;
     }
 }

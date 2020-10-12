@@ -4,11 +4,11 @@
 namespace App\Console\Commands;
 
 
-use App\Console\Commands\Extend\CustomCommand;
+use App\Console\Commands\Extend\ExtCommand;
 use App\Helpers\Chunks\ChunkCursor;
 use Illuminate\Support\Facades\DB;
 
-class MigrateProducersCommand extends CustomCommand
+class MigrateProducersCommand extends ExtCommand
 {
     /**
      * @var string
@@ -23,27 +23,23 @@ class MigrateProducersCommand extends CustomCommand
     /**
      *
      */
-    public function handle()
+    protected function extHandle()
     {
-        $this->catchExceptions(function () {
+        $producersQuery = DB::connection('store')
+            ->table('producers');
 
-            $producersQuery = DB::connection('store')
-                ->table('producers');
+        ChunkCursor::iterate($producersQuery, function ($producers) {
+            $producersArray = [];
 
-            ChunkCursor::iterate($producersQuery, function ($producers) {
-                $producersArray = [];
+            array_map(function ($producer) use (&$producersArray) {
+                $data = (array)$producer;
+                $data['disable_filter_series'] = ($data['disable_filter_series'] ? 't' : 'f');
+                $data['show_background'] = ($data['show_background'] ? 't' : 'f');
+                unset($data['attachments']);
+                $producersArray[] = $data;
+            }, $producers);
 
-                array_map(function ($producer) use (&$producersArray) {
-                    $data = (array)$producer;
-                    $data['disable_filter_series'] = ($data['disable_filter_series'] ? 't' : 'f');
-                    $data['show_background'] = ($data['show_background'] ? 't' : 'f');
-                    unset($data['attachments']);
-                    $producersArray[] = $data;
-                }, $producers);
-
-                DB::table('producers')->insertOrIgnore($producersArray);
-            });
-
+            DB::table('producers')->insertOrIgnore($producersArray);
         });
     }
 }

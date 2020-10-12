@@ -2,23 +2,21 @@
 
 namespace App\Processors\GoodsService;
 
-use App\Processors\AbstractCore;
-use App\ValueObjects\Processor;
+use App\Cores\ConsumerCore\Interfaces\MessageInterface;
+use App\Cores\ConsumerCore\Interfaces\ProcessorInterface;
+use App\Cores\Shared\Codes;
 use Illuminate\Support\Facades\DB;
 
-class DeleteProducerEntityProcessor extends AbstractCore
+class DeleteProducerEntityProcessor implements ProcessorInterface
 {
-    /**
-     * @inheritDoc
-     */
-    public function doJob()
+    public function processMessage(MessageInterface $message): int
     {
-        $producerId = $this->message->getField('id');
+        $producerId = $message->getField('id');
 
         DB::table('producers')
             ->where(['id' => $producerId])
             ->delete();
 
-        return Processor::CODE_SUCCESS;
+        return Codes::SUCCESS;
     }
 }

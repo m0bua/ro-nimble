@@ -1,12 +1,9 @@
 <?php
 
+namespace App\Cores\ConsumerCore;
 
-namespace App\ValueObjects;
-
-
-use App\Interfaces\MessageInterface;
+use App\Cores\ConsumerCore\Interfaces\MessageInterface;
 use Exception;
-use Illuminate\Support\Facades\Log;
 use PhpAmqpLib\Message\AMQPMessage;
 
 class Message implements MessageInterface
@@ -30,6 +27,14 @@ class Message implements MessageInterface
     {
         $this->message = $message;
         $this->body = $this->jsonValidate($this->message->body);
+    }
+
+    /**
+     * @return ErrorMessage
+     */
+    public function onError()
+    {
+        return (new ErrorMessage($this->getError()));
     }
 
     /**

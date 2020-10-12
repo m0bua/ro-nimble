@@ -2,20 +2,16 @@
 
 namespace App\Processors\GoodsService;
 
-use App\Processors\AbstractCore;
-use App\ValueObjects\Processor;
+use App\Cores\ConsumerCore\Interfaces\MessageInterface;
+use App\Cores\ConsumerCore\Interfaces\ProcessorInterface;
+use App\Cores\Shared\Codes;
 use Illuminate\Support\Facades\DB;
-use ReflectionException;
 
-class CreateProducerEntityProcessor extends AbstractCore
+class CreateProducerEntityProcessor implements ProcessorInterface
 {
-    /**
-     * @inheritDoc
-     * @throws ReflectionException
-     */
-    public function doJob()
+    public function processMessage(MessageInterface $message): int
     {
-        $producerData = (array)$this->message->getField('data');
+        $producerData = (array)$message->getField('data');
 
         DB::table('producers')->insertOrIgnore(
             [
@@ -36,6 +32,6 @@ class CreateProducerEntityProcessor extends AbstractCore
             ]
         );
 
-        return Processor::CODE_SUCCESS;
+        return Codes::SUCCESS;
     }
 }
