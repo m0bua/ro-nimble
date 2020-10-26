@@ -114,15 +114,15 @@ class GoodsBatchModel extends GraphQL
     {
         $batchId = 0;
         do {
-            $this->query->setSelectionSet([
-                $this->query('nodes')->setSelectionSet($this->defaultSelectionSet()),
-                $this->query('batchInfo')->setSelectionSet(['batchSize', 'lastID']),
-            ]);
-
-            $this->query->setArguments(array_merge(
-                $this->whereIn($this->whereInField, $ids),
-                $this->batch($this->batchSize, $batchId)
-            ));
+            $this->query
+                ->setSelectionSet([
+                    $this->query('nodes')->setSelectionSet($this->defaultSelectionSet()),
+                    $this->query('batchInfo')->setSelectionSet(['batchSize', 'lastID']),
+                ])
+                ->setArguments(array_merge(
+                    $this->whereIn($this->whereInField, $ids),
+                    $this->batch($this->batchSize, $batchId)
+                ));
 
             $result = $this->get();
 
