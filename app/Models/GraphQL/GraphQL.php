@@ -7,6 +7,7 @@ use GraphQL\Client;
 use GraphQL\InlineFragment;
 use GraphQL\Query;
 use GraphQL\RawObject;
+use GraphQL\Variable;
 
 /**
  * Class GraphQL
@@ -33,6 +34,16 @@ abstract class GraphQL implements GraphQLInterface
      * @var Query
      */
     protected Query $query;
+
+    /**
+     * @var array
+     */
+    protected array $vars = [];
+
+    /**
+     * @var array
+     */
+    protected array $varsValues = [];
 
     /**
      * GraphQL constructor.
@@ -81,9 +92,13 @@ abstract class GraphQL implements GraphQLInterface
      * @param $value
      * @return array|RawObject[]
      */
-    public function where(string $fieldName, $value): array
+    public function whereEq(string $fieldName, $value): array
     {
-        return ['where' => new RawObject("{{$fieldName}_eq: {$value}}")];
+        $this->varsValues['where'] = [
+            $fieldName . '_eq' => $value
+        ];
+
+        return $this->where();
     }
 
     /**
@@ -93,9 +108,21 @@ abstract class GraphQL implements GraphQLInterface
      */
     public function whereIn(string $fieldName, array $values): array
     {
-        $valuesStr = '[' . join(',', $values) . ']';
+        $this->varsValues['where'] = [
+            $fieldName . '_in' => $values
+        ];
 
-        return ['where' => new RawObject("{{$fieldName}_in: {$valuesStr}}")];
+        return $this->where();
+    }
+
+    /**
+     * @return string[]
+     */
+    public function where(): array
+    {
+        $this->vars[] = new Variable('where', 'Map!');
+
+        return ['where' => '$where'];
     }
 
     /**
@@ -105,7 +132,14 @@ abstract class GraphQL implements GraphQLInterface
      */
     public function batch(int $batchSize, int $batchId): array
     {
-        return ['batch' => new RawObject("{batchSize: $batchSize batchID: $batchId}")];
+        $this->varsValues['batch'] = [
+            'batchSize' => $batchSize,
+            'batchID' => $batchId,
+        ];
+
+        $this->vars[] = new Variable('batch', 'Batch');
+
+        return ['batch' => '$batch'];
     }
 
     /**
@@ -113,8 +147,11 @@ abstract class GraphQL implements GraphQLInterface
      */
     public function get(): array
     {
+        if ($this->vars) {
+            $this->query->setVariables($this->vars);
+        }
         return $this->client
-            ->runQuery($this->query, true)
+            ->runQuery($this->query, true, $this->varsValues)
             ->getResults()['data'][$this->entityName];
     }
 
@@ -125,7 +162,7 @@ abstract class GraphQL implements GraphQLInterface
     public function getById(int $id): array
     {
         $this->query->setArguments(
-            $this->where('id', $id)
+            $this->whereEq('id', $id)
         );
 
         return $this->get();
