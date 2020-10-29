@@ -78,7 +78,7 @@ class MigrateGoodsCommand extends ExtCommand
                 $property = $config['field'];
                 return $item->$property;
             }, $data);
-            $ids = \array_filter(\array_unique($ids));
+            $ids = \array_values(\array_filter(\array_unique($ids)));
 
             if ($ids) {
                 $this->batch->getByBatch($ids, function ($nodes): void {

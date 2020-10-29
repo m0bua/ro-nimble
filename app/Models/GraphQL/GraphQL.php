@@ -109,7 +109,7 @@ abstract class GraphQL implements GraphQLInterface
     public function whereIn(string $fieldName, array $values): array
     {
         $this->varsValues['where'] = [
-            $fieldName . '_in' => $values
+            $fieldName . '_in' => array_values($values)
         ];
 
         return $this->where();
@@ -120,7 +120,7 @@ abstract class GraphQL implements GraphQLInterface
      */
     public function where(): array
     {
-        $this->vars[] = new Variable('where', 'Map!');
+        $this->vars['where'] = new Variable('where', 'Map!');
 
         return ['where' => '$where'];
     }
@@ -137,7 +137,7 @@ abstract class GraphQL implements GraphQLInterface
             'batchID' => $batchId,
         ];
 
-        $this->vars[] = new Variable('batch', 'Batch');
+        $this->vars['batch'] = new Variable('batch', 'Batch');
 
         return ['batch' => '$batch'];
     }
@@ -148,8 +148,9 @@ abstract class GraphQL implements GraphQLInterface
     public function get(): array
     {
         if ($this->vars) {
-            $this->query->setVariables($this->vars);
+            $this->query->setVariables(array_values($this->vars));
         }
+
         return $this->client
             ->runQuery($this->query, true, $this->varsValues)
             ->getResults()['data'][$this->entityName];
