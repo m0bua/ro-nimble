@@ -29,7 +29,9 @@ return [
             'username'              => env('AMQP_MS_USERNAME', ''),
             'password'              => env('AMQP_MS_PASSWORD', ''),
             'vhost'                 => '/',
-            'connect_options'       => [],
+            'connect_options'       => [
+                'heartbeat' => 0
+            ],
             'ssl_options'           => [],
 
             'exchange'              => env('AMQP_MS_EXCHANGE', 'promo.goods'),
@@ -85,7 +87,9 @@ return [
             'username'              => env('AMQP_GS_USERNAME', ''),
             'password'              => env('AMQP_GS_PASSWORD', ''),
             'vhost'                 => '/',
-            'connect_options'       => [],
+            'connect_options'       => [
+                'heartbeat' => 0
+            ],
             'ssl_options'           => [],
 
             'exchange'              => env('AMQP_GS_EXCHANGE', 'promo.goods'),

@@ -52,8 +52,8 @@ class Consumer
                     $errorsCount = 0;
                 }
             } catch (\Throwable $t) {
-                $message = $t->getMessage();
-                ConsumerErrorLogger::log($message, $this->config, [
+                $errMessageStr = $t->getMessage();
+                ConsumerErrorLogger::log($errMessageStr, $this->config, [
                     'file' => $t->getFile(),
                     'line' => $t->getLine(),
                     'hash' => $iterationHash,
@@ -63,12 +63,12 @@ class Consumer
                 ]);
 
                 // Missed server heartbeat
-                if ($message == 'Missed server heartbeat') {
+                if ($errMessageStr == 'Missed server heartbeat') {
                     exit;
                 }
 
                 if ($errorsCount == env('CONSUMER_MAX_ERRORS_COUNT', self::MAX_ERRORS_COUNT)) {
-                    abort(500, $t->getMessage());
+                    abort(500, $errMessageStr);
                 }
 
                 $errorsCount++;
