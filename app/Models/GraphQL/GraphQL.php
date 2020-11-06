@@ -4,6 +4,7 @@ namespace App\Models\GraphQL;
 
 use App\Interfaces\GraphQLInterface;
 use GraphQL\Client;
+use GraphQL\Exception\QueryError;
 use GraphQL\InlineFragment;
 use GraphQL\Query;
 use GraphQL\RawObject;
@@ -144,6 +145,7 @@ abstract class GraphQL implements GraphQLInterface
 
     /**
      * @return array
+     * @throws \Exception
      */
     public function get(): array
     {
@@ -151,9 +153,13 @@ abstract class GraphQL implements GraphQLInterface
             $this->query->setVariables(array_values($this->vars));
         }
 
-        return $this->client
-            ->runQuery($this->query, true, $this->varsValues)
-            ->getResults()['data'][$this->entityName];
+        try {
+            return $this->client
+                ->runQuery($this->query, true, $this->varsValues)
+                ->getResults()['data'][$this->entityName];
+        } catch (QueryError $exception) {
+            throw new \Exception(json_encode($exception->getErrorDetails()));
+        }
     }
 
     /**
