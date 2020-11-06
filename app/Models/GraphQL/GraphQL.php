@@ -9,6 +9,7 @@ use GraphQL\InlineFragment;
 use GraphQL\Query;
 use GraphQL\RawObject;
 use GraphQL\Variable;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Class GraphQL
@@ -157,8 +158,13 @@ abstract class GraphQL implements GraphQLInterface
             return $this->client
                 ->runQuery($this->query, true, $this->varsValues)
                 ->getResults()['data'][$this->entityName];
-        } catch (QueryError $exception) {
-            throw new \Exception(json_encode($exception->getErrorDetails()));
+        } catch (\Throwable $t) {
+            Log::error($t->getMessage(), [
+                'file' => $t->getFile(),
+                'line' => $t->getLine(),
+                'query' => (string) $this->query,
+                'query_vars' => $this->varsValues
+            ]);
         }
     }
 
