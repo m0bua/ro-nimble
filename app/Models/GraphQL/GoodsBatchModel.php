@@ -126,7 +126,7 @@ class GoodsBatchModel extends GraphQL
 
             $result = $this->get();
 
-            if ($result['batchInfo']['batchSize'] == 0) {
+            if (!isset($result['batchInfo']) || $result['batchInfo']['batchSize'] == 0) {
                 break;
             }
 
