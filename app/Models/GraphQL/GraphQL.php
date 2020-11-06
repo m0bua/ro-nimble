@@ -150,12 +150,13 @@ abstract class GraphQL implements GraphQLInterface
      */
     public function get(): array
     {
+        $result = [];
         if ($this->vars) {
             $this->query->setVariables(array_values($this->vars));
         }
 
         try {
-            return $this->client
+            $result = $this->client
                 ->runQuery($this->query, true, $this->varsValues)
                 ->getResults()['data'][$this->entityName];
         } catch (\Throwable $t) {
@@ -166,6 +167,8 @@ abstract class GraphQL implements GraphQLInterface
                 'query_vars' => $this->varsValues
             ]);
         }
+
+        return $result;
     }
 
     /**
