@@ -27,7 +27,7 @@ deploy-dev:
 
 
 stop-dev-ms:
-  stage: stop
+  stage: stop-restart
   tags:
     - rozetka-shared
   script:
@@ -40,7 +40,7 @@ stop-dev-ms:
 
 
 stop-dev-gs:
-  stage: stop
+  stage: stop-restart
   tags:
     - rozetka-shared
   script:
