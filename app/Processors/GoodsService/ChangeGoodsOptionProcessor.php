@@ -25,9 +25,16 @@ class ChangeGoodsOptionProcessor implements ProcessorInterface
                 'updated_at' => date('Y-m-d H:i:s'),
             ]);
 
-        DB::table('goods')
+        $goods = DB::table('goods')
+            ->select(['needs_index'])
             ->where(['id' => $data['goods_id']])
-            ->update(['needs_index' => 1]);
+            ->first();
+
+        if ($goods->needs_index != 1) {
+            DB::table('goods')
+                ->where(['id' => $data['goods_id']])
+                ->update(['needs_index' => 1]);
+        }
 
         return Codes::SUCCESS;
     }
