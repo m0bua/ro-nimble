@@ -8,7 +8,8 @@ before_script:
 
 stages:
   - deploy
-  - stop
+  - stop-restart
+  - start
 
 deploy-dev:
   stage: deploy
@@ -26,7 +27,7 @@ deploy-dev:
 
 
 stop-dev-ms:
-  stage: stop
+  stage: stop-restart
   tags:
     - rozetka-shared
   script:
@@ -39,7 +40,7 @@ stop-dev-ms:
 
 
 stop-dev-gs:
-  stage: stop
+  stage: stop-restart
   tags:
     - rozetka-shared
   script:
@@ -64,7 +65,7 @@ deploy-prod:
     - master
 
 stop-ms:
-  stage: stop
+  stage: stop-restart
   tags:
     - rozetka-shared
   script:
@@ -74,11 +75,53 @@ stop-ms:
     - master
 
 stop-gs:
-  stage: stop
+  stage: stop-restart
   tags:
     - rozetka-shared
   script:
     - dep consumers:gs:stop prod -p -vv
+  when: manual
+  only:
+    - master
+
+restart-ms:
+  stage: stop-restart
+  tags:
+    - rozetka-shared
+  script:
+    - dep consumers:ms:stop prod -p -vv
+    - dep consumers:ms:start prod -p -vv
+  when: manual
+  only:
+    - master
+
+restart-gs:
+  stage: stop-restart
+  tags:
+    - rozetka-shared
+  script:
+    - dep consumers:gs:stop prod -p -vv
+    - dep consumers:gs:start prod -p -vv
+  when: manual
+  only:
+    - master
+
+start-ms:
+  stage: start
+  tags:
+    - rozetka-shared
+  script:
+    - dep consumers:ms:start prod -p -vv
+  when: manual
+  only:
+    - master
+
+start-gs:
+  stage: start
+  tags:
+    - rozetka-shared
+  script:
+    - dep consumers:gs:start prod -p -vv
   when: manual
   only:
     - master
