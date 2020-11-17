@@ -15,6 +15,18 @@ return [
             'schema'   => 'public',
             'options' => [PDO::ATTR_EMULATE_PREPARES => true],
         ],
+        'nimble_read' => [
+            'driver'   => 'pgsql',
+            'host'     => env('DB_HOST', 'localhost'),
+            'database' => env('DB_DATABASE', 'postgres'),
+            'port'     => env('DB_PORT_READ', 5432),
+            'username' => env('DB_USERNAME', 'postgres'),
+            'password' => env('DB_PASSWORD', 'postgres'),
+            'charset'  => 'utf8',
+            'prefix'   => '',
+            'schema'   => 'public',
+            'options' => [PDO::ATTR_EMULATE_PREPARES => true],
+        ],
         'store' => [
             'driver'   => 'pgsql',
             'host'     => env('DB_STORE_HOST', 'localhost'),

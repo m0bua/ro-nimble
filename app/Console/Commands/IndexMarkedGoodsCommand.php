@@ -45,7 +45,8 @@ class IndexMarkedGoodsCommand extends ExtCommand
 
     protected function extHandle()
     {
-        $goodsQuery = DB::table('goods')
+        $goodsQuery = DB::connection('nimble_read')
+            ->table('goods')
             ->select([
                 'goods.*',
                 'producers.name as producer_name',
@@ -84,7 +85,8 @@ class IndexMarkedGoodsCommand extends ExtCommand
             /**
              * Options info
              */
-            $options = DB::table('options')
+            $options = DB::connection('nimble_read')
+                ->table('options')
                 ->select([
                     'options.id',
                     'options.name',
@@ -111,7 +113,8 @@ class IndexMarkedGoodsCommand extends ExtCommand
             /**
              * Options plural info
              */
-            $optionsPlural = DB::table('options')
+            $optionsPlural = DB::connection('nimble_read')
+                ->table('options')
                 ->select([
                     'options.id',
                     'options.name',
@@ -141,7 +144,8 @@ class IndexMarkedGoodsCommand extends ExtCommand
                 ];
             });
 
-            $goodsConstructors = DB::table('promotion_goods_constructors as pgs')
+            $goodsConstructors = DB::connection('nimble_read')
+                ->table('promotion_goods_constructors as pgs')
                 ->select([
                     'pgs.goods_id',
                     'pc.id',
@@ -165,7 +169,8 @@ class IndexMarkedGoodsCommand extends ExtCommand
             $groupsConstructors = [];
 
             if ($groupsIds) {
-                $groupsData = DB::table('promotion_groups_constructors as pgs')
+                $groupsData = DB::connection('nimble_read')
+                    ->table('promotion_groups_constructors as pgs')
                     ->select([
                         'pgs.group_id',
                         'pc.id',

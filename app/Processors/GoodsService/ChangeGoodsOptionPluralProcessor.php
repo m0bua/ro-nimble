@@ -24,7 +24,8 @@ class ChangeGoodsOptionPluralProcessor implements ProcessorInterface
                 'updated_at' => date('Y-m-d H:i:s'),
             ]);
 
-        $goods = DB::table('goods')
+        $goods = DB::connection('nimble_read')
+            ->table('goods')
             ->select(['needs_index'])
             ->where(['id' => $data['goods_id']])
             ->first();
