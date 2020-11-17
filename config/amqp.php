@@ -119,7 +119,7 @@ return [
 
             'qos'                   => true,
             'qos_prefetch_size'     => 0,
-            'qos_prefetch_count'    => 1000,
+            'qos_prefetch_count'    => 1,
             'qos_a_global'          => false,
             'processor_name'        => function($routingKey) {
                 $keywords = explode('.', ucwords($routingKey, '.'));
