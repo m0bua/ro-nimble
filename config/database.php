@@ -17,7 +17,7 @@ return [
         ],
         'nimble_read' => [
             'driver'   => 'pgsql',
-            'host'     => env('DB_HOST', 'localhost'),
+            'host'     => env('DB_HOST_READ', 'localhost'),
             'database' => env('DB_DATABASE', 'postgres'),
             'port'     => env('DB_PORT_READ', 5432),
             'username' => env('DB_USERNAME', 'postgres'),
