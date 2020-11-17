@@ -30,7 +30,7 @@ class ChangeGoodsOptionProcessor implements ProcessorInterface
             ->where(['id' => $data['goods_id']])
             ->first();
 
-        if ($goods->needs_index != 1) {
+        if (!$goods || $goods->needs_index != 1) {
             DB::table('goods')
                 ->where(['id' => $data['goods_id']])
                 ->update(['needs_index' => 1]);
