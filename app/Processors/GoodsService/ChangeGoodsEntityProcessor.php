@@ -35,7 +35,11 @@ class ChangeGoodsEntityProcessor implements ProcessorInterface
         $intersect = array_intersect($updateFields, $changed);
 
         if (!empty($intersect)) {
-            $updateData = [];
+            $updateData = [
+                'needs_index' => 1,
+                'updated_at' => date('Y-m-d H:i:s')
+            ];
+
             foreach ($intersect as $field) {
                 $updateData[$field] = $goodsData[$field];
             }
