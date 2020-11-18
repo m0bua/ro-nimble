@@ -25,7 +25,7 @@ class ChunkCursor implements ChunkInterface
         DB::connection('nimble_read')->select("DECLARE {$cursorName} CURSOR FOR {$sql}");
 
         do {
-            $result = DB::select("FETCH {$chunkSize} FROM {$cursorName}");
+            $result = DB::connection('nimble_read')->select("FETCH {$chunkSize} FROM {$cursorName}");
             $resultCount = count($result);
 
             if ($resultCount == 0) {
