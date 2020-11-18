@@ -10,7 +10,7 @@ class Config
     {
         return [
             'ms' => true,
-            'gs' => true,
+            'gs' => false,
         ];
     }
 
