@@ -39,7 +39,8 @@ class IndexGoodsProducersCommand extends ExtCommand
      */
     protected function extHandle()
     {
-        $producersQuery = DB::table('producers as p')
+        $producersQuery = DB::connection('nimble_read')
+            ->table('producers as p')
             ->select([
                 'g.id as goods_id',
                 'p.id',
