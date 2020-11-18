@@ -74,6 +74,16 @@ class Processor
     }
 
     /**
+     * @param \Closure $callback
+     */
+    public function processCallback(\Closure $callback)
+    {
+        if (!($this->processor instanceof DefaultProcessor)) {
+            $callback();
+        }
+    }
+
+    /**
      * Start processing message
      */
     public function start()
