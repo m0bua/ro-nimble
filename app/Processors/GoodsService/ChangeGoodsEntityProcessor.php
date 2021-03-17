@@ -30,24 +30,18 @@ class ChangeGoodsEntityProcessor implements ProcessorInterface
         ];
 
         $goodsData = (array)$message->getField('data');
-        $changed = (array)$message->getField('changed');
+        $updateData = [
+            'needs_index' => 1,
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
 
-        $intersect = array_intersect($updateFields, $changed);
-
-        if (!empty($intersect)) {
-            $updateData = [
-                'needs_index' => 1,
-                'updated_at' => date('Y-m-d H:i:s')
-            ];
-
-            foreach ($intersect as $field) {
-                $updateData[$field] = $goodsData[$field];
-            }
-
-            DB::table('goods')
-                ->where(['id' => $goodsData['id']])
-                ->update($updateData);
+        foreach ($updateFields as $field) {
+            $updateData[$field] = $goodsData[$field];
         }
+
+        DB::table('goods')
+            ->where(['id' => $goodsData['id']])
+            ->update($updateData);
 
         return Codes::SUCCESS;
     }
