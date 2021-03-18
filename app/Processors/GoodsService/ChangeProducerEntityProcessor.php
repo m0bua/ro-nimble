@@ -16,19 +16,19 @@ class ChangeProducerEntityProcessor implements ProcessorInterface
         DB::table('producers')
             ->where(['id' => $producerData['id']])
             ->update([
-                'id' => $producerData['id'],
-                'ext_id' => $producerData['ext_id'],
-                'title' => $producerData['title'],
-                'title_rus' => $producerData['title_rus'],
-                'name' => $producerData['name'],
-                'text' => $producerData['text'],
-                'status' => $producerData['status'],
+                'id' => $producerData['id'] ?? null,
+                'ext_id' => $producerData['ext_id'] ?? null,
+                'title' => $producerData['title'] ?? null,
+                'title_rus' => $producerData['title_rus'] ?? null,
+                'name' => $producerData['name'] ?? null,
+                'text' => $producerData['text'] ?? null,
+                'status' => $producerData['status'] ?? null,
                 'show_background' => ($producerData['show_background'] ? 't' : 'f'),
                 'show_logo' => ($producerData['show_logo'] ? 't' : 'f'),
-                'attachments' => $producerData['attachments'],
+                'attachments' => $producerData['attachments'] ?? null,
                 'disable_filter_series' => ($producerData['disable_filter_series'] ? 't' : 'f'),
-                'order_for_promotion' => $producerData['order_for_promotion'],
-                'producer_rank' => $producerData['producer_rank'],
+                'order_for_promotion' => $producerData['order_for_promotion'] ?? null,
+                'producer_rank' => $producerData['producer_rank'] ?? null,
                 'updated_at' => date('Y-m-d H:i:s'),
                 'needs_index' => 1
             ]);
