@@ -317,4 +317,108 @@ abstract class Elastic extends Immutable implements ElasticInterface
             }
         }, $this->requiredFields());
     }
+
+    /**
+     * Создание нового индекса
+     * @param string $name
+     * @param array $params
+     * @return array
+     */
+    public function createIndex(string $name, array $params): array
+    {
+        if ($this->existIndex($name)) {
+            return [];
+        }
+
+        return $this->client->indices()->create(array_merge(['index' => $name], $params));
+    }
+
+    /**
+     * Удаление индекса
+     * @param $name
+     * @return array
+     */
+    public function deleteIndex($name): array
+    {
+        if (!$name || !$this->existIndex($name)) {
+            return [];
+        }
+
+        return $this->client->indices()->delete([
+            'index' => $name
+        ]);
+    }
+
+    /**
+     * Проверка на существование индекса
+     * @param $params
+     * @return bool
+     */
+    public function existIndex($name): bool
+    {
+        return $this->client->indices()->exists([
+            'index' => $name
+        ]);
+    }
+
+    /**
+     * Создание нового алиаса
+     * @param string $indexName
+     * @return array
+     */
+    public function createAlias(string $indexName): array
+    {
+        if ($this->existsAlias($indexName)) {
+            return [];
+        }
+
+        return $this->client->indices()->putAlias([
+            'name' => $this->indexName(),
+            'index' => $indexName
+        ]);
+    }
+
+    /**
+     * Массовое обновление алиасов
+     * @param array $actions
+     * @return array
+     */
+    public function updateAliases(array $actions): array
+    {
+        return $this->client->indices()->updateAliases([
+            'body' => [
+                'actions' => $actions
+            ]
+        ]);
+    }
+
+    /**
+     * Генерирует поведение для добавления алиаса
+     * @param string $index
+     * @return array
+     */
+    public function addAliasAction(string $index): array
+    {
+        return [
+            'add' => [
+                'index' => $index,
+                'alias' => $this->indexName()
+            ]
+        ];
+    }
+
+    /**
+     * Генерирует поведение для удаления алиаса
+     * @param string $index
+     * @return array
+     */
+    public function removeAliasAction(string $index): array
+    {
+        return [
+            'remove' => [
+                'index' => $index,
+                'alias' => $this->indexName()
+            ]
+        ];
+    }
 }
