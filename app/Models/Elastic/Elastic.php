@@ -362,23 +362,6 @@ abstract class Elastic extends Immutable implements ElasticInterface
     }
 
     /**
-     * Создание нового алиаса
-     * @param string $indexName
-     * @return array
-     */
-    public function createAlias(string $indexName): array
-    {
-        if ($this->existsAlias($indexName)) {
-            return [];
-        }
-
-        return $this->client->indices()->putAlias([
-            'name' => $this->indexName(),
-            'index' => $indexName
-        ]);
-    }
-
-    /**
      * Массовое обновление алиасов
      * @param array $actions
      * @return array
@@ -387,7 +370,7 @@ abstract class Elastic extends Immutable implements ElasticInterface
     {
         return $this->client->indices()->updateAliases([
             'body' => [
-                'actions' => $actions
+                'actions' => array_values(array_filter($actions))
             ]
         ]);
     }
@@ -399,6 +382,10 @@ abstract class Elastic extends Immutable implements ElasticInterface
      */
     public function addAliasAction(string $index): array
     {
+        if (!$index || !$this->existIndex($index)) {
+            return [];
+        }
+
         return [
             'add' => [
                 'index' => $index,
@@ -414,6 +401,10 @@ abstract class Elastic extends Immutable implements ElasticInterface
      */
     public function removeAliasAction(string $index): array
     {
+        if (!$index || !$this->existIndex($index)) {
+            return [];
+        }
+
         return [
             'remove' => [
                 'index' => $index,
