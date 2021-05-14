@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\V1\GoodsController;
+use App\Http\Controllers\V1\IndexController;
 
-Route::namespace('v1')->group(function() {
-    Route::get('/goods', [\App\Http\Controllers\v1\GoodsController::class, 'index']);
-});
+Route::get('/', [IndexController::class, 'index']);
+Route::get('/goods', [GoodsController::class, 'index']);
+
