@@ -2,20 +2,18 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Response;
 use Tests\TestCase;
 
 class ExampleTest extends TestCase
 {
     /**
-     * A basic test example.
-     *
-     * @return void
+     * @test
      */
-    public function test_example()
+    public function testApiV1RootTeapot()
     {
-        $response = $this->get('/');
+        $response = $this->get('/api/v1');
 
-        $response->assertStatus(200);
+        $response->assertStatus(Response::HTTP_I_AM_A_TEAPOT);
     }
 }

@@ -5,6 +5,8 @@ namespace App\Cores\ConsumerCore;
 use App\Cores\ConsumerCore\Interfaces\MessageInterface;
 use App\Cores\ConsumerCore\Interfaces\ProcessorInterface;
 use App\Processors\DefaultProcessor;
+use Closure;
+use Illuminate\Contracts\Container\BindingResolutionException;
 
 class Processor
 {
@@ -31,6 +33,7 @@ class Processor
     /**
      * Processor constructor.
      * @param MessageInterface $message
+     * @throws BindingResolutionException
      */
     public function __construct(MessageInterface $message)
     {
@@ -40,7 +43,7 @@ class Processor
         $this->message = $message;
         $this->processorName = is_callable($confProcName) ? $confProcName($this->message->getRoutingKey()) : $confProcName;
         $this->processorClass = "\App\Processors\\{$this->processorName}";
-        $this->processor = (class_exists($this->processorClass)) ? new $this->processorClass() : new DefaultProcessor();
+        $this->processor = (class_exists($this->processorClass)) ? app()->make($this->processorClass) : new DefaultProcessor();
     }
 
     /**
@@ -74,9 +77,9 @@ class Processor
     }
 
     /**
-     * @param \Closure $callback
+     * @param Closure $callback
      */
-    public function processCallback(\Closure $callback)
+    public function processCallback(Closure $callback)
     {
         if (!($this->processor instanceof DefaultProcessor)) {
             $callback();

@@ -50,25 +50,25 @@ class Kernel extends ConsoleKernel
     /**
      * Define the application's command schedule.
      *
-     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
+     * @param Schedule $schedule
      * @return void
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('db:migrate-goods')->runInBackground()->withoutOverlapping();
-        $schedule->command('db:migrate-goods --entity=groups')->runInBackground()->withoutOverlapping();
+        $schedule->command(MigrateGoodsCommand::class)->runInBackground()->withoutOverlapping();
+        $schedule->command(MigrateGoodsCommand::class, ['--entity' => 'groups'])->runInBackground()->withoutOverlapping();
 
-        $schedule->command('db:index-marked-goods')->runInBackground()->withoutOverlapping();
-        $schedule->command('db:index-goods-options')->runInBackground()->withoutOverlapping();
-        $schedule->command('db:index-goods-options-plural')->runInBackground()->withoutOverlapping();
-        $schedule->command('db:index-goods-constructors')->runInBackground()->withoutOverlapping();
-        $schedule->command('db:index-goods-groups-constructors')->runInBackground()->withoutOverlapping();
-        $schedule->command('db:index-goods-producers')->runInBackground()->withoutOverlapping();
-        $schedule->command('db:index-producers')->hourlyAt(10)->runInBackground()->withoutOverlapping();
+        $schedule->command(IndexMarkedGoodsCommand::class)->runInBackground()->withoutOverlapping();
+        $schedule->command(IndexGoodsOptionsCommand::class)->runInBackground()->withoutOverlapping();
+        $schedule->command(IndexGoodsOptionsPluralCommand::class)->runInBackground()->withoutOverlapping();
+        $schedule->command(IndexGoodsConstructors::class)->runInBackground()->withoutOverlapping();
+        $schedule->command(IndexGoodsGroupsConstructors::class)->runInBackground()->withoutOverlapping();
+        $schedule->command(IndexGoodsProducersCommand::class)->runInBackground()->withoutOverlapping();
+        $schedule->command(IndexProducers::class)->hourlyAt(10)->runInBackground()->withoutOverlapping();
 
-        $schedule->command('db:delete-marked-goods')->runInBackground()->withoutOverlapping();
-        $schedule->command('db:delete-constructors')->runInBackground()->withoutOverlapping();
-        $schedule->command('db:delete-groups-constructors')->runInBackground()->withoutOverlapping();
-        $schedule->command('db:delete-goods-constructors')->runInBackground()->withoutOverlapping();
+        $schedule->command(DeleteMarkedGoodsCommand::class)->runInBackground()->withoutOverlapping();
+        $schedule->command(DeleteConstructorsCommand::class)->runInBackground()->withoutOverlapping();
+        $schedule->command(DeleteGroupsConstructorsCommand::class)->runInBackground()->withoutOverlapping();
+        $schedule->command(DeleteGoodsConstructorsCommand::class)->runInBackground()->withoutOverlapping();
     }
 }
