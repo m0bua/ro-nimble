@@ -2,19 +2,23 @@
 
 namespace App\Http\Resources\V1;
 
-use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Interfaces\ResourceInterface;
+use App\Http\Resources\BaseResource;
 
-class GoodsResource extends JsonResource
+class GoodsResource extends BaseResource implements ResourceInterface
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @param Request $request
-     * @return array
-     */
-    public function toArray($request): array
+    public function getResourceFields(): array
     {
-        return $this->resource['ids'];
+        return [
+            'ids',
+            'ids_count',
+            'total_pages',
+            'show_next',
+            'goods_with_filter',
+            'goods_in_category',
+            'goods_limit',
+            'active_pages',
+            'shown_page',
+        ];
     }
 }
