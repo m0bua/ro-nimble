@@ -19,7 +19,7 @@ use App\Console\Commands\MigrateOptionsCommand;
 use App\Console\Commands\MigrateOptionValuesCommand;
 use App\Console\Commands\MigrateProducersCommand;
 use Illuminate\Console\Scheduling\Schedule;
-use Laravel\Lumen\Console\Kernel as ConsoleKernel;
+use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 class Kernel extends ConsoleKernel
 {
