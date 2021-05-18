@@ -1,0 +1,104 @@
+version: "3.7"
+
+services:
+  nginx:
+    container_name: selfi-nginx
+    build: ./nginx
+    image: selfi-nginx
+    ports:
+      - 8000:80
+    networks:
+      selfi_net:
+        ipv4_address: ${DOCKER_NETWORK:-172.33.0}.2
+
+  php:
+    container_name: selfi-php
+    build:
+      context: ./php
+      dockerfile: Dockerfile
+    image: selfi-php
+    volumes:
+      - ./../:/var/www/selection-api
+      - ${SSH:-~/.ssh}:/home/www-data/.ssh
+    extra_hosts:
+      - "selection-api.local : ${DOCKER_NETWORK:-172.33.0}.2"
+    networks:
+      selfi_net:
+        ipv4_address: ${DOCKER_NETWORK:-172.33.0}.3
+
+  redis:
+    container_name: selfi-redis
+    image: redis
+    ports:
+      - 7379:6379
+    networks:
+      selfi_net:
+        ipv4_address: ${DOCKER_NETWORK:-172.33.0}.4
+
+  elasticsearch:
+    container_name: selfi-elastic
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.12.1
+    environment:
+      - node.name=es01
+      - cluster.name=es-docker-cluster
+#      - discovery.seed_hosts=es02,es03
+      - cluster.initial_master_nodes=es01
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - selfi_elastic_data:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      selfi_net:
+        ipv4_address: ${DOCKER_NETWORK:-172.33.0}.5
+
+  postgre:
+    hostname: selfi-postgre
+    build:
+      context: ./postgre
+      dockerfile: Dockerfile
+    image: selfi-postgre
+    container_name: selfi-postgre
+    # exposing 5433 port for local connection to db (e.g. from phpstorm)
+    ports:
+      - 5433:5432
+    volumes:
+      - selfi_pg_data:/pgdata
+    environment:
+      PGDATA: /pgdata
+    networks:
+      selfi_net:
+        ipv4_address: ${DOCKER_NETWORK:-172.33.0}.6
+
+  rebbitmq:
+    hostname: selfi-rabbitmq
+    container_name: selfi-rabbitmq
+    image: rabbitmq:3-management
+    ports:
+      - 15672:15672
+    networks:
+      selfi_net:
+        ipv4_address: ${DOCKER_NETWORK:-172.33.0}.7
+
+networks:
+  selfi_net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: ${DOCKER_NETWORK:-172.33.0}.0/24
+
+volumes:
+  selfi_pg_data:
+    external:
+      name: selfi_pg_data
+  selfi_elastic_data:
+    external:
+      name: selfi_elastic_data
+
+
