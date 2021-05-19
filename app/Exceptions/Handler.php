@@ -117,7 +117,7 @@ class Handler extends ExceptionHandler
                 $response['errors'] = $e->original['errors'];
                 break;
             default:
-                $response['message'] = ($statusCode == 500) ? 'Whoops, looks like something went wrong' : $e->getMessage();
+                $response['message'] = ($statusCode == 500 && !app()->isLocal()) ? 'Whoops, looks like something went wrong' : $e->getMessage();
                 break;
         }
 
