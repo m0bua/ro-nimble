@@ -1,11 +1,8 @@
 <?php
 
-namespace App\Http\Resources\V1;
+namespace App\Http\Resources;
 
-use App\Http\Interfaces\ResourceInterface;
-use App\Http\Resources\BaseResource;
-
-class GoodsResource extends BaseResource implements ResourceInterface
+class GoodsResource extends BaseResource
 {
     public function getResourceFields(): array
     {

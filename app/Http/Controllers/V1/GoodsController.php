@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\V1\GoodsResource;
+use App\Http\Resources\GoodsResource;
 
 class GoodsController extends Controller
 {
