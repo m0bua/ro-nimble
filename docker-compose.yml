@@ -3,7 +3,7 @@ version: "3.7"
 services:
   nginx:
     container_name: selfi-nginx
-    build: ./nginx
+    build: ./__docker/nginx
     image: selfi-nginx
     ports:
       - 8000:80
@@ -14,11 +14,11 @@ services:
   php:
     container_name: selfi-php
     build:
-      context: ./php
+      context: ./__docker/php
       dockerfile: Dockerfile
     image: selfi-php
     volumes:
-      - ./../:/var/www/selection-api
+      - ./:/var/www/selection-api
       - ${SSH:-~/.ssh}:/home/www-data/.ssh
     extra_hosts:
       - "selection-api.local : ${DOCKER_NETWORK:-172.33.0}.2"
@@ -41,7 +41,7 @@ services:
     environment:
       - node.name=es01
       - cluster.name=es-docker-cluster
-#      - discovery.seed_hosts=es02,es03
+      #      - discovery.seed_hosts=es02,es03
       - cluster.initial_master_nodes=es01
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
@@ -60,7 +60,7 @@ services:
   postgre:
     hostname: selfi-postgre
     build:
-      context: ./postgre
+      context: ./__docker/postgre
       dockerfile: Dockerfile
     image: selfi-postgre
     container_name: selfi-postgre

@@ -13,7 +13,6 @@ use Illuminate\Support\Carbon;
  * App\Models\Eloquent\Goods
  *
  * @property int $id
- * @property string|null $title
  * @property string|null $name
  * @property int|null $category_id
  * @property string|null $mpath
@@ -30,8 +29,8 @@ use Illuminate\Support\Carbon;
  * @property string|null $state
  * @property int $needs_index
  * @property int $is_deleted
- * @property Carbon $created_at
- * @property Carbon $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @method static Builder|Goods newModelQuery()
  * @method static Builder|Goods newQuery()
  * @method static Builder|Goods query()
@@ -53,7 +52,6 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Goods whereSeriesId($value)
  * @method static Builder|Goods whereState($value)
  * @method static Builder|Goods whereStatusInherited($value)
- * @method static Builder|Goods whereTitle($value)
  * @method static Builder|Goods whereUpdatedAt($value)
  * @mixin Eloquent
  */
@@ -64,7 +62,6 @@ class Goods extends Model
 
     protected $fillable = [
         'id',
-        'title',
         'name',
         'category_id',
         'mpath',

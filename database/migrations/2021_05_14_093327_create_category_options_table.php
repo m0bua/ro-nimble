@@ -15,9 +15,9 @@ class CreateCategoryOptionsTable extends Migration
     {
         Schema::create('category_options', function (Blueprint $table) {
             $table->id();
-            $table->integer('category_id');
-            $table->integer('option_id');
-            $table->string('value');
+            $table->integer('category_id')->nullable();
+            $table->integer('option_id')->nullable();
+            $table->string('value')->nullable();
             $table->timestamps();
         });
     }

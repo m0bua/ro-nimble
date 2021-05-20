@@ -13,9 +13,9 @@ use Illuminate\Support\Carbon;
  * App\Models\Eloquent\CategoryOption
  *
  * @property int $id
- * @property int $category_id
- * @property int $option_id
- * @property string $value
+ * @property int|null $category_id
+ * @property int|null $option_id
+ * @property string|null $value
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @method static Builder|CategoryOption newModelQuery()

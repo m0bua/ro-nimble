@@ -20,13 +20,8 @@ use Illuminate\Support\Carbon;
  * @property string|null $name
  * @property string|null $status
  * @property int|null $order
- * @property string|null $similars_value
  * @property int|null $show_value_in_short_set
  * @property string|null $color
- * @property string|null $title_genetive
- * @property string|null $title_accusative
- * @property string|null $title_prepositional
- * @property string|null $description
  * @property string|null $shortening
  * @property int|null $record_type
  * @property int|null $is_section
@@ -38,7 +33,6 @@ use Illuminate\Support\Carbon;
  * @method static Builder|OptionValue query()
  * @method static Builder|OptionValue whereColor($value)
  * @method static Builder|OptionValue whereCreatedAt($value)
- * @method static Builder|OptionValue whereDescription($value)
  * @method static Builder|OptionValue whereExtId($value)
  * @method static Builder|OptionValue whereId($value)
  * @method static Builder|OptionValue whereIsDeleted($value)
@@ -50,12 +44,8 @@ use Illuminate\Support\Carbon;
  * @method static Builder|OptionValue whereRecordType($value)
  * @method static Builder|OptionValue whereShortening($value)
  * @method static Builder|OptionValue whereShowValueInShortSet($value)
- * @method static Builder|OptionValue whereSimilarsValue($value)
  * @method static Builder|OptionValue whereStatus($value)
  * @method static Builder|OptionValue whereTitle($value)
- * @method static Builder|OptionValue whereTitleAccusative($value)
- * @method static Builder|OptionValue whereTitleGenetive($value)
- * @method static Builder|OptionValue whereTitlePrepositional($value)
  * @method static Builder|OptionValue whereUpdatedAt($value)
  * @mixin Eloquent
  */
@@ -73,13 +63,8 @@ class OptionValue extends Model
         'name',
         'status',
         'order',
-        'similars_value',
         'show_value_in_short_set',
         'color',
-        'title_genetive',
-        'title_accusative',
-        'title_prepositional',
-        'description',
         'shortening',
         'record_type',
         'is_deleted',

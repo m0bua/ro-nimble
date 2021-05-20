@@ -5,7 +5,7 @@ namespace App\Processors\GoodsService;
 use App\Cores\ConsumerCore\Interfaces\MessageInterface;
 use App\Cores\ConsumerCore\Interfaces\ProcessorInterface;
 use App\Cores\Shared\Codes;
-use App\Models\Eloquent\CategoryEntity;
+use App\Models\Eloquent\Category;
 use Illuminate\Support\Arr;
 
 class CreateCategoryEntityProcessor implements ProcessorInterface
@@ -13,15 +13,15 @@ class CreateCategoryEntityProcessor implements ProcessorInterface
     /**
      * Eloquent model for updating data
      *
-     * @var CategoryEntity
+     * @var Category
      */
-    protected CategoryEntity $model;
+    protected Category $model;
 
     /**
      * CreateCategoryEntityProcessor constructor.
-     * @param CategoryEntity $model
+     * @param Category $model
      */
-    public function __construct(CategoryEntity $model)
+    public function __construct(Category $model)
     {
         $this->model = $model;
     }
