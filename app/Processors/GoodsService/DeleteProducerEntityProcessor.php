@@ -5,17 +5,31 @@ namespace App\Processors\GoodsService;
 use App\Cores\ConsumerCore\Interfaces\MessageInterface;
 use App\Cores\ConsumerCore\Interfaces\ProcessorInterface;
 use App\Cores\Shared\Codes;
-use Illuminate\Support\Facades\DB;
+use App\Models\Eloquent\Producer;
 
 class DeleteProducerEntityProcessor implements ProcessorInterface
 {
+    /**
+     * Eloquent model for updating data
+     *
+     * @var Producer
+     */
+    protected Producer $model;
+
+    /**
+     * DeleteProducerEntityProcessor constructor.
+     * @param Producer $model
+     */
+    public function __construct(Producer $model)
+    {
+        $this->model = $model;
+    }
+
     public function processMessage(MessageInterface $message): int
     {
-        $producerId = $message->getField('id');
+        $id = $message->getField('id');
 
-        DB::table('producers')
-            ->where(['id' => $producerId])
-            ->delete();
+        $this->model->write()->whereId($id)->delete();
 
         return Codes::SUCCESS;
     }

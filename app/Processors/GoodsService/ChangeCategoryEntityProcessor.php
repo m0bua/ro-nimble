@@ -38,7 +38,7 @@ class ChangeCategoryEntityProcessor implements ProcessorInterface
         $rawData = (array)$message->getField('data');
         $data = Arr::only($rawData, $fillable);
 
-        $this->model->whereId($id)->update($data);
+        $this->model->write()->whereId($id)->update($data);
 
         return Codes::SUCCESS;
     }

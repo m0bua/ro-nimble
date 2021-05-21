@@ -5,7 +5,7 @@ namespace App\Processors\GoodsService;
 use App\Cores\ConsumerCore\Interfaces\MessageInterface;
 use App\Cores\ConsumerCore\Interfaces\ProcessorInterface;
 use App\Cores\Shared\Codes;
-use App\Models\Eloquent\CategoryEntity;
+use App\Models\Eloquent\CategoryOption;
 use Exception;
 
 class DeleteCategoryOptionProcessor implements ProcessorInterface
@@ -13,15 +13,15 @@ class DeleteCategoryOptionProcessor implements ProcessorInterface
     /**
      * Eloquent model for updating data
      *
-     * @var CategoryEntity
+     * @var CategoryOption
      */
-    protected CategoryEntity $model;
+    protected CategoryOption $model;
 
     /**
      * DeleteCategoryOptionProcessor constructor.
-     * @param CategoryEntity $model
+     * @param CategoryOption $model
      */
-    public function __construct(CategoryEntity $model)
+    public function __construct(CategoryOption $model)
     {
         $this->model = $model;
     }
@@ -35,7 +35,7 @@ class DeleteCategoryOptionProcessor implements ProcessorInterface
     {
         $id = $message->getField('id');
 
-        $this->model->whereId($id)->update([
+        $this->model->write()->whereId($id)->update([
             'is_deleted' => true,
         ]);
 

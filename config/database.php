@@ -1,7 +1,8 @@
 <?php
 return [
     'migrations' => 'migrations',
-    'default' => 'nimble',
+    'default' => env('DB_CONNECTION_READ'),
+    'write' => env('DB_CONNECTION'),
     'connections' => [
         'nimble' => [
             'driver'   => 'pgsql',

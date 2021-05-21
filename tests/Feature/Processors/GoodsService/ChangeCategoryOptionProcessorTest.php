@@ -24,6 +24,7 @@ class ChangeCategoryOptionProcessorTest extends TestCase
                 'option_id',
                 'value',
             ]);
+            $mock->shouldReceive('write')->once()->andReturn($mock);
             $mock->shouldReceive('whereId')->once()->andReturn($mock);
             $mock->shouldReceive('update')->once();
         });

@@ -5,16 +5,33 @@ namespace App\Processors\GoodsService;
 use App\Cores\ConsumerCore\Interfaces\MessageInterface;
 use App\Cores\ConsumerCore\Interfaces\ProcessorInterface;
 use App\Cores\Shared\Codes;
-use Illuminate\Support\Facades\DB;
+use App\Models\Eloquent\Producer;
 
 class ChangeProducerEntityProcessor implements ProcessorInterface
 {
+    /**
+     * Eloquent model for updating data
+     *
+     * @var Producer
+     */
+    protected Producer $model;
+
+    /**
+     * ChangeProducerEntityProcessor constructor.
+     * @param Producer $model
+     */
+    public function __construct(Producer $model)
+    {
+        $this->model = $model;
+    }
+
     public function processMessage(MessageInterface $message): int
     {
         $producerData = (array)$message->getField('data');
 
-        DB::table('producers')
-            ->where(['id' => $producerData['id']])
+        $this->model
+            ->write()
+            ->where('id', $producerData['id'])
             ->update([
                 'id' => $producerData['id'] ?? null,
                 'ext_id' => $producerData['ext_id'] ?? null,
@@ -29,7 +46,6 @@ class ChangeProducerEntityProcessor implements ProcessorInterface
                 'disable_filter_series' => ($producerData['disable_filter_series'] ? 't' : 'f'),
                 'order_for_promotion' => $producerData['order_for_promotion'] ?? null,
                 'producer_rank' => $producerData['producer_rank'] ?? null,
-                'updated_at' => date('Y-m-d H:i:s'),
                 'needs_index' => 1
             ]);
 

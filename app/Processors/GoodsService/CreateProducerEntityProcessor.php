@@ -5,32 +5,34 @@ namespace App\Processors\GoodsService;
 use App\Cores\ConsumerCore\Interfaces\MessageInterface;
 use App\Cores\ConsumerCore\Interfaces\ProcessorInterface;
 use App\Cores\Shared\Codes;
-use Illuminate\Support\Facades\DB;
+use App\Models\Eloquent\Producer;
+use Illuminate\Support\Arr;
 
 class CreateProducerEntityProcessor implements ProcessorInterface
 {
+    /**
+     * Eloquent model for updating data
+     *
+     * @var Producer
+     */
+    protected Producer $model;
+
+    /**
+     * CreateOptionSettingProcessor constructor.
+     * @param Producer $model
+     */
+    public function __construct(Producer $model)
+    {
+        $this->model = $model;
+    }
+
     public function processMessage(MessageInterface $message): int
     {
-        $producerData = (array)$message->getField('data');
+        $fillable = $this->model->getFillable();
+        $rawData = (array)$message->getField('data');
+        $data = Arr::only($rawData, $fillable);
 
-        DB::table('producers')->insertOrIgnore(
-            [
-                'id' => $producerData['id'] ?? null,
-                'ext_id' => $producerData['ext_id'] ?? null,
-                'title' => $producerData['title'] ?? null,
-                'title_rus' => $producerData['title_rus'] ?? null,
-                'name' => $producerData['name'] ?? null,
-                'text' => $producerData['text'] ?? null,
-                'status' => $producerData['status'] ?? null,
-                'show_background' => ($producerData['show_background'] ? 't' : 'f'),
-                'show_logo' => ($producerData['show_logo'] ? 't' : 'f'),
-                'attachments' => $producerData['attachments'] ?? null,
-                'disable_filter_series' => ($producerData['disable_filter_series'] ? 't' : 'f'),
-                'order_for_promotion' => $producerData['order_for_promotion'] ?? null,
-                'producer_rank' => $producerData['producer_rank'] ?? null,
-                'needs_index' => 1
-            ]
-        );
+        $this->model->write()->create($data);
 
         return Codes::SUCCESS;
     }

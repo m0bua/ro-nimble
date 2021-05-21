@@ -5,34 +5,56 @@ namespace App\Processors\GoodsService;
 use App\Cores\ConsumerCore\Interfaces\MessageInterface;
 use App\Cores\ConsumerCore\Interfaces\ProcessorInterface;
 use App\Cores\Shared\Codes;
-use Illuminate\Support\Facades\DB;
+use App\Models\Eloquent\Goods;
+use App\Models\Eloquent\GoodsOptionPlural;
 
 class ChangeGoodsOptionPluralProcessor implements ProcessorInterface
 {
+    /**
+     * Eloquent model for updating data
+     *
+     * @var GoodsOptionPlural
+     */
+    protected GoodsOptionPlural $model;
+
+    /**
+     * Goods model
+     *
+     * @var Goods
+     */
+    protected Goods $goods;
+
+    /**
+     * ChangeGoodsOptionPluralProcessor constructor.
+     * @param GoodsOptionPlural $model
+     * @param Goods $goods
+     */
+    public function __construct(GoodsOptionPlural $model, Goods $goods)
+    {
+        $this->model = $model;
+        $this->goods = $goods;
+    }
+
     public function processMessage(MessageInterface $message): int
     {
         $data = (array)$message->getField('data');
 
-        DB::table('goods_options_plural')
-            ->where([
-                ['goods_id', '=', $data['goods_id']],
-                ['option_id', '=', $data['option_id']],
-                ['value_id', '=', $data['value_id']],
-            ])
+        $this->model
+            ->whereGoodsId($data['goods_id'])
+            ->whereOptionId($data['option_id'])
+            ->whereValueId($data['value_id'])
             ->update([
                 'needs_index' => 1,
-                'updated_at' => date('Y-m-d H:i:s'),
             ]);
 
-        $goods = DB::connection('nimble_read')
-            ->table('goods')
-            ->select(['needs_index'])
-            ->where(['id' => $data['goods_id']])
-            ->first();
+        $goods = $this->goods
+            ->whereId($data['goods_id'])
+            ->first(['needs_index']);
 
         if (!$goods || $goods->needs_index != 1) {
-            DB::table('goods')
-                ->where(['id' => $data['goods_id']])
+            $this->goods
+                ->write()
+                ->whereId($data['goods_id'])
                 ->update(['needs_index' => 1]);
         }
 

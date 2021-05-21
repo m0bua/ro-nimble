@@ -5,43 +5,35 @@ namespace App\Processors\GoodsService;
 use App\Cores\ConsumerCore\Interfaces\MessageInterface;
 use App\Cores\ConsumerCore\Interfaces\ProcessorInterface;
 use App\Cores\Shared\Codes;
-use Illuminate\Support\Facades\DB;
+use App\Models\Eloquent\Goods;
+use Illuminate\Support\Arr;
 
 class ChangeGoodsEntityProcessor implements ProcessorInterface
 {
+    /**
+     * Eloquent model for updating data
+     *
+     * @var Goods
+     */
+    protected Goods $model;
+
+    /**
+     * ChangeGoodsEntityProcessor constructor.
+     * @param Goods $model
+     */
+    public function __construct(Goods $model)
+    {
+        $this->model = $model;
+    }
+
     public function processMessage(MessageInterface $message): int
     {
-        $updateFields = [
-            'title',
-            'name',
-            'category_id',
-            'mpath',
-            'price',
-            'rank',
-            'sell_status',
-            'group_id',
-            'is_group_primary',
-            'status_inherited',
-            'order',
-            'series_id',
-            'state',
-            'producer_id',
-            'seller_id',
-        ];
+        $fillable = $this->model->getFillable();
+        $rawData = (array)$message->getField('data');
+        $data = Arr::only($rawData, $fillable);
+        $data['needs_index'] = 1;
 
-        $goodsData = (array)$message->getField('data');
-        $updateData = [
-            'needs_index' => 1,
-            'updated_at' => date('Y-m-d H:i:s')
-        ];
-
-        foreach ($updateFields as $field) {
-            $updateData[$field] = $goodsData[$field];
-        }
-
-        DB::table('goods')
-            ->where(['id' => $goodsData['id']])
-            ->update($updateData);
+        $this->model->write()->whereId($rawData['id'])->update($data);
 
         return Codes::SUCCESS;
     }

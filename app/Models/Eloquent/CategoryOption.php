@@ -3,6 +3,7 @@
 namespace App\Models\Eloquent;
 
 use App\Traits\Eloquent\HasFillable;
+use App\Traits\Eloquent\HasWriteDb;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -33,6 +34,9 @@ class CategoryOption extends Model
 {
     use HasFactory;
     use HasFillable;
+    use HasWriteDb;
+
+    protected $connection = 'nimble_read';
 
     protected $fillable = [
         'id',

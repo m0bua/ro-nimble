@@ -5,35 +5,53 @@ namespace App\Processors\GoodsService;
 use App\Cores\ConsumerCore\Interfaces\MessageInterface;
 use App\Cores\ConsumerCore\Interfaces\ProcessorInterface;
 use App\Cores\Shared\Codes;
-use Illuminate\Support\Facades\DB;
+use App\Models\Eloquent\Goods;
+use App\Models\Eloquent\GoodsOption;
 
 class ChangeGoodsOptionProcessor implements ProcessorInterface
 {
+    /**
+     * Eloquent model for updating data
+     *
+     * @var GoodsOption
+     */
+    protected GoodsOption $model;
+
+    protected Goods $goods;
+
+    /**
+     * ChangeGoodsOptionProcessor constructor.
+     * @param GoodsOption $model
+     * @param Goods $goods
+     */
+    public function __construct(GoodsOption $model, Goods $goods)
+    {
+        $this->model = $model;
+        $this->goods = $goods;
+    }
+
     public function processMessage(MessageInterface $message): int
     {
         $data = (array)$message->getField('data');
 
-        DB::table('goods_options')
-            ->where([
-                ['goods_id', '=', $data['goods_id']],
-                ['option_id', '=', $data['option_id']],
-            ])
+        $this->model
+            ->write()
+            ->where('goods_id', $data['goods_id'])
+            ->where('option_id', $data['option_id'])
             ->update([
                 'type' => $data['type'],
                 'value' => $data['value'],
                 'needs_index' => 1,
-                'updated_at' => date('Y-m-d H:i:s'),
             ]);
 
-        $goods = DB::connection('nimble_read')
-            ->table('goods')
-            ->select(['needs_index'])
-            ->where(['id' => $data['goods_id']])
-            ->first();
+        $goods = $this->goods
+            ->where('id', $data['goods_id'])
+            ->first(['needs_index']);
 
         if (!$goods || $goods->needs_index != 1) {
-            DB::table('goods')
-                ->where(['id' => $data['goods_id']])
+            $this->goods
+                ->write()
+                ->where('id', $data['goods_id'])
                 ->update(['needs_index' => 1]);
         }
 

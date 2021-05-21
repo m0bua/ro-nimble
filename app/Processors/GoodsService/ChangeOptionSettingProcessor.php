@@ -38,7 +38,7 @@ class ChangeOptionSettingProcessor implements ProcessorInterface
         $rawData = (array)$message->getField('data');
         $data = Arr::only($rawData, $fillable);
 
-        $this->model->whereId($id)->update($data);
+        $this->model->write()->where('id', $id)->update($data);
 
         return Codes::SUCCESS;
     }

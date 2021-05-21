@@ -3,6 +3,7 @@
 namespace App\Models\Eloquent;
 
 use App\Traits\Eloquent\HasFillable;
+use App\Traits\Eloquent\HasWriteDb;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -26,8 +27,8 @@ use Illuminate\Support\Carbon;
  * @property int|null $record_type
  * @property int|null $is_section
  * @property int $is_deleted
- * @property Carbon $created_at
- * @property Carbon $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @method static Builder|OptionValue newModelQuery()
  * @method static Builder|OptionValue newQuery()
  * @method static Builder|OptionValue query()
@@ -53,6 +54,9 @@ class OptionValue extends Model
 {
     use HasFactory;
     use HasFillable;
+    use HasWriteDb;
+
+    protected $connection = 'nimble_read';
 
     protected $fillable = [
         'id',
