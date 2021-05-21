@@ -26,7 +26,6 @@ trait GSDefaultSelectionTrait
             'state',
             'pl_bonus_charge_pcs',
             $this->query('producer')->setSelectionSet(['producer_id:id', 'producer_name:name', 'producer_title:title']),
-            $this->query('tags')->setSelectionSet(['id']),
             $this->query('rank')->setSelectionSet(['search_rank']),
             $this->query('options')->setSelectionSet([
                 $this->query('details')->setSelectionSet(['id', 'name', 'type', 'state']),
