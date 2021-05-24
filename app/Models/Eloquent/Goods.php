@@ -26,6 +26,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $is_group_primary
  * @property string|null $status_inherited
  * @property int|null $order
+ * @property string|null $country_code
  * @property int|null $series_id
  * @property string|null $state
  * @property int $needs_index
@@ -36,6 +37,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Goods newQuery()
  * @method static Builder|Goods query()
  * @method static Builder|Goods whereCategoryId($value)
+ * @method static Builder|Goods whereCountryCode($value)
  * @method static Builder|Goods whereCreatedAt($value)
  * @method static Builder|Goods whereGroupId($value)
  * @method static Builder|Goods whereId($value)
@@ -62,8 +64,6 @@ class Goods extends Model
     use HasFillable;
     use HasWriteDb;
 
-    protected $connection = 'nimble_read';
-
     protected $fillable = [
         'id',
         'name',
@@ -78,6 +78,7 @@ class Goods extends Model
         'is_group_primary',
         'status_inherited',
         'order',
+        'country_code',
         'series_id',
         'state',
         'needs_index',
