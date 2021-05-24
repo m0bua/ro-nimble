@@ -69,8 +69,6 @@ class OptionValue extends Model
     use HasFillable;
     use HasWriteDb;
 
-    protected $connection = 'nimble_read';
-
     protected $fillable = [
         'id',
         'option_id',

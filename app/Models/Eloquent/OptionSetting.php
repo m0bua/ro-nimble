@@ -77,12 +77,6 @@ class OptionSetting extends Model
     use HasFillable;
     use HasWriteDb;
 
-    protected $connection = 'nimble_read';
-
-    protected $casts = [
-        'in_short_description' => 'bool',
-    ];
-
     protected $fillable = [
         'id',
         'category_id',

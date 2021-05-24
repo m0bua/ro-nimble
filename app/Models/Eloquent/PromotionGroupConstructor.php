@@ -40,8 +40,6 @@ class PromotionGroupConstructor extends Model
     use HasFillable;
     use HasWriteDb;
 
-    protected $connection = 'nimble_read';
-
     protected $table = 'promotion_groups_constructors';
 
     protected $fillable = [

@@ -44,8 +44,6 @@ class GoodsOptionPlural extends Model
     use HasFillable;
     use HasWriteDb;
 
-    protected $connection = 'nimble_read';
-
     protected $table = 'goods_options_plural';
 
     protected $fillable = [

@@ -39,8 +39,6 @@ class CategoryOption extends Model
     use HasFillable;
     use HasWriteDb;
 
-    protected $connection = 'nimble_read';
-
     protected $fillable = [
         'id',
         'category_id',

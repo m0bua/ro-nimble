@@ -42,8 +42,6 @@ class PromotionGoodsConstructor extends Model
     use HasFillable;
     use HasWriteDb;
 
-    protected $connection = 'nimble_read';
-
     protected $fillable = [
         'id',
         'constructor_id',

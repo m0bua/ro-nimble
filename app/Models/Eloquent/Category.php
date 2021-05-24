@@ -82,8 +82,6 @@ class Category extends Model
     use HasFillable;
     use HasWriteDb;
 
-    protected $connection = 'nimble_read';
-
     protected $fillable = [
         'id',
         'mpath',

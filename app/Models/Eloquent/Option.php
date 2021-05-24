@@ -64,12 +64,6 @@ class Option extends Model
     use HasFillable;
     use HasWriteDb;
 
-    protected $connection = 'nimble_read';
-
-    protected $casts = [
-        'affect_group_photo' => 'bool',
-    ];
-
     protected $fillable = [
         'id',
         'title',
