@@ -30,7 +30,17 @@ class ChangeOptionEntityProcessor implements ProcessorInterface
     {
         $fillable = $this->model->getFillable();
         $rawData = (array)$message->getField('data');
-        $data = Arr::only($rawData, $fillable);
+        $data = $this->prepareData(Arr::only($rawData, $fillable));
+
+        $boolAttributes = [
+            'affect_group_photo',
+        ];
+
+        foreach ($data as $key => &$datum) {
+            if (in_array($key, $boolAttributes)) {
+                $datum = $datum ? 'true' : 'false';
+            }
+        }
 
         $this->model
             ->write()
@@ -38,5 +48,24 @@ class ChangeOptionEntityProcessor implements ProcessorInterface
             ->update($data);
 
         return Codes::SUCCESS;
+    }
+
+    /**
+     * Prepare data and cast booleans for PostgreSQL
+     *
+     * @param array $data
+     * @return array
+     */
+    private function prepareData(array $data): array
+    {
+        $boolAttributes = $this->model->getBoolAttributes();
+
+        foreach ($data as $key => &$datum) {
+            if (in_array($key, $boolAttributes)) {
+                $datum = $datum ? 'true' : 'false';
+            }
+        }
+
+        return $data;
     }
 }

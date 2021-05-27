@@ -8,6 +8,7 @@ use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
@@ -26,13 +27,15 @@ use Illuminate\Support\Carbon;
  * @property int|null $is_group_primary
  * @property string|null $status_inherited
  * @property int|null $order
- * @property string|null $country_code
  * @property int|null $series_id
  * @property string|null $state
  * @property int $needs_index
  * @property int $is_deleted
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property string|null $country_code
+ * @property-read Category|null $category
+ * @property-read Producer|null $producer
  * @method static Builder|Goods newModelQuery()
  * @method static Builder|Goods newQuery()
  * @method static Builder|Goods query()
@@ -84,4 +87,14 @@ class Goods extends Model
         'needs_index',
         'is_deleted',
     ];
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function producer(): BelongsTo
+    {
+        return $this->belongsTo(Producer::class);
+    }
 }

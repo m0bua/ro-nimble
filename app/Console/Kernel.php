@@ -7,6 +7,7 @@ use App\Console\Commands\DeleteConstructorsCommand;
 use App\Console\Commands\DeleteGoodsConstructorsCommand;
 use App\Console\Commands\DeleteGroupsConstructorsCommand;
 use App\Console\Commands\DeleteMarkedGoodsCommand;
+use App\Console\Commands\Dev;
 use App\Console\Commands\IndexGoodsConstructors;
 use App\Console\Commands\IndexGoodsGroupsConstructors;
 use App\Console\Commands\IndexGoodsOptionsCommand;
@@ -45,6 +46,8 @@ class Kernel extends ConsoleKernel
         DeleteGroupsConstructorsCommand::class,
         DeleteConstructorsCommand::class,
         IndexProducers::class,
+
+        Dev\TestCommand::class,
     ];
 
     /**

@@ -8,6 +8,7 @@ use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
@@ -38,6 +39,8 @@ use Illuminate\Support\Carbon;
  * @property bool|null $get_from_standard
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read Category|null $category
+ * @property-read Option|null $option
  * @method static Builder|OptionSetting newModelQuery()
  * @method static Builder|OptionSetting newQuery()
  * @method static Builder|OptionSetting query()
@@ -76,6 +79,10 @@ class OptionSetting extends Model
 
     protected $connection = 'nimble_read';
 
+    protected $casts = [
+        'in_short_description' => 'bool',
+    ];
+
     protected $fillable = [
         'id',
         'category_id',
@@ -101,4 +108,29 @@ class OptionSetting extends Model
         'number_template',
         'get_from_standard',
     ];
+
+    public function getBoolAttributes(): array
+    {
+        return [
+            'in_short_description',
+            'is_comparable',
+            'show_selected_filter_title',
+            'option_to_print',
+            'is_searchable',
+            'strict_equal_similars',
+            'hide_block_in_filter',
+            'disallow_import_filters_orders',
+            'get_from_standard',
+        ];
+    }
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function option(): BelongsTo
+    {
+        return $this->belongsTo(Option::class);
+    }
 }

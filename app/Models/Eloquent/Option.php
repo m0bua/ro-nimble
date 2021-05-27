@@ -8,6 +8,7 @@ use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
@@ -32,6 +33,7 @@ use Illuminate\Support\Carbon;
  * @property int $is_deleted
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ * @property-read Category|null $category
  * @method static Builder|Option newModelQuery()
  * @method static Builder|Option newQuery()
  * @method static Builder|Option query()
@@ -64,6 +66,10 @@ class Option extends Model
 
     protected $connection = 'nimble_read';
 
+    protected $casts = [
+        'affect_group_photo' => 'bool',
+    ];
+
     protected $fillable = [
         'id',
         'title',
@@ -83,4 +89,16 @@ class Option extends Model
         'affect_group_photo',
         'is_deleted',
     ];
+
+    public function getBoolAttributes(): array
+    {
+        return [
+            'affect_group_photo',
+        ];
+    }
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
 }

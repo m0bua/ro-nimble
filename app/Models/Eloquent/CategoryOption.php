@@ -8,6 +8,7 @@ use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
@@ -19,6 +20,8 @@ use Illuminate\Support\Carbon;
  * @property string|null $value
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read Category|null $category
+ * @property-read Option|null $option
  * @method static Builder|CategoryOption newModelQuery()
  * @method static Builder|CategoryOption newQuery()
  * @method static Builder|CategoryOption query()
@@ -44,4 +47,14 @@ class CategoryOption extends Model
         'option_id',
         'value',
     ];
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function option(): BelongsTo
+    {
+        return $this->belongsTo(Option::class);
+    }
 }

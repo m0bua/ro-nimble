@@ -34,10 +34,29 @@ class CreateOptionSettingProcessor implements ProcessorInterface
     {
         $fillable = $this->model->getFillable();
         $rawData = (array)$message->getField('data');
-        $data = Arr::only($rawData, $fillable);
+        $data = $this->prepareData(Arr::only($rawData, $fillable));
 
         $this->model->write()->create($data);
 
         return Codes::SUCCESS;
+    }
+
+    /**
+     * Prepare data and cast booleans for PostgreSQL
+     *
+     * @param array $data
+     * @return array
+     */
+    private function prepareData(array $data): array
+    {
+        $boolAttributes = $this->model->getBoolAttributes();
+
+        foreach ($data as $key => &$datum) {
+            if (in_array($key, $boolAttributes)) {
+                $datum = $datum ? 'true' : 'false';
+            }
+        }
+
+        return $data;
     }
 }

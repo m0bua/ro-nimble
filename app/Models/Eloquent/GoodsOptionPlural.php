@@ -8,6 +8,7 @@ use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
@@ -21,6 +22,9 @@ use Illuminate\Support\Carbon;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property int $needs_index
+ * @property-read Goods|null $goods
+ * @property-read Option|null $option
+ * @property-read OptionValue|null $value
  * @method static Builder|GoodsOptionPlural newModelQuery()
  * @method static Builder|GoodsOptionPlural newQuery()
  * @method static Builder|GoodsOptionPlural query()
@@ -52,4 +56,19 @@ class GoodsOptionPlural extends Model
         'is_deleted',
         'needs_index',
     ];
+
+    public function goods(): BelongsTo
+    {
+        return $this->belongsTo(Goods::class);
+    }
+
+    public function option(): BelongsTo
+    {
+        return $this->belongsTo(Option::class);
+    }
+
+    public function value(): BelongsTo
+    {
+        return $this->belongsTo(OptionValue::class);
+    }
 }

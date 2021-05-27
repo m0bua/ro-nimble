@@ -8,6 +8,7 @@ use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
@@ -21,6 +22,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property int $needs_migrate
+ * @property-read Goods $goods
  * @method static Builder|PromotionGoodsConstructor newModelQuery()
  * @method static Builder|PromotionGoodsConstructor newQuery()
  * @method static Builder|PromotionGoodsConstructor query()
@@ -50,4 +52,9 @@ class PromotionGoodsConstructor extends Model
         'is_deleted',
         'needs_migrate',
     ];
+
+    public function goods(): BelongsTo
+    {
+        return $this->belongsTo(Goods::class);
+    }
 }

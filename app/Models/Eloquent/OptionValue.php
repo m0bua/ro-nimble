@@ -8,6 +8,7 @@ use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
@@ -29,6 +30,8 @@ use Illuminate\Support\Carbon;
  * @property int $is_deleted
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read Option|null $option
+ * @property-read OptionValue|null $parent
  * @method static Builder|OptionValue newModelQuery()
  * @method static Builder|OptionValue newQuery()
  * @method static Builder|OptionValue query()
@@ -74,4 +77,14 @@ class OptionValue extends Model
         'is_deleted',
         'is_section',
     ];
+
+    public function option(): BelongsTo
+    {
+        return $this->belongsTo(Option::class);
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(static::class);
+    }
 }

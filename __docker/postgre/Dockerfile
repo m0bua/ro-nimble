@@ -1,4 +1,4 @@
-FROM library/postgres
+FROM postgres:13.3
 ENV POSTGRES_USER postgres
 ENV POSTGRES_PASSWORD postgres
 ENV POSTGRES_DB nimble_store

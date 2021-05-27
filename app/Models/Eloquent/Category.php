@@ -6,15 +6,18 @@ use App\Traits\Eloquent\HasFillable;
 use App\Traits\Eloquent\HasWriteDb;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
  * App\Models\Eloquent\Category
  *
  * @property int $id
- * @property int|null $mpath
+ * @property string|null $mpath
  * @property int|null $order
  * @property string|null $name
  * @property int|null $parent_id
@@ -24,6 +27,9 @@ use Illuminate\Support\Carbon;
  * @property int $is_deleted
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read Collection|Category[] $children
+ * @property-read int|null $children_count
+ * @property-read Category|null $parent
  * @method static Builder|Category newModelQuery()
  * @method static Builder|Category newQuery()
  * @method static Builder|Category query()
@@ -59,4 +65,14 @@ class Category extends Model
         'level',
         'is_deleted',
     ];
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(static::class, 'parent_id');
+    }
+
+    public function children(): HasMany
+    {
+        return $this->hasMany(static::class, 'parent_id');
+    }
 }

@@ -13,7 +13,10 @@ return [
             'password' => env('DB_PASSWORD', 'postgres'),
             'prefix'   => '',
             'schema'   => 'public',
-            'options' => [PDO::ATTR_EMULATE_PREPARES => true],
+            'sslmode'  => 'prefer',
+            'options'  => [
+                PDO::ATTR_EMULATE_PREPARES => true,
+            ],
         ],
         'nimble_read' => [
             'driver'   => 'pgsql',
@@ -24,7 +27,10 @@ return [
             'password' => env('DB_PASSWORD', 'postgres'),
             'prefix'   => '',
             'schema'   => 'public',
-            'options' => [PDO::ATTR_EMULATE_PREPARES => true],
+            'sslmode'  => 'prefer',
+            'options'  => [
+                PDO::ATTR_EMULATE_PREPARES => true
+            ],
         ],
         'store' => [
             'driver'   => 'pgsql',
@@ -35,14 +41,17 @@ return [
             'password' => env('DB_STORE_PASSWORD', 'postgres'),
             'prefix'   => '',
             'schema'   => 'public',
-            'options' => [PDO::ATTR_EMULATE_PREPARES => true],
+            'sslmode'  => 'prefer',
+            'options'  => [
+                PDO::ATTR_EMULATE_PREPARES => true
+            ],
         ],
     ],
     'redis' => [
         'client' => env('REDIS_CLIENT', 'phpredis'),
         'default' => [
             'host' => env('REDIS_HOST', '127.0.0.1'),
-            'password' => env('REDIS_PASSWORD', null),
+            'password' => env('REDIS_PASSWORD'),
             'port' => env('REDIS_PORT', 6379),
             'database' => env('REDIS_DB', 0),
         ],
