@@ -1,20 +1,21 @@
-image: registry.rozetka.company/ci:php7.4
+image: registry.gitlab.rozetka.company/common/ci-docker-images/ci-deployer-php74:latest
 
 before_script:
     - export VAULT_ADDR=https://vault.rozetka.company:8200
     - vault read -field=PROD_PRIVATE devops/infra/rzk > /root/.ssh/id_rsa 
     - chmod 600 /root/.ssh/id_rsa
 
-
 stages:
   - deploy
+  - rollback
   - stop-restart
   - start
+
 
 deploy-dev:
   stage: deploy
   tags:
-    - rozetka-shared
+    - rozetka-shared-standart
   script:
     - consul-template -template "env.dev:.env" -once
     - dep build dev  -p -vv
@@ -29,7 +30,7 @@ deploy-dev:
 stop-dev-ms:
   stage: stop-restart
   tags:
-    - rozetka-shared
+    - rozetka-shared-standart
   script:
     - dep consumers:ms:stop dev -p -vv
   when: manual
@@ -42,7 +43,7 @@ stop-dev-ms:
 stop-dev-gs:
   stage: stop-restart
   tags:
-    - rozetka-shared
+    - rozetka-shared-standart
   script:
     - dep consumers:gs:stop dev -p -vv
   when: manual
@@ -51,11 +52,10 @@ stop-dev-gs:
   except:
     - master
 
-
 deploy-prod:
   stage: deploy
   tags:
-    - rozetka-shared
+    - rozetka-shared-standart
   script:
     - consul-template -template "env.prod:.env" -once
     - dep build prod -p -vv
@@ -65,10 +65,22 @@ deploy-prod:
   only:
     - master
 
+rollback-prod:
+  stage: rollback
+  tags:
+    - rozetka-shared-standart
+  script:
+    - curl -X POST -H "Content-Type:application/json" -d "{\"alias\":\"gitlab\",\"text\":\"* ${CI_PROJECT_NAME}:*   пользователь *${GITLAB_USER_LOGIN}* запустил откат  \nversion:*$CI_COMMIT_REF_NAME* \npipeline:${CI_PROJECT_URL}/pipelines/${CI_PIPELINE_ID}/   \"}" ${rocket}
+    - dep rollback prod -p -vv
+  allow_failure: true
+  when: manual
+  only:
+    - master
+
 stop-ms:
   stage: stop-restart
   tags:
-    - rozetka-shared
+    - rozetka-shared-standart
   script:
     - dep consumers:ms:stop prod -p -vv
   when: manual
@@ -78,7 +90,7 @@ stop-ms:
 stop-gs:
   stage: stop-restart
   tags:
-    - rozetka-shared
+    - rozetka-shared-standart
   script:
     - dep consumers:gs:stop prod -p -vv
   when: manual
@@ -88,7 +100,7 @@ stop-gs:
 restart-ms:
   stage: stop-restart
   tags:
-    - rozetka-shared
+    - rozetka-shared-standart
   script:
     - dep consumers:ms:stop prod -p -vv
     - dep consumers:ms:start prod -p -vv
@@ -99,7 +111,7 @@ restart-ms:
 restart-gs:
   stage: stop-restart
   tags:
-    - rozetka-shared
+    - rozetka-shared-standart
   script:
     - dep consumers:gs:stop prod -p -vv
     - dep consumers:gs:start prod -p -vv
@@ -110,7 +122,7 @@ restart-gs:
 start-ms:
   stage: start
   tags:
-    - rozetka-shared
+    - rozetka-shared-standart
   script:
     - dep consumers:ms:start prod -p -vv
   when: manual
@@ -120,7 +132,7 @@ start-ms:
 start-gs:
   stage: start
   tags:
-    - rozetka-shared
+    - rozetka-shared-standart
   script:
     - dep consumers:gs:start prod -p -vv
   when: manual

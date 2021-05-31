@@ -40,7 +40,7 @@ host('10.10.29.66')
 
 // Tasks
 task('build', function () {
-    run('composer.phar install');
+    run('composer-v1 install');
 })->local();
 
 task('consumers:ms:stop', function () {
