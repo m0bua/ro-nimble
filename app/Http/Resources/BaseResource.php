@@ -10,25 +10,15 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 abstract class BaseResource extends JsonResource
 {
+    const RESERVED_FIELD = 'field';
+    const RESERVED_ALIAS = 'alias';
+    const RESERVED_INSIDE = 'inside';
+    const RESERVED_RESOURCE = 'resource';
+    const RESERVED_CLASS = 'class';
+    const RESERVED_METHOD = 'method';
+
     /**
      * Returns list of fields for resource
-     *
-     * @example
-     * 'nestedResourceField1' => [
-     *      resource' => [
-     *          'class' => NestedResource1::class,
-     *          'method' => 'collection'
-     *      ],
-     * ],
-     * 'nestedResourceField2' => [
-     *      resource' => [
-     *          'class' => NestedResource2::class,
-     *          'method' => 'make'
-     *      ],
-     *      'alias' => 'nrf2',
-     * ],
-     * 'field1',
-     * 'field2',
      *
      * @return array
      */
@@ -41,17 +31,48 @@ abstract class BaseResource extends JsonResource
      */
     public function toArray($request): array
     {
-        $response = [];
-        foreach ($this->getResourceFields() as $key => $field) {
-            if (is_array($field)) {
-                $fieldName = $field['alias'] ?? $key;
-                $callable = $this->resolveResource($field);
+        return $this->resolveStruct($this->getResourceFields(), $this->resource);
+    }
 
-                $response[$fieldName] = is_callable($callable)
-                    ? $callable($this->resource[$fieldName])
-                    : $this->resolveField($fieldName);
+    /**
+     * @param array $resourceFields
+     * @param $resource
+     * @return array
+     * @throws Exception
+     */
+    private function resolveStruct(array $resourceFields, $resource): array
+    {
+        $response = [];
+        foreach ($resourceFields as $field) {
+            if (!is_array($field)) {
+                $response[$field] = $this->resolveField($resource, $field);
+                continue;
+            }
+
+            if (!isset($field[self::RESERVED_FIELD])) {
+                throw new Exception("Parameter 'field' not found in resource: " . static::class);
+            }
+
+            $parameterName = $this->resolveParameterName($field);
+
+            if ($this->leaveEmpty($resource, $field)) {
+                $response[$parameterName] = null;
+                continue;
+            }
+
+            if (isset($field[self::RESERVED_RESOURCE])) {
+                $callable = $this->resolveResource($field[self::RESERVED_RESOURCE]);
+                if (is_callable($callable)) {
+                    $response[$parameterName] = $callable($this->resolveArrayField($resource, $field[self::RESERVED_FIELD]));
+                }
+
+                continue;
+            }
+
+            if (isset($field[self::RESERVED_INSIDE])) {
+                $response[$parameterName] = $this->resolveStruct($field[self::RESERVED_INSIDE], $this->resolveArrayField($resource, $field[self::RESERVED_FIELD]));
             } else {
-                $response[$field] = $this->resolveField($field);
+                $response[$parameterName] = $resource[$field[self::RESERVED_FIELD]];
             }
         }
 
@@ -59,38 +80,70 @@ abstract class BaseResource extends JsonResource
     }
 
     /**
-     * @param array $field
-     * @return array|string[] Array with class name and method
-     * @throws Exception
+     * Leave field empty in response when incoming data is empty
+     *
+     * @param $resource
+     * @param $field
+     * @return bool
      */
-    private function resolveResource(array $field): array
+    private function leaveEmpty($resource, $field): bool
     {
-        if (!isset($field['resource'])) {
-            return [];
-        } elseif (!is_array($field['resource'])) {
-            throw new Exception('Field "resource" must be of type array');
-        }
-
-        $class = $field['resource']['class'] ?? null;
-        $method = $field['resource']['method'] ?? null;
-
-        if (!isset($class)) {
-            throw new Exception('Resource must have a "class" parameter');
-        } elseif (!class_exists($class)) {
-            throw new Exception("Class '$class' does not exist");
-        }
-
-        if (!isset($method)) {
-            throw new Exception('Resource must have a "method" parameter');
-        } elseif (!method_exists($class, $method)) {
-            throw new Exception("Method '$method' does not exist in class '$class");
-        }
-
-        return [$class, $method];
+        return !isset($resource[$field[self::RESERVED_FIELD]])
+            && array_key_exists('fill_if_empty', $field)
+            && !$field['fill_if_empty'];
     }
 
-    private function resolveField(string $fieldName)
+    /**
+     * @param $resource
+     * @param string $fieldName
+     * @return null[]
+     */
+    private function resolveArrayField($resource, string $fieldName): array
     {
-        return $this->resource[$fieldName] ?? null;
+        return $resource[$fieldName] ?? [null];
+    }
+
+    /**
+     * @param $resource
+     * @param string $fieldName
+     * @return array|string|null
+     */
+    private function resolveField($resource, string $fieldName)
+    {
+        return $resource[$fieldName] ?? null;
+    }
+
+    /**
+     * @param $field
+     * @return string
+     */
+    private function resolveParameterName($field): string
+    {
+        return $field[self::RESERVED_ALIAS] ?? $field[self::RESERVED_FIELD];
+    }
+
+    /**
+     * @param array $resource
+     * @return array|string[]
+     * @throws Exception
+     */
+    private function resolveResource(array $resource): array
+    {
+        $resourceClass = $this->resolveField($resource, self::RESERVED_CLASS);
+        $resourceMethod = $this->resolveField($resource, self::RESERVED_METHOD);
+
+        if (!$resourceClass) {
+            throw new Exception("Resource must have a 'class' parameter");
+        } elseif (!class_exists($resourceClass)) {
+            throw new Exception("Class '$resourceClass' does not exist");
+        }
+
+        if (!$resourceMethod) {
+            throw new Exception("Resource must have a 'method' parameter");
+        } elseif (!method_exists($resourceClass, $resourceMethod)) {
+            throw new Exception("Method '$resourceMethod' does not exist in class '$resourceClass'");
+        }
+
+        return [$resourceClass, $resourceMethod];
     }
 }

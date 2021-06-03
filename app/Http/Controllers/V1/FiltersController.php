@@ -10,57 +10,25 @@ class FiltersController extends Controller
 {
     public function index(Request $request)
     {
-        $data = [
-            'options' => [
-                [
-                    'option_id' => 1,
-                    'option_values' => [
-                        [
-                            'option_value_id' => 10,
-                            'is_chosen' => false,
-                            'products_quantity' => 1,
-                        ],
-                        [
-                            'option_value_id' => 10,
-                            'is_chosen' => false,
-                            'products_quantity' => 1,
-                        ],
-                    ],
-                ],
-                [
-                    'option_id' => 2,
-                    'option_values' => [
-                        [
-                            'option_value_id' => 10,
-                            'is_chosen' => false,
-                            'products_quantity' => 1,
-                        ],
-                        [
-                            'option_value_id' => 10,
-                            'is_chosen' => false,
-                            'products_quantity' => 1,
-                        ],
-                    ],
-                ],
-                [
-                    'option_id' => 3,
-                    'option_values' => [
-                        [
-                            'option_value_id' => 10,
-                            'is_chosen' => false,
-                            'products_quantity' => 1,
-                        ],
-                        [
-                            'option_value_id' => 10,
-                            'is_chosen' => false,
-                            'products_quantity' => 1,
-                        ],
-                    ],
-                ],
-            ],
-            'chosen' => ['something']
-        ];
+        /**
+         * TODO реализовать логику формирования фильтров
+         * при передаче пустого массива [] в ответе будет выводиться пример структуры ответа
+         */
 
-        return FilterResource::make($data);
+        $t = [
+            'anchors' => [
+                'bottom' => [
+                    [
+                        'title' => 'test',
+                        'href' => 'test_href',
+                    ],
+                    [
+                        'title' => 'test2',
+                        'href' => 'test_href2'
+                    ]
+                ]
+            ]
+        ];
+        return FilterResource::make($t);
     }
 }

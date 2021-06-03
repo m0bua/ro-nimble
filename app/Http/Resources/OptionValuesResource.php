@@ -11,8 +11,13 @@ class OptionValuesResource extends BaseResource
     {
         return [
             'option_value_id',
+            'option_value_name',
             'is_chosen',
+            'disabled',
+            'is_rank',
+            'option_value_title',
             'products_quantity',
+            'order',
         ];
     }
 }

@@ -10,13 +10,20 @@ class OptionResource extends BaseResource
     public function getResourceFields(): array
     {
         return [
-            'option_id',
-            'option_values' => [
+            'general' => [
+                'field' => 'general',
                 'resource' => [
-                    'class' => OptionValuesResource::class,
+                    'class' => GeneralOptionResource::class,
                     'method' => 'collection'
-                ],
-            ]
+                ]
+            ],
+            'specific' => [
+                'field' => 'specific',
+                'resource' => [
+                    'class' => SpecificOptionResource::class,
+                    'method' => 'collection'
+                ]
+            ],
         ];
     }
 }
