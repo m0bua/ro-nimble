@@ -22,67 +22,85 @@ add('shared_dirs', ['storage']);
 set('writable_mode', 'chown');
 set('writable_use_sudo', true);
 
+######## PROD ENV ###########
 host('10.10.13.45')
     ->stage('prod')
+    ->roles('app')
     ->set('deploy_path', '/var/www/ivv-nimble')
     ->user('rzk')
     ->port(10022)
     ->multiplexing(true)
     ->addSshOption('StrictHostKeyChecking', 'no');
 
+host('10.10.12.221')
+    ->stage('prod')
+    ->roles('api')
+    ->set('deploy_path', '/var/www/ivv-nimble')
+    ->user('rzk')
+    ->port(10022)
+    ->multiplexing(true)
+    ->addSshOption('StrictHostKeyChecking', 'no');
+
+######## TEST ENV ###########
 host('10.10.29.66')
     ->stage('dev')
+    ->roles('app', 'api')
     ->set('deploy_path', '/var/www/ivv-nimble')
     ->user('rzk')
     ->port(10022)
     ->multiplexing(true)
     ->addSshOption('StrictHostKeyChecking', 'no');
 
-// Tasks
+######## DEPLOY TASKS ###########
 task('build', function () {
     run('composer-v1 install');
 })->local();
 
 task('consumers:ms:stop', function () {
     run("sudo /usr/bin/systemctl stop ms-consumer@*");
-});
+})->onRoles('app');
 
 task('consumers:ms:start', function () {
     $numprocs = get('ms_consumer_threads');
     for ($counter = 1; $counter <= $numprocs; $counter++) {
         run("sudo /usr/bin/systemctl start ms-consumer@" . $counter);
     }
-});
+})->onRoles('app');
 
 task('consumers:gs:stop', function () {
     run("sudo /usr/bin/systemctl stop gs-consumer@*");
-});
+})->onRoles('app');
 
 task('consumers:gs:start', function () {
     $numprocs = get('gs_consumer_threads');
     for ($counter = 1; $counter <= $numprocs; $counter++) {
         run("sudo /usr/bin/systemctl start gs-consumer@" . $counter);
     }
-});
+})->onRoles('app');
 
 task('deploy:migratedb', function () {
     run('{{bin/php}} {{release_path}}/artisan migrate');
-})->once();
+})->onRoles('app')->once();
 
 task('consumers:ms:restart', [
     'consumers:ms:stop',
     'consumers:ms:start'
-]);
+])->onRoles('app');
 
 task('consumers:gs:restart', [
     'consumers:gs:stop',
     'consumers:gs:start'
-]);
+])->onRoles('app');
+
+task('cachetool:clear:opcache', function () {
+    run("/usr/local/bin/cachetool opcache:reset --fcgi=127.0.0.1:9000 2>&1 || true");
+})->onRoles('api');
 
 task('upload', function () {
     upload(__DIR__ . '/', '{{release_path}}');
 })->desc('Environment setup');
 
+######## DEPLOY FLOW ###########
 task('release', [
     'deploy:prepare',
     'deploy:release',
@@ -103,10 +121,13 @@ task('deploy', [
     'success'
 ]);
 
+######## DEPLOY AFTER ###########
 after('deploy:symlink', 'consumers:ms:restart');
 after('deploy:symlink', 'consumers:gs:restart');
+after('deploy:symlink', 'cachetool:clear:opcache');
 after('rollback', 'consumers:ms:restart');
 after('rollback', 'consumers:gs:restart');
+after('rollback', 'cachetool:clear:opcache');
 
-// [Optional] If deploy fails automatically unlock.
+// If deploy fails automatically unlock.
 after('deploy:failed', 'deploy:unlock');
