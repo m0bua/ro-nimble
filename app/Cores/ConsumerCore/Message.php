@@ -38,6 +38,14 @@ class Message implements MessageInterface
     }
 
     /**
+     * @return string
+     */
+    public function getMessage(): string
+    {
+        return $this->message->getBody();
+    }
+
+    /**
      * @return object
      */
     public function getBody(): object
