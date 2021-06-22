@@ -32,13 +32,18 @@ class ChangeCategoryOptionProcessor implements ProcessorInterface
      */
     public function processMessage(MessageInterface $message): int
     {
-        $id = $message->getField('data.id');
-
         $fillable = $this->model->getFillable();
         $rawData = (array)$message->getField('data');
         $data = Arr::only($rawData, $fillable);
 
-        $this->model->write()->whereId($id)->update($data);
+        $categoryId = $rawData['category_id'];
+        $optionId = $rawData['option_id'];
+
+        $this->model
+            ->write()
+            ->whereCategoryId($categoryId)
+            ->whereOptionId($optionId)
+            ->update($data);
 
         return Codes::SUCCESS;
     }
