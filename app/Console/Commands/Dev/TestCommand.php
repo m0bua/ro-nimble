@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands\Dev;
 
-use App\Models\Eloquent\Option;
 use Illuminate\Console\Command;
 
 class TestCommand extends Command
@@ -38,14 +37,6 @@ class TestCommand extends Command
      */
     public function handle(): int
     {
-        $this->info((new Option())->write()->getConnectionName());
-
-        $model = (new Option())->write()->create([
-            'id' => rand(1, 100000),
-            'affect_group_photo' => false,
-        ]);
-
-        $this->info(print_r($model->toArray(), true));
         return 0;
     }
 }

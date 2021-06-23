@@ -6,15 +6,18 @@ use App\Traits\Eloquent\HasFillable;
 use App\Traits\Eloquent\HasWriteDb;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Carbon;
 
 /**
  * App\Models\Eloquent\Goods
  *
  * @property int $id
+ * @property string|null $title
  * @property string|null $name
  * @property int|null $category_id
  * @property string|null $mpath
@@ -31,10 +34,12 @@ use Illuminate\Support\Carbon;
  * @property string|null $state
  * @property int $needs_index
  * @property int $is_deleted
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
  * @property string|null $country_code
  * @property-read Category|null $category
+ * @property-read Collection|PaymentMethod[] $paymentMethods
+ * @property-read int|null $payment_methods_count
  * @property-read Producer|null $producer
  * @method static Builder|Goods newModelQuery()
  * @method static Builder|Goods newQuery()
@@ -58,6 +63,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Goods whereSeriesId($value)
  * @method static Builder|Goods whereState($value)
  * @method static Builder|Goods whereStatusInherited($value)
+ * @method static Builder|Goods whereTitle($value)
  * @method static Builder|Goods whereUpdatedAt($value)
  * @mixin Eloquent
  */
@@ -96,5 +102,10 @@ class Goods extends Model
     public function producer(): BelongsTo
     {
         return $this->belongsTo(Producer::class);
+    }
+
+    public function paymentMethods(): BelongsToMany
+    {
+        return $this->belongsToMany(PaymentMethod::class);
     }
 }

@@ -6,6 +6,7 @@ use App\Cores\ConsumerCore\Consumer;
 use App\Cores\ConsumerCore\Interfaces\MessageInterface;
 use App\Cores\ConsumerCore\Loggers\ConsumerInfoLogger;
 use App\Cores\ConsumerCore\Processor;
+use Exception;
 use Illuminate\Console\Command;
 
 class ConsumerCommand extends Command
@@ -23,7 +24,7 @@ class ConsumerCommand extends Command
     /**
      * Handle command
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function handle()
     {

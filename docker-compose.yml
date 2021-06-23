@@ -74,12 +74,13 @@ services:
       selfi_net:
         ipv4_address: ${DOCKER_NETWORK:-172.33.0}.6
 
-  rebbitmq:
+  rabbitmq:
     hostname: selfi-rabbitmq
     container_name: selfi-rabbitmq
     image: rabbitmq:3-management
     ports:
       - 15672:15672
+      - 5672:5672
     networks:
       selfi_net:
         ipv4_address: ${DOCKER_NETWORK:-172.33.0}.7
