@@ -2,8 +2,13 @@
 
 
 namespace App\Cores\ConsumerCore;
+
 use App\Cores\ConsumerCore\Loggers\ConsumerErrorLogger;
 use Bschmitt\Amqp\Consumer as BaseConsumer;
+use Closure;
+use Exception;
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Throwable;
 
 class Consumer
 {
@@ -22,22 +27,23 @@ class Consumer
     /**
      * Consumer constructor.
      * @param string $useConfig
+     * @throws BindingResolutionException
      */
     public function __construct(string $useConfig)
     {
         config(['amqp.use' => $useConfig]);
 
         $this->config = $useConfig;
-        $this->consumer = app()->make('Bschmitt\Amqp\Consumer');
+        $this->consumer = app()->make(BaseConsumer::class);
         $this->consumer->connect();
     }
 
     /**
      * @param string $queue
-     * @param \Closure $callback
-     * @throws \Exception
+     * @param Closure $callback
+     * @throws Exception
      */
-    public function consume(string $queue, \Closure $callback)
+    public function consume(string $queue, Closure $callback)
     {
         $errorsCount = 0;
         $this->consumer->consume($queue, function ($amqpMessage, $resolver) use ($callback, &$errorsCount) {
@@ -51,7 +57,7 @@ class Consumer
                 if ($errorsCount > 0) {
                     $errorsCount = 0;
                 }
-            } catch (\Throwable $t) {
+            } catch (Throwable $t) {
                 $errMessageStr = $t->getMessage();
                 ConsumerErrorLogger::log($errMessageStr, $this->config, [
                     'file' => $t->getFile(),
