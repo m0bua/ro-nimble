@@ -2,7 +2,10 @@
     "name": "laravel/laravel",
     "type": "project",
     "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "keywords": [
+        "framework",
+        "laravel"
+    ],
     "license": "MIT",
     "require": {
         "php": "^7.4",
@@ -20,9 +23,16 @@
         "ext-pdo": "*"
     },
     "require-dev": {
+        "automation-testing-tools/codeception-test-helper": "^2.0",
+        "codeception/module-asserts": "^1.0.0",
         "barryvdh/laravel-ide-helper": "2.10",
+        "codeception/module-amqp": "^1.1",
+        "codeception/module-cli": "^1.1",
+        "codeception/module-phpbrowser": "^1.0",
+        "codeception/module-rest": "^1.3",
         "facade/ignition": "2.9.0",
         "fakerphp/faker": "1.14.1",
+        "ivv/nimble-test": "dev-master",
         "laravel/sail": "1.5.1",
         "mockery/mockery": "1.4.3",
         "nunomaduro/collision": "5.4.0",
@@ -68,5 +78,23 @@
         "sort-packages": true
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "repositories": {
+        "cc-allure": {
+            "type": "vcs",
+            "url": "git@gitlab.rozetka.company:automation-testing-tools/allure-codeception.git"
+        },
+        "testhelper": {
+            "type": "vcs",
+            "url": "git@gitlab.rozetka.company:automation-testing-tools/codeception-test-helper.git"
+        },
+        "nimble-test": {
+            "type": "vcs",
+            "url": "git@gitlab.rozetka.company:ivv/nimble-test.git"
+        },
+        "cc-moduledb": {
+            "type": "vcs",
+            "url": "git@gitlab.rozetka.company:automation-testing-tools/module-db.git"
+        }
+    }
 }
