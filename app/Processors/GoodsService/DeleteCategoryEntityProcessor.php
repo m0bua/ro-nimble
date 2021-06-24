@@ -33,7 +33,11 @@ class DeleteCategoryEntityProcessor implements ProcessorInterface
     {
         $id = $message->getField('id');
 
-        $this->model->whereId($id)->delete();
+        $this->model
+            ->whereId($id)
+            ->update([
+                'is_deleted' => 1
+            ]);
 
         return Codes::SUCCESS;
     }

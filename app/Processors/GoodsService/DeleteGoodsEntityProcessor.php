@@ -30,7 +30,7 @@ class DeleteGoodsEntityProcessor implements ProcessorInterface
         $id = $message->getField('id');
 
         $this->model->whereId($id)->update([
-            'is_deleted' => true,
+            'is_deleted' => 1,
         ]);
 
         return Codes::SUCCESS;
