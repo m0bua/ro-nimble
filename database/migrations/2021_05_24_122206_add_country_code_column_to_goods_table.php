@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Schema;
 
 class AddCountryCodeColumnToGoodsTable extends Migration
 {
+    protected $connection = 'nimble';
+
     /**
      * Run the migrations.
      *

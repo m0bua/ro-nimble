@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Schema;
 
 class ChangeMpathColumnInCategoriesTable extends Migration
 {
+    protected $connection = 'nimble';
+
     /**
      * Run the migrations.
      *
