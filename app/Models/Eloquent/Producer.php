@@ -62,6 +62,7 @@ class Producer extends Model
         'id',
         'order_for_promotion',
         'producer_rank',
+        'rank',
         'name',
         'title',
         'title_rus',

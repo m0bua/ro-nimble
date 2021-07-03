@@ -6,7 +6,6 @@ use App\Cores\ConsumerCore\Interfaces\MessageInterface;
 use App\Cores\ConsumerCore\Interfaces\ProcessorInterface;
 use App\Cores\Shared\Codes;
 use App\Models\Eloquent\Producer;
-use Illuminate\Support\Arr;
 
 class CreateProducerEntityProcessor implements ProcessorInterface
 {
@@ -18,7 +17,7 @@ class CreateProducerEntityProcessor implements ProcessorInterface
     protected Producer $model;
 
     /**
-     * CreateOptionSettingProcessor constructor.
+     * CreateProducerEntityProcessor constructor.
      * @param Producer $model
      */
     public function __construct(Producer $model)
@@ -28,9 +27,7 @@ class CreateProducerEntityProcessor implements ProcessorInterface
 
     public function processMessage(MessageInterface $message): int
     {
-        $fillable = $this->model->getFillable();
-        $rawData = (array)$message->getField('data');
-        $data = Arr::only($rawData, $fillable);
+        $data = (array)$message->getField('data');
 
         $this->model->create([
             'id' => $data['id'] ?? null,
@@ -45,7 +42,7 @@ class CreateProducerEntityProcessor implements ProcessorInterface
             'attachments' => $data['attachments'] ?? null,
             'disable_filter_series' => $data['disable_filter_series'] ? 't' : 'f',
             'order_for_promotion' => $data['order_for_promotion'] ?? null,
-            'producer_rank' => $data['producer_rank'] ?? null,
+            'producer_rank' => $data['rank'] ?? null,
             'needs_index' => 1
         ]);
 

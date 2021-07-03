@@ -27,25 +27,24 @@ class ChangeProducerEntityProcessor implements ProcessorInterface
 
     public function processMessage(MessageInterface $message): int
     {
-        $producerData = (array)$message->getField('data');
+        $data = (array)$message->getField('data');
 
         $this->model
-
-            ->where('id', $producerData['id'])
+            ->where('id', $data['id'])
             ->update([
-                'id' => $producerData['id'] ?? null,
-                'ext_id' => $producerData['ext_id'] ?? null,
-                'title' => $producerData['title'] ?? null,
-                'title_rus' => $producerData['title_rus'] ?? null,
-                'name' => $producerData['name'] ?? null,
-                'text' => $producerData['text'] ?? null,
-                'status' => $producerData['status'] ?? null,
-                'show_background' => ($producerData['show_background'] ? 't' : 'f'),
-                'show_logo' => ($producerData['show_logo'] ? 't' : 'f'),
-                'attachments' => $producerData['attachments'] ?? null,
-                'disable_filter_series' => ($producerData['disable_filter_series'] ? 't' : 'f'),
-                'order_for_promotion' => $producerData['order_for_promotion'] ?? null,
-                'producer_rank' => $producerData['producer_rank'] ?? null,
+                'id' => $data['id'] ?? null,
+                'ext_id' => $data['ext_id'] ?? null,
+                'title' => $data['title'] ?? null,
+                'title_rus' => $data['title_rus'] ?? null,
+                'name' => $data['name'] ?? null,
+                'text' => $data['text'] ?? null,
+                'status' => $data['status'] ?? null,
+                'show_background' => ($data['show_background'] ? 't' : 'f'),
+                'show_logo' => ($data['show_logo'] ? 't' : 'f'),
+                'attachments' => $data['attachments'] ?? null,
+                'disable_filter_series' => ($data['disable_filter_series'] ? 't' : 'f'),
+                'order_for_promotion' => $data['order_for_promotion'] ?? null,
+                'producer_rank' => $data['rank'] ?? null,
                 'needs_index' => 1
             ]);
 
