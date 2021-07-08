@@ -3,15 +3,17 @@
 namespace App\Helpers\Chunks;
 
 use App\Interfaces\ChunkInterface;
+use Closure;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class ChunkPrimary implements ChunkInterface
 {
     /**
      * @inheritDoc
      */
-    public static function iterate(Builder $query, \Closure $callback, int $chunkSize = 500)
+    public static function iterate(Builder $query, Closure $callback, int $chunkSize = 500)
     {
         $startId = 0;
 
@@ -32,13 +34,12 @@ class ChunkPrimary implements ChunkInterface
 
             try {
                 $callback($result->toArray());
-            } catch (\Throwable $t) {
+            } catch (Throwable $t) {
                 Log::error($t->getMessage(), [
                     'file' => $t->getFile(),
                     'line' => $t->getLine()
                 ]);
             }
-
-        } while($resultCount == $chunkSize);
+        } while ($resultCount == $chunkSize);
     }
 }

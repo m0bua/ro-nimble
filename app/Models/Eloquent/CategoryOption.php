@@ -2,10 +2,13 @@
 
 namespace App\Models\Eloquent;
 
+use App\Casts\Translatable;
 use App\Traits\Eloquent\HasFillable;
-
+use App\Traits\Eloquent\HasTranslations;
+use Database\Factories\Eloquent\CategoryOptionFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,11 +20,14 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property int|null $category_id
  * @property int|null $option_id
- * @property string|null $value
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Category|null $category
  * @property-read Option|null $option
+ * @property-read Collection|CategoryOptionTranslation[] $translations
+ * @property-read int|null $translations_count
+ * @property array<string> $value value translations
+ * @method static CategoryOptionFactory factory(...$parameters)
  * @method static Builder|CategoryOption newModelQuery()
  * @method static Builder|CategoryOption newQuery()
  * @method static Builder|CategoryOption query()
@@ -30,14 +36,13 @@ use Illuminate\Support\Carbon;
  * @method static Builder|CategoryOption whereId($value)
  * @method static Builder|CategoryOption whereOptionId($value)
  * @method static Builder|CategoryOption whereUpdatedAt($value)
- * @method static Builder|CategoryOption whereValue($value)
  * @mixin Eloquent
  */
 class CategoryOption extends Model
 {
     use HasFactory;
     use HasFillable;
-
+    use HasTranslations;
 
     protected $fillable = [
         'id',
@@ -46,13 +51,17 @@ class CategoryOption extends Model
         'value',
     ];
 
+    protected $casts = [
+        'value' => Translatable::class,
+    ];
+
     public function category(): BelongsTo
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(Category::class)->withDefault();
     }
 
     public function option(): BelongsTo
     {
-        return $this->belongsTo(Option::class);
+        return $this->belongsTo(Option::class)->withDefault();
     }
 }

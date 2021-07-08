@@ -2,37 +2,31 @@
 
 namespace App\Processors\GoodsService;
 
-use App\Cores\ConsumerCore\Interfaces\MessageInterface;
-use App\Cores\ConsumerCore\Interfaces\ProcessorInterface;
-use App\Cores\Shared\Codes;
+use App\Models\Eloquent\GoodsOption;
 use App\Models\Eloquent\Option;
+use App\Processors\AbstractProcessor;
+use App\Processors\Traits\WithDelete;
 
-class DeleteOptionEntityProcessor implements ProcessorInterface
+class DeleteOptionEntityProcessor extends AbstractProcessor
 {
-    /**
-     * Eloquent model for updating data
-     *
-     * @var Option
-     */
+    use WithDelete;
+
+    public static bool $softDelete = true;
+
+    public static ?string $dataRoot = null;
+
     protected Option $model;
+
+    protected GoodsOption $goodsOption;
 
     /**
      * DeleteOptionEntityProcessor constructor.
      * @param Option $model
+     * @param GoodsOption $goodsOption
      */
-    public function __construct(Option $model)
+    public function __construct(Option $model, GoodsOption $goodsOption)
     {
         $this->model = $model;
-    }
-
-    public function processMessage(MessageInterface $message): int
-    {
-        $id = $message->getField('id');
-
-        $this->model->whereId($id)->update([
-            'is_deleted' => 1,
-        ]);
-
-        return Codes::SUCCESS;
+        $this->goodsOption = $goodsOption;
     }
 }

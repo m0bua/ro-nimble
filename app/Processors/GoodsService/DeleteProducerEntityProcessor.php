@@ -2,18 +2,18 @@
 
 namespace App\Processors\GoodsService;
 
-use App\Cores\ConsumerCore\Interfaces\MessageInterface;
-use App\Cores\ConsumerCore\Interfaces\ProcessorInterface;
-use App\Cores\Shared\Codes;
 use App\Models\Eloquent\Producer;
+use App\Processors\AbstractProcessor;
+use App\Processors\Traits\WithDelete;
 
-class DeleteProducerEntityProcessor implements ProcessorInterface
+class DeleteProducerEntityProcessor extends AbstractProcessor
 {
-    /**
-     * Eloquent model for updating data
-     *
-     * @var Producer
-     */
+    use WithDelete;
+
+    public static bool $softDelete = true;
+
+    public static ?string $dataRoot = null;
+
     protected Producer $model;
 
     /**
@@ -23,18 +23,5 @@ class DeleteProducerEntityProcessor implements ProcessorInterface
     public function __construct(Producer $model)
     {
         $this->model = $model;
-    }
-
-    public function processMessage(MessageInterface $message): int
-    {
-        $id = $message->getField('id');
-
-        $this->model
-            ->whereId($id)
-            ->update([
-                'is_deleted' => 1,
-            ]);
-
-        return Codes::SUCCESS;
     }
 }

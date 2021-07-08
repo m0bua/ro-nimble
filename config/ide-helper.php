@@ -34,7 +34,7 @@ return [
     |
     */
 
-    'include_fluent' => false,
+    'include_fluent' => true,
 
     /*
     |--------------------------------------------------------------------------
@@ -156,7 +156,7 @@ return [
     */
 
     'model_hooks' => [
-        // App\Support\IdeHelper\MyModelHook::class
+        App\Support\IdeHelper\ModelHooks\TranslatableHook::class,
     ],
 
     /*

@@ -2,18 +2,18 @@
 
 namespace App\Processors\GoodsService;
 
-use App\Cores\ConsumerCore\Interfaces\MessageInterface;
-use App\Cores\ConsumerCore\Interfaces\ProcessorInterface;
-use App\Cores\Shared\Codes;
 use App\Models\Eloquent\Category;
+use App\Processors\AbstractProcessor;
+use App\Processors\Traits\WithDelete;
 
-class DeleteCategoryEntityProcessor implements ProcessorInterface
+class DeleteCategoryEntityProcessor extends AbstractProcessor
 {
-    /**
-     * Eloquent model for updating data
-     *
-     * @var Category
-     */
+    use WithDelete;
+
+    public static bool $softDelete = true;
+
+    public static ?string $dataRoot = null;
+
     protected Category $model;
 
     /**
@@ -23,22 +23,5 @@ class DeleteCategoryEntityProcessor implements ProcessorInterface
     public function __construct(Category $model)
     {
         $this->model = $model;
-    }
-
-    /**
-     * @param MessageInterface $message
-     * @return int
-     */
-    public function processMessage(MessageInterface $message): int
-    {
-        $id = $message->getField('id');
-
-        $this->model
-            ->whereId($id)
-            ->update([
-                'is_deleted' => 1
-            ]);
-
-        return Codes::SUCCESS;
     }
 }

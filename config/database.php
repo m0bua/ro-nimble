@@ -1,7 +1,8 @@
 <?php
+
 return [
     'migrations' => 'migrations',
-    'default' => 'nimble',
+    'default' => env('DB_CONNECTION', 'nimble'),
     'connections' => [
         'nimble' => [
             'read' => [

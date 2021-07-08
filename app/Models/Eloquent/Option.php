@@ -2,20 +2,23 @@
 
 namespace App\Models\Eloquent;
 
+use App\Casts\Translatable;
 use App\Traits\Eloquent\HasFillable;
-
+use App\Traits\Eloquent\HasTranslations;
+use Database\Factories\Eloquent\OptionFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
  * App\Models\Eloquent\Option
  *
  * @property int $id
- * @property string|null $title
  * @property string|null $name
  * @property string|null $type
  * @property string|null $ext_id
@@ -34,6 +37,12 @@ use Illuminate\Support\Carbon;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property-read Category|null $category
+ * @property-read Collection|GoodsOption[] $goodsOptions
+ * @property-read int|null $goods_options_count
+ * @property-read Collection|OptionTranslation[] $translations
+ * @property-read int|null $translations_count
+ * @property array<string> $title title translations
+ * @method static OptionFactory factory(...$parameters)
  * @method static Builder|Option newModelQuery()
  * @method static Builder|Option newQuery()
  * @method static Builder|Option query()
@@ -52,7 +61,6 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Option whereParentId($value)
  * @method static Builder|Option whereRecordType($value)
  * @method static Builder|Option whereState($value)
- * @method static Builder|Option whereTitle($value)
  * @method static Builder|Option whereType($value)
  * @method static Builder|Option whereUpdatedAt($value)
  * @method static Builder|Option whereValueSeparator($value)
@@ -62,7 +70,9 @@ class Option extends Model
 {
     use HasFactory;
     use HasFillable;
+    use HasTranslations;
 
+    public $incrementing = false;
 
     protected $fillable = [
         'id',
@@ -84,15 +94,17 @@ class Option extends Model
         'is_deleted',
     ];
 
-    public function getBoolAttributes(): array
-    {
-        return [
-            'affect_group_photo',
-        ];
-    }
+    protected $casts = [
+        'title' => Translatable::class,
+    ];
 
     public function category(): BelongsTo
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(Category::class)->withDefault();
+    }
+
+    public function goodsOptions(): HasMany
+    {
+        return $this->hasMany(GoodsOption::class);
     }
 }

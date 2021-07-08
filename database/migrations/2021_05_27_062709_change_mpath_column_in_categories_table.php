@@ -25,8 +25,6 @@ class ChangeMpathColumnInCategoriesTable extends Migration
      */
     public function down()
     {
-        Schema::table('categories', function (Blueprint $table) {
-            $table->integer('mpath')->change();
-        });
+        Illuminate\Support\Facades\DB::raw('ALTER TABLE categories ALTER mpath TYPE INT');
     }
 }

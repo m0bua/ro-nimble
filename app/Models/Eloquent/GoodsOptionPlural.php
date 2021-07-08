@@ -3,7 +3,7 @@
 namespace App\Models\Eloquent;
 
 use App\Traits\Eloquent\HasFillable;
-
+use Database\Factories\Eloquent\GoodsOptionPluralFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -25,6 +25,8 @@ use Illuminate\Support\Carbon;
  * @property-read Goods|null $goods
  * @property-read Option|null $option
  * @property-read OptionValue|null $value
+ * @method static GoodsOptionPluralFactory factory(...$parameters)
+ * @method static Builder|GoodsOptionPlural needsIndex()
  * @method static Builder|GoodsOptionPlural newModelQuery()
  * @method static Builder|GoodsOptionPlural newQuery()
  * @method static Builder|GoodsOptionPlural query()
@@ -43,7 +45,6 @@ class GoodsOptionPlural extends Model
     use HasFactory;
     use HasFillable;
 
-
     protected $table = 'goods_options_plural';
 
     protected $fillable = [
@@ -57,16 +58,21 @@ class GoodsOptionPlural extends Model
 
     public function goods(): BelongsTo
     {
-        return $this->belongsTo(Goods::class);
+        return $this->belongsTo(Goods::class)->withDefault();
     }
 
     public function option(): BelongsTo
     {
-        return $this->belongsTo(Option::class);
+        return $this->belongsTo(Option::class)->withDefault();
     }
 
     public function value(): BelongsTo
     {
-        return $this->belongsTo(OptionValue::class);
+        return $this->belongsTo(OptionValue::class)->withDefault();
+    }
+
+    public function scopeNeedsIndex(Builder $builder): Builder
+    {
+        return $builder->where('needs_index', 1);
     }
 }

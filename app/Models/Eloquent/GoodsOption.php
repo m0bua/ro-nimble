@@ -3,7 +3,7 @@
 namespace App\Models\Eloquent;
 
 use App\Traits\Eloquent\HasFillable;
-
+use Database\Factories\Eloquent\GoodsOptionFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -25,6 +25,8 @@ use Illuminate\Support\Carbon;
  * @property int $needs_index
  * @property-read Goods|null $goods
  * @property-read Option|null $option
+ * @method static GoodsOptionFactory factory(...$parameters)
+ * @method static Builder|GoodsOption needsIndex()
  * @method static Builder|GoodsOption newModelQuery()
  * @method static Builder|GoodsOption newQuery()
  * @method static Builder|GoodsOption query()
@@ -44,7 +46,6 @@ class GoodsOption extends Model
     use HasFactory;
     use HasFillable;
 
-
     protected $fillable = [
         'id',
         'goods_id',
@@ -57,11 +58,16 @@ class GoodsOption extends Model
 
     public function goods(): BelongsTo
     {
-        return $this->belongsTo(Goods::class);
+        return $this->belongsTo(Goods::class)->withDefault();
     }
 
     public function option(): BelongsTo
     {
-        return $this->belongsTo(Option::class);
+        return $this->belongsTo(Option::class)->withDefault();
+    }
+
+    public function scopeNeedsIndex(Builder $builder): Builder
+    {
+        return $builder->where('needs_index', 1);
     }
 }

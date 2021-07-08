@@ -2,19 +2,16 @@
 
 namespace App\Processors\GoodsService;
 
-use App\Cores\ConsumerCore\Interfaces\MessageInterface;
-use App\Cores\ConsumerCore\Interfaces\ProcessorInterface;
-use App\Cores\Shared\Codes;
 use App\Models\Eloquent\OptionSetting;
-use Exception;
+use App\Processors\AbstractProcessor;
+use App\Processors\Traits\WithDelete;
 
-class DeleteOptionSettingProcessor implements ProcessorInterface
+class DeleteOptionSettingProcessor extends AbstractProcessor
 {
-    /**
-     * Eloquent model for updating data
-     *
-     * @var OptionSetting
-     */
+    use WithDelete;
+
+    public static ?string $dataRoot = null;
+
     protected OptionSetting $model;
 
     /**
@@ -24,19 +21,5 @@ class DeleteOptionSettingProcessor implements ProcessorInterface
     public function __construct(OptionSetting $model)
     {
         $this->model = $model;
-    }
-
-    /**
-     * @param MessageInterface $message
-     * @return int
-     * @throws Exception
-     */
-    public function processMessage(MessageInterface $message): int
-    {
-        $id = $message->getField('id');
-
-        $this->model->whereId($id)->delete();
-
-        return Codes::SUCCESS;
     }
 }

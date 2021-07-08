@@ -2,18 +2,23 @@
 
 namespace App\Processors\MarketingService;
 
-use App\Cores\ConsumerCore\Interfaces\MessageInterface;
-use App\Cores\ConsumerCore\Interfaces\ProcessorInterface;
-use App\Cores\Shared\Codes;
 use App\Models\Eloquent\PromotionGroupConstructor;
+use App\Processors\AbstractProcessor;
+use App\Processors\Traits\WithDelete;
 
-class DeletePromotionConstructorGroupProcessor implements ProcessorInterface
+class DeletePromotionConstructorGroupProcessor extends AbstractProcessor
 {
-    /**
-     * Eloquent model for updating data
-     *
-     * @var PromotionGroupConstructor
-     */
+    use WithDelete;
+
+    public static bool $softDelete = true;
+
+    public static ?string $dataRoot = 'fields_data';
+
+    public static ?array $compoundKey = [
+        'constructor_id',
+        'group_id',
+    ];
+
     protected PromotionGroupConstructor $model;
 
     /**
@@ -23,20 +28,5 @@ class DeletePromotionConstructorGroupProcessor implements ProcessorInterface
     public function __construct(PromotionGroupConstructor $model)
     {
         $this->model = $model;
-    }
-
-    /**
-     * @param MessageInterface $message
-     * @return int
-     */
-    public function processMessage(MessageInterface $message): int
-    {
-        $this->model
-
-            ->where('constructor_id', $message->getField('fields_data.promotion_constructor_id'))
-            ->where('group_id', $message->getField('fields_data.group_id'))
-            ->update(['is_deleted' => 1]);
-
-        return Codes::SUCCESS;
     }
 }

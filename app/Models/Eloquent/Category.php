@@ -2,8 +2,10 @@
 
 namespace App\Models\Eloquent;
 
+use App\Casts\Translatable;
 use App\Traits\Eloquent\HasFillable;
-
+use App\Traits\Eloquent\HasTranslations;
+use Database\Factories\Eloquent\CategoryFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -18,11 +20,10 @@ use Illuminate\Support\Carbon;
  *
  * @property int $id
  * @property string|null $mpath
- * @property string|null $title
  * @property string|null $status
  * @property string|null $status_inherited
  * @property int|null $order
- * @property int|null $ext_id
+ * @property string|null $ext_id
  * @property string|null $name
  * @property string|null $titles_mode
  * @property string|null $kits_show
@@ -45,6 +46,10 @@ use Illuminate\Support\Carbon;
  * @property-read Collection|Category[] $children
  * @property-read int|null $children_count
  * @property-read Category|null $parent
+ * @property-read Collection|CategoryTranslation[] $translations
+ * @property-read int|null $translations_count
+ * @property array<string> $title title translations
+ * @method static CategoryFactory factory(...$parameters)
  * @method static Builder|Category newModelQuery()
  * @method static Builder|Category newQuery()
  * @method static Builder|Category query()
@@ -71,7 +76,6 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Category whereSectionsList($value)
  * @method static Builder|Category whereStatus($value)
  * @method static Builder|Category whereStatusInherited($value)
- * @method static Builder|Category whereTitle($value)
  * @method static Builder|Category whereTitlesMode($value)
  * @method static Builder|Category whereUpdatedAt($value)
  * @mixin Eloquent
@@ -80,23 +84,44 @@ class Category extends Model
 {
     use HasFactory;
     use HasFillable;
+    use HasTranslations;
 
+    public $incrementing = false;
 
     protected $fillable = [
         'id',
         'mpath',
+        'title',
+        'status',
+        'status_inherited',
         'order',
+        'ext_id',
         'name',
+        'titles_mode',
+        'kits_show',
         'parent_id',
         'left_key',
         'right_key',
         'level',
+        'sections_list',
+        'href',
+        'rz_mpath',
+        'allow_index_three_parameters',
+        'on_subdomain',
+        'oversized',
+        'is_subdomain',
+        'disable_kit_ratio',
+        'is_rozetka_top',
         'is_deleted',
+    ];
+
+    protected $casts = [
+        'title' => Translatable::class,
     ];
 
     public function parent(): BelongsTo
     {
-        return $this->belongsTo(static::class, 'parent_id');
+        return $this->belongsTo(static::class, 'parent_id')->withDefault();
     }
 
     public function children(): HasMany

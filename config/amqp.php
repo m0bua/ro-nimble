@@ -109,7 +109,7 @@ return [
             'qos_prefetch_count'    => 1000,
             'qos_a_global'          => false,
 
-            'processor_name'        => [App\Processors\MarketingService\Support\Helpers::class, 'resolveProcessorClassname'],
+            'processor_name'        => [App\Processors\MarketingService\Support\ProcessorClassnameResolver::class, 'resolve'],
         ],
 
         // goods service
@@ -153,7 +153,7 @@ return [
             'qos_prefetch_size'     => 0,
             'qos_prefetch_count'    => 1,
             'qos_a_global'          => false,
-            'processor_name'        => [App\Processors\GoodsService\Support\Helpers::class, 'resolveProcessorClassname'],
+            'processor_name'        => [App\Processors\GoodsService\Support\ProcessorClassnameResolver::class, 'resolve'],
         ],
 
         // payment service
@@ -197,7 +197,7 @@ return [
             'qos_prefetch_size'     => 0,
             'qos_prefetch_count'    => 1,
             'qos_a_global'          => false,
-            'processor_name'        => [App\Processors\PaymentService\Helpers::class, 'resolveProcessorClassname'],
+            'processor_name'        => [App\Processors\PaymentService\Support\ProcessorClassnameResolver::class, 'resolve'],
         ],
 
         // bonus service
@@ -241,7 +241,7 @@ return [
             'qos_prefetch_size'     => 0,
             'qos_prefetch_count'    => 1,
             'qos_a_global'          => false,
-            'processor_name'        => [App\Processors\BonusService\Support\ProcessorResolver::class, 'resolve'],
+            'processor_name'        => [App\Processors\BonusService\Support\ProcessorClassnameResolver::class, 'resolve'],
         ],
     ],
 

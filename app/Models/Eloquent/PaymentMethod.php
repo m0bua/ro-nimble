@@ -3,7 +3,7 @@
 namespace App\Models\Eloquent;
 
 use App\Traits\Eloquent\HasFillable;
-
+use Database\Factories\Eloquent\PaymentMethodFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -29,6 +29,7 @@ use Illuminate\Support\Carbon;
  * @property-read Collection|Goods[] $goods
  * @property-read int|null $goods_count
  * @property-read PaymentMethod|null $parent
+ * @method static PaymentMethodFactory factory(...$parameters)
  * @method static Builder|PaymentMethod newModelQuery()
  * @method static Builder|PaymentMethod newQuery()
  * @method static Builder|PaymentMethod query()
@@ -46,6 +47,7 @@ class PaymentMethod extends Model
     use HasFactory;
     use HasFillable;
 
+    public $incrementing = false;
 
     protected $fillable = [
         'id',
@@ -62,7 +64,7 @@ class PaymentMethod extends Model
 
     public function parent(): BelongsTo
     {
-        return $this->belongsTo(static::class, 'parent_id');
+        return $this->belongsTo(static::class, 'parent_id')->withDefault();
     }
 
     public function children(): HasMany

@@ -2,19 +2,19 @@
 
 namespace App\Processors\GoodsService;
 
-use App\Cores\ConsumerCore\Interfaces\MessageInterface;
-use App\Cores\ConsumerCore\Interfaces\ProcessorInterface;
-use App\Cores\Shared\Codes;
 use App\Models\Eloquent\CategoryOption;
-use Illuminate\Support\Arr;
+use App\Processors\AbstractProcessor;
+use App\Processors\Traits\WithUpdate;
 
-class ChangeCategoryOptionProcessor implements ProcessorInterface
+class ChangeCategoryOptionProcessor extends AbstractProcessor
 {
-    /**
-     * Eloquent model for updating data
-     *
-     * @var CategoryOption
-     */
+    use WithUpdate;
+
+    public static ?array $compoundKey = [
+        'category_id',
+        'option_id',
+    ];
+
     protected CategoryOption $model;
 
     /**
@@ -24,27 +24,5 @@ class ChangeCategoryOptionProcessor implements ProcessorInterface
     public function __construct(CategoryOption $model)
     {
         $this->model = $model;
-    }
-
-    /**
-     * @param MessageInterface $message
-     * @return int
-     */
-    public function processMessage(MessageInterface $message): int
-    {
-        $fillable = $this->model->getFillable();
-        $rawData = (array)$message->getField('data');
-        $data = Arr::only($rawData, $fillable);
-
-        $categoryId = $rawData['category_id'];
-        $optionId = $rawData['option_id'];
-
-        $this->model
-
-            ->whereCategoryId($categoryId)
-            ->whereOptionId($optionId)
-            ->update($data);
-
-        return Codes::SUCCESS;
     }
 }

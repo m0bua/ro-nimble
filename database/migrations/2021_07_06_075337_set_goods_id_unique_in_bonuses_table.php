@@ -26,7 +26,7 @@ class SetGoodsIdUniqueInBonusesTable extends Migration
     public function down()
     {
         Schema::table('bonuses', function (Blueprint $table) {
-            $table->dropIndex(['goods_id']);
+            $table->dropUnique(['goods_id']);
         });
     }
 }

@@ -128,6 +128,9 @@ class CommonFormatter
                 'id' => $productData['producer']['producer_id'],
                 'name' => $productData['producer']['producer_name'],
                 'title' => $productData['producer']['producer_title'],
+                'uk' => [
+                    'title' => $productData['producer']['uk']['title'] ?? '',
+                ],
             ];
         }
 
@@ -201,6 +204,9 @@ class CommonFormatter
                         'option_id' => $option['details']['id'],
                         'type' => $option['details']['type'],
                         'value' => $option['value'],
+                        'uk' => [
+                            'value' => $option['value_uk'] ?? ''
+                        ],
                     ];
                 }
             }

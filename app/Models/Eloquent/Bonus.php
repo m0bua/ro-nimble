@@ -3,6 +3,7 @@
 namespace App\Models\Eloquent;
 
 use App\Traits\Eloquent\HasFillable;
+use Database\Factories\Eloquent\BonusFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -26,6 +27,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Goods $goods
+ * @method static BonusFactory factory(...$parameters)
  * @method static Builder|Bonus newModelQuery()
  * @method static Builder|Bonus newQuery()
  * @method static Builder|Bonus query()
@@ -62,6 +64,6 @@ class Bonus extends Model
 
     public function goods(): BelongsTo
     {
-        return $this->belongsTo(Goods::class);
+        return $this->belongsTo(Goods::class)->withDefault();
     }
 }

@@ -2,36 +2,47 @@
 
 namespace App\Processors\MarketingService;
 
-use App\Cores\ConsumerCore\Interfaces\MessageInterface;
-use App\Cores\ConsumerCore\Interfaces\ProcessorInterface;
-use App\Cores\Shared\Codes;
 use App\Models\Eloquent\PromotionConstructor;
+use App\Models\Eloquent\PromotionGoodsConstructor;
+use App\Models\Eloquent\PromotionGroupConstructor;
+use App\Processors\AbstractProcessor;
+use App\Processors\Traits\WithDelete;
 
-class DeletePromotionConstructorProcessor implements ProcessorInterface
+class DeletePromotionConstructorProcessor extends AbstractProcessor
 {
-    /**
-     * Eloquent model for updating data
-     *
-     * @var PromotionConstructor
-     */
+    use WithDelete;
+
+    public static bool $softDelete = true;
+
+    public static ?string $dataRoot = 'fields_data';
+
     protected PromotionConstructor $model;
+
+    protected PromotionGoodsConstructor $goodsConstructor;
+
+    protected PromotionGroupConstructor $groupConstructor;
 
     /**
      * DeletePromotionConstructorProcessor constructor.
      * @param PromotionConstructor $model
+     * @param PromotionGoodsConstructor $goodsConstructor
+     * @param PromotionGroupConstructor $groupConstructor
      */
-    public function __construct(PromotionConstructor $model)
+    public function __construct(PromotionConstructor $model, PromotionGoodsConstructor $goodsConstructor, PromotionGroupConstructor $groupConstructor)
     {
         $this->model = $model;
+        $this->goodsConstructor = $goodsConstructor;
+        $this->groupConstructor = $groupConstructor;
     }
 
-    public function processMessage(MessageInterface $message): int
+    /**
+     * @inheritDoc
+     */
+    protected function afterProcess(): void
     {
-        $this->model
-
-            ->where('id', $message->getField('fields_data.id'))
-            ->update(['is_deleted' => 1]);
-
-        return Codes::SUCCESS;
+        // Mark group and goods constructors as deleted too
+        $constructorId = $this->data['id'];
+        $this->groupConstructor->whereConstructorId($constructorId)->update(['is_deleted' => 1]);
+        $this->goodsConstructor->whereConstructorId($constructorId)->update(['is_deleted' => 1]);
     }
 }

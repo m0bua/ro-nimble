@@ -4,14 +4,12 @@
 namespace App\Processors;
 
 use App\Cores\ConsumerCore\Interfaces\MessageInterface;
-use App\Cores\ConsumerCore\Interfaces\ProcessorInterface;
 use App\Cores\Shared\Codes;
 
-class DefaultProcessor implements ProcessorInterface
+class DefaultProcessor extends AbstractProcessor
 {
     /**
-     * @param MessageInterface $message
-     * @return int
+     * @inheritDoc
      */
     public function processMessage(MessageInterface $message): int
     {

@@ -1,9 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models\GraphQL;
 
 use App\Traits\GSDefaultSelectionTrait;
+use Closure;
+use Exception;
 
 class GoodsBatchModel extends GraphQL
 {
@@ -19,7 +22,7 @@ class GoodsBatchModel extends GraphQL
     protected int $batchSize = self::DEFAULT_BATCH_SIZE;
 
     /**
-     * Конструктор GoodsBatchModel
+     * GoodsBatchModel constructor.
      * @param string|null $whereInField
      * @param int|null $batchSize
      */
@@ -83,6 +86,7 @@ class GoodsBatchModel extends GraphQL
     /**
      * @param array $goodsIds
      * @return array
+     * @throws Exception
      */
     public function getByIds(array $goodsIds): array
     {
@@ -96,6 +100,8 @@ class GoodsBatchModel extends GraphQL
     /**
      * @param array $goodsIds
      * @return array
+     * @throws Exception
+     * @noinspection PhpUnused
      */
     public function getDefaultDataByGoodsIds(array $goodsIds): array
     {
@@ -108,9 +114,10 @@ class GoodsBatchModel extends GraphQL
 
     /**
      * @param array $ids
-     * @param \Closure $callback
+     * @param Closure $callback
+     * @throws Exception
      */
-    public function getByBatch(array $ids, \Closure $callback)
+    public function getByBatch(array $ids, Closure $callback)
     {
         $batchId = 0;
         do {
@@ -133,6 +140,6 @@ class GoodsBatchModel extends GraphQL
             $callback($result['nodes']);
 
             $batchId = $result['batchInfo']['lastID'];
-        } while($result['batchInfo']['batchSize'] == $this->batchSize);
+        } while ($result['batchInfo']['batchSize'] == $this->batchSize);
     }
 }

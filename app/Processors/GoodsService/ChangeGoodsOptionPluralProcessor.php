@@ -2,26 +2,24 @@
 
 namespace App\Processors\GoodsService;
 
-use App\Cores\ConsumerCore\Interfaces\MessageInterface;
-use App\Cores\ConsumerCore\Interfaces\ProcessorInterface;
-use App\Cores\Shared\Codes;
 use App\Models\Eloquent\Goods;
 use App\Models\Eloquent\GoodsOptionPlural;
+use App\Processors\AbstractProcessor;
+use App\Processors\Traits\WithUpdate;
+use Illuminate\Support\Arr;
 
-class ChangeGoodsOptionPluralProcessor implements ProcessorInterface
+class ChangeGoodsOptionPluralProcessor extends AbstractProcessor
 {
-    /**
-     * Eloquent model for updating data
-     *
-     * @var GoodsOptionPlural
-     */
+    use WithUpdate;
+
+    public static ?array $compoundKey = [
+        'goods_id',
+        'option_id',
+        'value_id',
+    ];
+
     protected GoodsOptionPlural $model;
 
-    /**
-     * Goods model
-     *
-     * @var Goods
-     */
     protected Goods $goods;
 
     /**
@@ -35,29 +33,33 @@ class ChangeGoodsOptionPluralProcessor implements ProcessorInterface
         $this->goods = $goods;
     }
 
-    public function processMessage(MessageInterface $message): int
+    /**
+     * Update entity in DB
+     *
+     * @return bool
+     */
+    protected function updateModel(): bool
     {
-        $data = (array)$message->getField('data');
+        $data = $this->prepareData();
+        $data['needs_index'] = 1;
 
         $this->model
-            ->whereGoodsId($data['goods_id'])
-            ->whereOptionId($data['option_id'])
-            ->whereValueId($data['value_id'])
-            ->update([
-                'needs_index' => 1,
-            ]);
+            ->when(
+                static::$compoundKey,
+                fn($q, $compoundKey) => $q->where(Arr::only($this->data, $compoundKey)),
+                fn($q) => $q->where('id', $this->data['id'])
+            )
+            ->update($data);
+        $this->saveTranslations();
 
-        $goods = $this->goods
-            ->whereId($data['goods_id'])
-            ->first(['needs_index']);
+        return true;
+    }
 
-        if (!$goods || $goods->needs_index != 1) {
-            $this->goods
-
-                ->whereId($data['goods_id'])
-                ->update(['needs_index' => 1]);
-        }
-
-        return Codes::SUCCESS;
+    /**
+     * @inheritDoc
+     */
+    protected function afterProcess(): void
+    {
+        $this->goods->whereId($this->data['goods_id'])->update(['needs_index' => 1]);
     }
 }

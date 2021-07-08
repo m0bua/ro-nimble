@@ -29,7 +29,9 @@ class TestProcessor extends AbstractProcessor
 
     public function _prepareData(array $data, array $aliases = []): array
     {
-        return $this->prepareData($data, $aliases);
+        $this->data = $data;
+        static::$aliases = $aliases;
+        return $this->prepareData();
     }
 
     public function _resolveField($field)

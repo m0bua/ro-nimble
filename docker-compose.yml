@@ -74,6 +74,7 @@ services:
     networks:
       selfi_net:
         ipv4_address: ${DOCKER_NETWORK:-172.33.0}.6
+    command: ["postgres", "-c", "log_statement=all"]
 
   rabbitmq:
     hostname: selfi-rabbitmq

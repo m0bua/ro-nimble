@@ -3,7 +3,7 @@
 namespace App\Models\Eloquent;
 
 use App\Traits\Eloquent\HasFillable;
-
+use Database\Factories\Eloquent\PromotionGoodsConstructorFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -22,7 +22,12 @@ use Illuminate\Support\Carbon;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property int $needs_migrate
+ * @property-read PromotionConstructor $constructor
  * @property-read Goods $goods
+ * @method static PromotionGoodsConstructorFactory factory(...$parameters)
+ * @method static Builder|PromotionGoodsConstructor markedAsDeleted()
+ * @method static Builder|PromotionGoodsConstructor needsIndex()
+ * @method static Builder|PromotionGoodsConstructor needsMigrate()
  * @method static Builder|PromotionGoodsConstructor newModelQuery()
  * @method static Builder|PromotionGoodsConstructor newQuery()
  * @method static Builder|PromotionGoodsConstructor query()
@@ -41,7 +46,6 @@ class PromotionGoodsConstructor extends Model
     use HasFactory;
     use HasFillable;
 
-
     protected $fillable = [
         'id',
         'constructor_id',
@@ -53,6 +57,26 @@ class PromotionGoodsConstructor extends Model
 
     public function goods(): BelongsTo
     {
-        return $this->belongsTo(Goods::class);
+        return $this->belongsTo(Goods::class)->withDefault();
+    }
+
+    public function constructor(): BelongsTo
+    {
+        return $this->belongsTo(PromotionConstructor::class, 'constructor_id')->withDefault();
+    }
+
+    public function scopeMarkedAsDeleted(Builder $builder): Builder
+    {
+        return $builder->where('is_deleted', 1);
+    }
+
+    public function scopeNeedsIndex(Builder $builder): Builder
+    {
+        return $builder->where('needs_index', 1);
+    }
+
+    public function scopeNeedsMigrate(Builder $builder): Builder
+    {
+        return $builder->where('needs_migrate', 1);
     }
 }

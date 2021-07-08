@@ -2,12 +2,16 @@
 
 namespace App\Models\Eloquent;
 
+use App\Casts\Translatable;
 use App\Traits\Eloquent\HasFillable;
-
+use App\Traits\Eloquent\HasTranslations;
+use Database\Factories\Eloquent\ProducerFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -17,8 +21,6 @@ use Illuminate\Support\Carbon;
  * @property int|null $order_for_promotion
  * @property int|null $producer_rank
  * @property string|null $name
- * @property string|null $title
- * @property string|null $title_rus
  * @property string|null $ext_id
  * @property string|null $text
  * @property string|null $status
@@ -30,6 +32,13 @@ use Illuminate\Support\Carbon;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property int $needs_index
+ * @property-read Collection|Goods[] $goods
+ * @property-read int|null $goods_count
+ * @property-read Collection|ProducerTranslation[] $translations
+ * @property-read int|null $translations_count
+ * @property array<string> $title title translations
+ * @method static ProducerFactory factory(...$parameters)
+ * @method static Builder|Producer needsIndex()
  * @method static Builder|Producer newModelQuery()
  * @method static Builder|Producer newQuery()
  * @method static Builder|Producer query()
@@ -47,8 +56,6 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Producer whereShowLogo($value)
  * @method static Builder|Producer whereStatus($value)
  * @method static Builder|Producer whereText($value)
- * @method static Builder|Producer whereTitle($value)
- * @method static Builder|Producer whereTitleRus($value)
  * @method static Builder|Producer whereUpdatedAt($value)
  * @mixin Eloquent
  */
@@ -56,16 +63,16 @@ class Producer extends Model
 {
     use HasFactory;
     use HasFillable;
+    use HasTranslations;
 
+    public $incrementing = false;
 
     protected $fillable = [
         'id',
         'order_for_promotion',
         'producer_rank',
-        'rank',
         'name',
         'title',
-        'title_rus',
         'ext_id',
         'text',
         'status',
@@ -76,4 +83,18 @@ class Producer extends Model
         'is_deleted',
         'needs_index',
     ];
+
+    protected $casts = [
+        'title' => Translatable::class,
+    ];
+
+    public function goods(): HasMany
+    {
+        return $this->hasMany(Goods::class);
+    }
+
+    public function scopeNeedsIndex(Builder $builder): Builder
+    {
+        return $builder->where('needs_index', 1);
+    }
 }

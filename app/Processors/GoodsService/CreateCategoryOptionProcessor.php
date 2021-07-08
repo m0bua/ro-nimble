@@ -2,19 +2,19 @@
 
 namespace App\Processors\GoodsService;
 
-use App\Cores\ConsumerCore\Interfaces\MessageInterface;
-use App\Cores\ConsumerCore\Interfaces\ProcessorInterface;
-use App\Cores\Shared\Codes;
 use App\Models\Eloquent\CategoryOption;
-use Illuminate\Support\Arr;
+use App\Processors\AbstractProcessor;
+use App\Processors\Traits\WithCreate;
 
-class CreateCategoryOptionProcessor implements ProcessorInterface
+class CreateCategoryOptionProcessor extends AbstractProcessor
 {
-    /**
-     * Eloquent model for updating data
-     *
-     * @var CategoryOption
-     */
+    use WithCreate;
+
+    public static ?array $compoundKey = [
+        'category_id',
+        'option_id',
+    ];
+
     protected CategoryOption $model;
 
     /**
@@ -24,16 +24,5 @@ class CreateCategoryOptionProcessor implements ProcessorInterface
     public function __construct(CategoryOption $model)
     {
         $this->model = $model;
-    }
-
-    public function processMessage(MessageInterface $message): int
-    {
-        $fillable = $this->model->getFillable();
-        $rawData = (array)$message->getField('data');
-        $data = Arr::only($rawData, $fillable);
-
-        $this->model->insertOrIgnore($data);
-
-        return Codes::SUCCESS;
     }
 }

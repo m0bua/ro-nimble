@@ -2,6 +2,8 @@
 
 namespace App\Traits\Eloquent;
 
+use App\Casts\Translatable;
+
 trait HasFillable
 {
     /**
@@ -11,6 +13,15 @@ trait HasFillable
      */
     public function getFillable(): array
     {
-        return $this->fillable;
+        $translatableCasts = $this->getTranslatableProperties();
+        return array_filter($this->fillable, fn($key) => !in_array($key, $translatableCasts, true));
+    }
+
+    /**
+     * @return array<string>
+     */
+    public function getTranslatableProperties(): array
+    {
+        return array_keys($this->casts, Translatable::class);
     }
 }

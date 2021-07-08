@@ -23,6 +23,7 @@
         "psr/log": "1.1.4"
     },
     "require-dev": {
+        "roave/security-advisories": "dev-latest",
         "automation-testing-tools/codeception-test-helper": "^2.0",
         "codeception/module-asserts": "^1.0.0",
         "barryvdh/laravel-ide-helper": "2.10",

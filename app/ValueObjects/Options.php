@@ -99,21 +99,18 @@ class Options implements OptionsInterface
             return;
         }
 
-        foreach($data as $option) {
+        foreach ($data as $option) {
             if (!$option || !is_array($option)) {
                 continue;
             }
-
             $details = $option['details'];
-
             if (is_null($details) || $details['state'] != self::STATUS_ACTIVE) {
                 continue;
             }
-
             if (in_array($details['type'], self::OPTIONS_BY_TYPES['values'])) {
                 if (!empty($option['values'])) {
                     $this->options[] = $details['id'];
-                    $this->optionNames[] = (string) $details['name'];
+                    $this->optionNames[] = (string)$details['name'];
 
                     foreach ($option['values'] as $value) {
                         if ($value['status'] != self::STATUS_ACTIVE) {
@@ -121,18 +118,18 @@ class Options implements OptionsInterface
                         }
 
                         $this->optionValues[] = $value['id'];
-                        $this->optionValuesNames[] = (string) $value['name'];
+                        $this->optionValuesNames[] = (string)$value['name'];
                     }
                 }
             } elseif (in_array($details['type'], self::OPTIONS_BY_TYPES['integers'])) {
                 $this->optionSliders[] = [
-                    'id' => (int) $details['id'],
+                    'id' => (int)$details['id'],
                     'name' => $details['name'],
-                    'value' => (float) $option['value']
+                    'value' => (float)$option['value']
                 ];
             } elseif (in_array($details['type'], self::OPTIONS_BY_TYPES['booleans'])) {
                 $this->optionChecked[] = $details['id'];
-                $this->optionCheckedNames[] = (string) $details['name'];
+                $this->optionCheckedNames[] = (string)$details['name'];
             }
         }
     }

@@ -2,10 +2,13 @@
 
 namespace App\Models\Eloquent;
 
+use App\Casts\Translatable;
 use App\Traits\Eloquent\HasFillable;
-
+use App\Traits\Eloquent\HasTranslations;
+use Database\Factories\Eloquent\OptionSettingFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -25,7 +28,6 @@ use Illuminate\Support\Carbon;
  * @property bool|null $show_selected_filter_title
  * @property bool|null $option_to_print
  * @property bool|null $is_searchable
- * @property string|null $unit
  * @property string|null $comment
  * @property string|null $template
  * @property string|null $comparable
@@ -33,7 +35,6 @@ use Illuminate\Support\Carbon;
  * @property bool|null $strict_equal_similars
  * @property bool|null $hide_block_in_filter
  * @property string|null $special_combobox_view
- * @property string|null $more_word
  * @property bool|null $disallow_import_filters_orders
  * @property string|null $number_template
  * @property bool|null $get_from_standard
@@ -41,6 +42,11 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Category|null $category
  * @property-read Option|null $option
+ * @property-read Collection|OptionSettingTranslation[] $translations
+ * @property-read int|null $translations_count
+ * @property array<string> $unit unit translations
+ * @property array<string> $more_word more_word translations
+ * @method static OptionSettingFactory factory(...$parameters)
  * @method static Builder|OptionSetting newModelQuery()
  * @method static Builder|OptionSetting newQuery()
  * @method static Builder|OptionSetting query()
@@ -55,7 +61,6 @@ use Illuminate\Support\Carbon;
  * @method static Builder|OptionSetting whereInShortDescription($value)
  * @method static Builder|OptionSetting whereIsComparable($value)
  * @method static Builder|OptionSetting whereIsSearchable($value)
- * @method static Builder|OptionSetting whereMoreWord($value)
  * @method static Builder|OptionSetting whereNumberTemplate($value)
  * @method static Builder|OptionSetting whereOptionId($value)
  * @method static Builder|OptionSetting whereOptionToPrint($value)
@@ -66,7 +71,6 @@ use Illuminate\Support\Carbon;
  * @method static Builder|OptionSetting whereStatus($value)
  * @method static Builder|OptionSetting whereStrictEqualSimilars($value)
  * @method static Builder|OptionSetting whereTemplate($value)
- * @method static Builder|OptionSetting whereUnit($value)
  * @method static Builder|OptionSetting whereUpdatedAt($value)
  * @method static Builder|OptionSetting whereWeight($value)
  * @mixin Eloquent
@@ -75,7 +79,9 @@ class OptionSetting extends Model
 {
     use HasFactory;
     use HasFillable;
+    use HasTranslations;
 
+    public $incrementing = false;
 
     protected $fillable = [
         'id',
@@ -103,28 +109,18 @@ class OptionSetting extends Model
         'get_from_standard',
     ];
 
-    public function getBoolAttributes(): array
-    {
-        return [
-            'in_short_description',
-            'is_comparable',
-            'show_selected_filter_title',
-            'option_to_print',
-            'is_searchable',
-            'strict_equal_similars',
-            'hide_block_in_filter',
-            'disallow_import_filters_orders',
-            'get_from_standard',
-        ];
-    }
+    protected $casts = [
+        'unit' => Translatable::class,
+        'more_word' => Translatable::class,
+    ];
 
     public function category(): BelongsTo
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(Category::class)->withDefault();
     }
 
     public function option(): BelongsTo
     {
-        return $this->belongsTo(Option::class);
+        return $this->belongsTo(Option::class)->withDefault();
     }
 }

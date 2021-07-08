@@ -2,18 +2,30 @@
 
 namespace App\Processors\MarketingService;
 
-use App\Cores\ConsumerCore\Interfaces\MessageInterface;
-use App\Cores\ConsumerCore\Interfaces\ProcessorInterface;
-use App\Cores\Shared\Codes;
 use App\Models\Eloquent\PromotionGroupConstructor;
+use App\Processors\AbstractProcessor;
+use App\Processors\Traits\WithUpsert;
 
-class ChangePromotionConstructorGroupProcessor implements ProcessorInterface
+class ChangePromotionConstructorGroupProcessor extends AbstractProcessor
 {
-    /**
-     * Eloquent model for updating data
-     *
-     * @var PromotionGroupConstructor
-     */
+    use WithUpsert;
+
+    public static array $uniqueBy = [
+        'constructor_id',
+        'group_id',
+    ];
+
+    public static ?string $dataRoot = 'fields_data';
+
+    public static ?array $compoundKey = [
+        'constructor_id',
+        'group_id',
+    ];
+
+    protected static array $aliases = [
+        'promotion_constructor_id' => 'constructor_id',
+    ];
+
     protected PromotionGroupConstructor $model;
 
     /**
@@ -25,23 +37,24 @@ class ChangePromotionConstructorGroupProcessor implements ProcessorInterface
         $this->model = $model;
     }
 
-    public function processMessage(MessageInterface $message): int
+    /**
+     * Update or create entity
+     *
+     * @param array<string>|string $uniqueBy
+     * @param array<string>|null $update
+     * @return bool
+     */
+    protected function upsertModel($uniqueBy, ?array $update = null): bool
     {
-        $constructorId = $message->getField('fields_data.promotion_constructor_id');
-        $groupId = $message->getField('fields_data.group_id');
+        $data = $this->prepareData();
+        $data['needs_index'] = 1;
+        $data['needs_migrate'] = 1;
 
-        $this->model
+        $this->model->upsert($data, $uniqueBy, $update);
 
-            ->updateOrCreate(
-                [
-                    'constructor_id' => $constructorId,
-                    'group_id' => $groupId,
-                ],
-                [
-                    'needs_index' => 1,
-                    'needs_migrate' => 1,
-                ]);
+        // saving translations after creating record if we can do that
+        $this->saveTranslations();
 
-        return Codes::SUCCESS;
+        return true;
     }
 }

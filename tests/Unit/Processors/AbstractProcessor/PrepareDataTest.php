@@ -22,7 +22,7 @@ class PrepareDataTest extends TestCase
         return new TestProcessor(new TestModel());
     }
 
-    public function testWithoutAliases()
+    public function testItWillReturnDataWithoutAliases(): void
     {
         $data = [
             'field1' => 'value1',
@@ -35,7 +35,7 @@ class PrepareDataTest extends TestCase
         $this->assertEquals($data, $result);
     }
 
-    public function testWithAliases()
+    public function testItWillReturnDataWithAliases(): void
     {
         $data = [
             'field1' => 'value1',
