@@ -21,11 +21,11 @@ class ChunkCursor implements ChunkInterface
         $sql = vsprintf(str_replace('?', '%s', $addSlashes), $query->getBindings());
         $cursorName = "cursor_" . md5(microtime(true));
 
-        DB::connection('nimble_read')->beginTransaction();
-        DB::connection('nimble_read')->select("DECLARE {$cursorName} CURSOR FOR {$sql}");
+        DB::beginTransaction();
+        DB::select("DECLARE {$cursorName} CURSOR FOR {$sql}");
 
         do {
-            $result = DB::connection('nimble_read')->select("FETCH {$chunkSize} FROM {$cursorName}");
+            $result = DB::select("FETCH {$chunkSize} FROM {$cursorName}");
             $resultCount = count($result);
 
             if ($resultCount == 0) {
@@ -43,7 +43,7 @@ class ChunkCursor implements ChunkInterface
 
         } while($resultCount == $chunkSize);
 
-        DB::connection('nimble_read')->select("CLOSE {$cursorName}");
-        DB::connection('nimble_read')->commit();
+        DB::select("CLOSE {$cursorName}");
+        DB::commit();
     }
 }
