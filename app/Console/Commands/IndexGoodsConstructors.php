@@ -42,8 +42,7 @@ class IndexGoodsConstructors extends ExtCommand
      */
     protected function extHandle()
     {
-        $constructorsGoodsQuery = DB::connection('nimble_read')
-            ->table('promotion_goods_constructors as pgc')
+        $constructorsGoodsQuery = DB::table('promotion_goods_constructors as pgc')
             ->select([
                 'pc.id',
                 'pc.promotion_id',

@@ -43,8 +43,7 @@ class DeleteMarkedGoodsCommand extends ExtCommand
      */
     protected function extHandle()
     {
-        $goodsQuery = DB::connection('nimble_read')
-            ->table('goods')
+        $goodsQuery = DB::table('goods')
             ->select('id')
             ->where(['is_deleted' => 1])
             ->limit(self::GOODS_COUNT_LIMIT);

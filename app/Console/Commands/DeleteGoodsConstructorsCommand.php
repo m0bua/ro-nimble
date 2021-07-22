@@ -41,8 +41,7 @@ class DeleteGoodsConstructorsCommand extends ExtCommand
      */
     protected function extHandle()
     {
-        $deleted = DB::connection('nimble_read')
-            ->table('promotion_goods_constructors')
+        $deleted = DB::table('promotion_goods_constructors')
             ->select(['constructor_id', 'goods_id'])
             ->where(['is_deleted' => 1])
             ->get();

@@ -61,8 +61,7 @@ class IndexProducers extends ExtCommand
      */
     public function fillIndex()
     {
-        $producersQuery = DB::connection('nimble_read')
-            ->table('producers as p')
+        $producersQuery = DB::table('producers as p')
             ->select([
                 'p.id',
                 'p.name',

@@ -41,8 +41,7 @@ class DeleteGroupsConstructorsCommand extends ExtCommand
      */
     protected function extHandle()
     {
-        $deleted = DB::connection('nimble_read')
-            ->table('promotion_groups_constructors')
+        $deleted = DB::table('promotion_groups_constructors')
             ->select(['constructor_id', 'group_id'])
             ->where(['is_deleted' => 1])
             ->get();
@@ -50,8 +49,7 @@ class DeleteGroupsConstructorsCommand extends ExtCommand
         $params = ['body' => []];
         $deleted->map(function ($item) use (&$params) {
 
-            $goods = DB::connection('nimble_read')
-                ->table('goods')
+            $goods = DB::table('goods')
                 ->select(['id'])
                 ->where(['group_id' => $item->group_id])
                 ->get();

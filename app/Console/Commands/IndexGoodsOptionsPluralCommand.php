@@ -43,8 +43,7 @@ class IndexGoodsOptionsPluralCommand extends ExtCommand
      */
     protected function extHandle()
     {
-        $baseQuery = DB::connection('nimble_read')
-            ->table('goods_options_plural as gol')
+        $baseQuery = DB::table('goods_options_plural as gol')
             ->select([
                 'gol.goods_id',
                 'gol.option_id',

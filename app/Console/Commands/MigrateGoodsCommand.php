@@ -109,8 +109,7 @@ class MigrateGoodsCommand extends ExtCommand
         $query = null;
         switch ($this->entity) {
             case self::ENTITY_GROUPS:
-                $query = DB::connection('nimble_read')
-                    ->table("{$table} as main_table")
+                $query = DB::table("{$table} as main_table")
                     ->select([
                         'main_table.id as primary_id',
                         "main_table.{$searchField}",
@@ -118,8 +117,7 @@ class MigrateGoodsCommand extends ExtCommand
                     ->where(['needs_migrate' => $indexCondition]);
                 break;
             case self::ENTITY_GOODS:
-                $query = DB::connection('nimble_read')
-                    ->table("{$table} as main_table")
+                $query = DB::table("{$table} as main_table")
                     ->select([
                         'main_table.id as primary_id',
                         "main_table.{$searchField}",
