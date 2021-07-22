@@ -36,7 +36,7 @@ class CreateCategoryEntityProcessor implements ProcessorInterface
         $rawData = (array)$message->getField('data');
         $data = Arr::only($rawData, $fillable);
 
-        $this->model->write()->insertOrIgnore($data);
+        $this->model->insertOrIgnore($data);
 
         return Codes::SUCCESS;
     }

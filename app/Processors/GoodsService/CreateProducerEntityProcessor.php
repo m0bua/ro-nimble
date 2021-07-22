@@ -32,7 +32,7 @@ class CreateProducerEntityProcessor implements ProcessorInterface
         $rawData = (array)$message->getField('data');
         $data = Arr::only($rawData, $fillable);
 
-        $this->model->write()->create([
+        $this->model->create([
             'id' => $data['id'] ?? null,
             'ext_id' => $data['ext_id'] ?? null,
             'title' => $data['title'] ?? null,

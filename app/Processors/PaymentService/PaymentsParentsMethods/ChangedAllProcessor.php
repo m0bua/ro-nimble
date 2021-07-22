@@ -31,7 +31,7 @@ class ChangedAllProcessor implements ProcessorInterface
         $rawData = (array)$message->getField('fields_data');
         $data = Arr::only($rawData, $fields);
 
-        $this->model->write()->upsert($data, 'id', Arr::except($data, 'id'));
+        $this->model->upsert($data, 'id', Arr::except($data, 'id'));
 
         return Codes::SUCCESS;
     }

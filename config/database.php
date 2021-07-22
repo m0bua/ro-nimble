@@ -1,14 +1,20 @@
 <?php
 return [
     'migrations' => 'migrations',
-    'default' => env('DB_CONNECTION_READ'),
-    'write' => env('DB_CONNECTION'),
+    'default' => 'nimble',
     'connections' => [
         'nimble' => [
+            'read' => [
+                'host' => env('DB_HOST_READ', 'localhost'),
+                'port' => env('DB_PORT_READ', 5432),
+            ],
+            'write' => [
+                'host' => env('DB_HOST', 'localhost'),
+                'port' => env('DB_PORT', 5432),
+            ],
             'driver'   => 'pgsql',
             'host'     => env('DB_HOST', 'localhost'),
             'database' => env('DB_DATABASE', 'postgres'),
-            'port'     => env('DB_PORT', 5432),
             'username' => env('DB_USERNAME', 'postgres'),
             'password' => env('DB_PASSWORD', 'postgres'),
             'prefix'   => '',
@@ -16,20 +22,6 @@ return [
             'sslmode'  => 'prefer',
             'options'  => [
                 PDO::ATTR_EMULATE_PREPARES => true,
-            ],
-        ],
-        'nimble_read' => [
-            'driver'   => 'pgsql',
-            'host'     => env('DB_HOST_READ', 'localhost'),
-            'database' => env('DB_DATABASE', 'postgres'),
-            'port'     => env('DB_PORT_READ', 5432),
-            'username' => env('DB_USERNAME', 'postgres'),
-            'password' => env('DB_PASSWORD', 'postgres'),
-            'prefix'   => '',
-            'schema'   => 'public',
-            'sslmode'  => 'prefer',
-            'options'  => [
-                PDO::ATTR_EMULATE_PREPARES => true
             ],
         ],
         'store' => [

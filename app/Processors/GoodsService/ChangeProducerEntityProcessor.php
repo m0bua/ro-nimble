@@ -30,7 +30,7 @@ class ChangeProducerEntityProcessor implements ProcessorInterface
         $producerData = (array)$message->getField('data');
 
         $this->model
-            ->write()
+
             ->where('id', $producerData['id'])
             ->update([
                 'id' => $producerData['id'] ?? null,

@@ -40,7 +40,7 @@ class ChangeCategoryOptionProcessor implements ProcessorInterface
         $optionId = $rawData['option_id'];
 
         $this->model
-            ->write()
+
             ->whereCategoryId($categoryId)
             ->whereOptionId($optionId)
             ->update($data);

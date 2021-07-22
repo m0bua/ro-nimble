@@ -6,8 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 class ReworkOfTimestampsInCategoriesTable extends Migration
 {
-    protected $connection = 'nimble';
-
     /**
      * Run the migrations.
      *

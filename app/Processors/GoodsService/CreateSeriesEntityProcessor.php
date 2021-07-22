@@ -36,7 +36,7 @@ class CreateSeriesEntityProcessor implements ProcessorInterface
         $rawData = (array)$message->getField('data');
         $data = Arr::only($rawData, $fillable);
 
-        $this->model->write()->create($data);
+        $this->model->create($data);
 
         return Codes::SUCCESS;
     }

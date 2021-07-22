@@ -31,7 +31,7 @@ class CreateGoodsEntityProcessor implements ProcessorInterface
         $rawData = (array)$message->getField('data');
         $data = Arr::only($rawData, $this->model->getFillable());
 
-        $this->model->write()->insertOrIgnore($data);
+        $this->model->insertOrIgnore($data);
 
         return Codes::SUCCESS;
     }

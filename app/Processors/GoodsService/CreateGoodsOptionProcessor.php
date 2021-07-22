@@ -37,7 +37,7 @@ class CreateGoodsOptionProcessor implements ProcessorInterface
         $data = (array)$message->getField('data');
 
         $this->model
-            ->write()
+
             ->create([
                 'goods_id' => $data['goods_id'],
                 'option_id' => $data['option_id'],
@@ -46,7 +46,7 @@ class CreateGoodsOptionProcessor implements ProcessorInterface
             ]);
 
         $this->goods
-            ->write()
+
             ->where('id', $data['goods_id'])
             ->update(['needs_index' => 1]);
 

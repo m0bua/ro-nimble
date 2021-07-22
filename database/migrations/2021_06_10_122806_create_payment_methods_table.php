@@ -6,8 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 class CreatePaymentMethodsTable extends Migration
 {
-    protected $connection = 'nimble';
-
     /**
      * Run the migrations.
      *

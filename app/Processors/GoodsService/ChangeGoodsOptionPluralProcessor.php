@@ -53,7 +53,7 @@ class ChangeGoodsOptionPluralProcessor implements ProcessorInterface
 
         if (!$goods || $goods->needs_index != 1) {
             $this->goods
-                ->write()
+
                 ->whereId($data['goods_id'])
                 ->update(['needs_index' => 1]);
         }

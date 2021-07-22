@@ -29,7 +29,7 @@ class DeleteProducerEntityProcessor implements ProcessorInterface
     {
         $id = $message->getField('id');
 
-        $this->model->write()->whereId($id)->delete();
+        $this->model->whereId($id)->delete();
 
         return Codes::SUCCESS;
     }

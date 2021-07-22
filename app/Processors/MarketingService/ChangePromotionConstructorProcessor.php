@@ -32,7 +32,7 @@ class ChangePromotionConstructorProcessor implements ProcessorInterface
         $giftId = $message->getField('fields_data.gift_id');
 
         $this->model
-            ->write()
+
             ->updateOrCreate(
                 [
                     'id' => $id,

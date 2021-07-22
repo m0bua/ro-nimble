@@ -32,7 +32,7 @@ class DeletePromotionConstructorGroupProcessor implements ProcessorInterface
     public function processMessage(MessageInterface $message): int
     {
         $this->model
-            ->write()
+
             ->where('constructor_id', $message->getField('fields_data.promotion_constructor_id'))
             ->where('group_id', $message->getField('fields_data.group_id'))
             ->update(['is_deleted' => 1]);

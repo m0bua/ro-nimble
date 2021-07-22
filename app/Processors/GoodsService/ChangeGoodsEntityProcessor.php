@@ -33,7 +33,7 @@ class ChangeGoodsEntityProcessor implements ProcessorInterface
         $data = Arr::only($rawData, $fillable);
         $data['needs_index'] = 1;
 
-        $this->model->write()->whereId($rawData['id'])->update($data);
+        $this->model->whereId($rawData['id'])->update($data);
 
         return Codes::SUCCESS;
     }

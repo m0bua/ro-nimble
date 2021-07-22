@@ -3,7 +3,7 @@
 namespace App\Models\Eloquent;
 
 use App\Traits\Eloquent\HasFillable;
-use App\Traits\Eloquent\HasWriteDb;
+
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -71,7 +71,7 @@ class Goods extends Model
 {
     use HasFactory;
     use HasFillable;
-    use HasWriteDb;
+
 
     protected $fillable = [
         'id',

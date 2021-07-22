@@ -31,7 +31,7 @@ class ChangePromotionConstructorGroupProcessor implements ProcessorInterface
         $groupId = $message->getField('fields_data.group_id');
 
         $this->model
-            ->write()
+
             ->updateOrCreate(
                 [
                     'constructor_id' => $constructorId,

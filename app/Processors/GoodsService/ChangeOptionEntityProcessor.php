@@ -43,7 +43,7 @@ class ChangeOptionEntityProcessor implements ProcessorInterface
         }
 
         $this->model
-            ->write()
+
             ->where('id', $rawData['id'])
             ->update($data);
 

@@ -29,7 +29,7 @@ class DeleteAllProcessor implements ProcessorInterface
         $goodsId = $message->getField('goods_id');
         $paymentMethodIds = $message->getField('credit_methods_for_goods');
 
-        $goods = $this->model->write()->findOrNew($goodsId);
+        $goods = $this->model->findOrNew($goodsId);
         if (!$goods->exists) {
             $goods->id = $goodsId;
         }

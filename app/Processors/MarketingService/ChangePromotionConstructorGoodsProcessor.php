@@ -31,7 +31,7 @@ class ChangePromotionConstructorGoodsProcessor implements ProcessorInterface
         $goodsId = $message->getField('fields_data.goods_id');
 
         $this->model
-            ->write()
+
             ->updateOrCreate(
                 [
                     'constructor_id' => $constructorId,

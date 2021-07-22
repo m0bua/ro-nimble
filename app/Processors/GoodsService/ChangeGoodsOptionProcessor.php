@@ -35,7 +35,7 @@ class ChangeGoodsOptionProcessor implements ProcessorInterface
         $data = (array)$message->getField('data');
 
         $this->model
-            ->write()
+
             ->where('goods_id', $data['goods_id'])
             ->where('option_id', $data['option_id'])
             ->update([
@@ -50,7 +50,7 @@ class ChangeGoodsOptionProcessor implements ProcessorInterface
 
         if (!$goods || $goods->needs_index != 1) {
             $this->goods
-                ->write()
+
                 ->where('id', $data['goods_id'])
                 ->update(['needs_index' => 1]);
         }

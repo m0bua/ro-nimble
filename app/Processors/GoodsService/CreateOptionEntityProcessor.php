@@ -30,7 +30,7 @@ class CreateOptionEntityProcessor implements ProcessorInterface
         $data = (array)$message->getField('data');
 
         $this->model
-            ->write()
+
             ->insertOrIgnore([
                 'id' => $data['id'],
                 'title' => $data['title'],
