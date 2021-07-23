@@ -19,7 +19,7 @@ services:
     image: selfi-php
     volumes:
       - ./:/var/www/selection-api
-      - ~/.ssh:/home/www-data/.ssh
+      - ~/.ssh:/root/.ssh
     extra_hosts:
       - "selection-api.local : ${DOCKER_NETWORK:-172.33.0}.2"
     networks:
