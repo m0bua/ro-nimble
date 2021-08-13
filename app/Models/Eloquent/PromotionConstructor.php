@@ -16,7 +16,6 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property int $promotion_id
  * @property int|null $gift_id
- * @property int $needs_index
  * @property int $is_deleted
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -27,7 +26,6 @@ use Illuminate\Support\Carbon;
  * @method static Builder|PromotionConstructor whereGiftId($value)
  * @method static Builder|PromotionConstructor whereId($value)
  * @method static Builder|PromotionConstructor whereIsDeleted($value)
- * @method static Builder|PromotionConstructor whereNeedsIndex($value)
  * @method static Builder|PromotionConstructor wherePromotionId($value)
  * @method static Builder|PromotionConstructor whereUpdatedAt($value)
  * @mixin Eloquent
@@ -42,7 +40,6 @@ class PromotionConstructor extends Model
         'id',
         'promotion_id',
         'gift_id',
-        'needs_index',
         'is_deleted',
     ];
 }
