@@ -64,8 +64,7 @@ class Kernel extends ConsoleKernel
         $schedule->command(IndexMarkedGoodsCommand::class)->runInBackground()->withoutOverlapping();
         $schedule->command(IndexGoodsOptionsCommand::class)->runInBackground()->withoutOverlapping();
         $schedule->command(IndexGoodsOptionsPluralCommand::class)->runInBackground()->withoutOverlapping();
-        $schedule->command(IndexGoodsConstructors::class)->runInBackground()->withoutOverlapping();
-        $schedule->command(IndexGoodsGroupsConstructors::class)->runInBackground()->withoutOverlapping();
+
         $schedule->command(IndexGoodsProducersCommand::class)->runInBackground()->withoutOverlapping();
         $schedule->command(IndexProducers::class)->hourlyAt(10)->runInBackground()->withoutOverlapping();
 
@@ -73,5 +72,8 @@ class Kernel extends ConsoleKernel
         $schedule->command(DeleteConstructorsCommand::class)->runInBackground()->withoutOverlapping();
         $schedule->command(DeleteGroupsConstructorsCommand::class)->runInBackground()->withoutOverlapping();
         $schedule->command(DeleteGoodsConstructorsCommand::class)->runInBackground()->withoutOverlapping();
+
+        $schedule->command(IndexGoodsConstructors::class)->withoutOverlapping();
+        $schedule->command(IndexGoodsGroupsConstructors::class)->withoutOverlapping();
     }
 }
