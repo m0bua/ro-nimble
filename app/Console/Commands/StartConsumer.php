@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Cores\ConsumerCore\Consumer;
 use App\Cores\ConsumerCore\Interfaces\MessageInterface;
-use App\Cores\ConsumerCore\Loggers\ConsumerErrorLogger;
 use App\Cores\ConsumerCore\Loggers\ConsumerInfoLogger;
 use App\Cores\ConsumerCore\Processor;
 use Exception;
@@ -13,28 +12,34 @@ use Illuminate\Console\Command;
 class StartConsumer extends Command
 {
     /**
+     * The name and signature of the console command.
+     *
      * @var string
      */
-    protected $signature = 'consumer:start {config} {queue}';
+    protected $signature = 'consumer:start {config} {queue} {--stopWhenProcessed}';
 
     /**
+     * The console command description.
+     *
      * @var string
      */
     protected $description = 'Start RabbitMQ consumer';
 
     /**
-     * Handle command
+     * Execute the console command.
      *
+     * @return int
      * @throws Exception
      */
-    public function handle(): void
+    public function handle(): int
     {
-        $queue = $this->argument('queue');
-        $config = $this->argument('config');
+        $queue = (string)$this->argument('queue');
+        $config = (string)$this->argument('config');
+        $stopWhenProcessed = (bool)$this->option('stopWhenProcessed');
 
         $consumer = new Consumer($config);
+
         $consumer->consume($queue, function (MessageInterface $message, string $iterationHash) use ($config, $queue) {
-            $message->onError()->throwException();
             $processor = new Processor($message);
             $processorName = $processor->getName();
 
@@ -52,7 +57,9 @@ class StartConsumer extends Command
                 );
             });
 
-            $processor->start();
-        });
+            return $processor->start();
+        }, $stopWhenProcessed);
+
+        return 0;
     }
 }

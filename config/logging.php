@@ -44,6 +44,14 @@ return [
             'days' => 14,
         ],
 
+        'message-publisher' => [
+            'driver' => 'daily',
+            'tap' => [DefaultLogger::class],
+            'path' => storage_path('logs/message-publisher.log'),
+            'level' => 'debug',
+            'days' => 14,
+        ],
+
         'stack' => [
             'driver' => 'stack',
             'channels' => ['daily'],

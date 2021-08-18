@@ -24,7 +24,7 @@ class GoodsFactory extends Factory
         $faker = $this->faker;
 
         return [
-            'id' => $faker->unique()->numberBetween(1, 1000),
+            'id' => $faker->unique()->numberBetween(1, 100000),
             'name' => $faker->word,
             'category_id' => $faker->numberBetween(1, 1000),
             'mpath' => $faker->word,

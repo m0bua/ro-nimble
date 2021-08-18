@@ -1,48 +1,32 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models\Elastic;
 
-use App\Helpers\ArrayHelper;
-use App\Helpers\Immutable;
-use App\Interfaces\ElasticInterface;
-use App\ValueObjects\Method;
 use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
 use Exception;
-use Prophecy\Exception\Doubler\MethodNotFoundException;
-use ReflectionClass;
+use Illuminate\Support\Str;
 use ReflectionException;
 
 /**
  * Class Elastic
  * @package App\Models\Elastic
  */
-abstract class Elastic extends Immutable implements ElasticInterface
+abstract class Elastic
 {
     /**
      * @var Client
      */
-    private $client;
-
-    /**
-     * Index associated with the model
-     *
-     * @var string
-     */
-    private $index;
+    private Client $client;
 
     /**
      * Parameters for query
      *
      * @var array
      */
-    private $params;
-
-    /**
-     * @var ReflectionClass
-     */
-    private ReflectionClass $reflectionClass;
+    private array $params;
 
     /**
      * @var array
@@ -51,17 +35,10 @@ abstract class Elastic extends Immutable implements ElasticInterface
 
     /**
      * Elastic constructor.
-     * @throws ReflectionException
-     */
-
-    /**
-     * Elastic constructor.
-     * @throws ReflectionException
      * @throws Exception
      */
     public function __construct()
     {
-        $this->reflectionClass = new ReflectionClass(get_class($this));
         $this->client = ClientBuilder::create()
             ->setHosts(config('database.elasticsearch.hosts'))
             ->setBasicAuthentication(
@@ -69,64 +46,43 @@ abstract class Elastic extends Immutable implements ElasticInterface
                 config('database.elasticsearch.basic_auth.password')
             )
             ->build();
-        $this->index = $this->indexName();
-        $this->checkRequired();
+    }
+
+    abstract public function indexPrefix(): string;
+
+    /**
+     * @return Client
+     */
+    public function getClient(): Client
+    {
+        return $this->client;
     }
 
     /**
-     * Указывает на возможные типы, которые конкретное поле сможет принимать от сторонних сервисов
+     * Устанавливает актуальное имя индекса
      *
-     * @return array
+     * @return string
      */
-    public function typeIndication(): array
+    public function getIndexName(): string
     {
-        return [];
+        return collect(
+                $this->client
+                    ->cat()
+                    ->indices(['index' => $this->indexPrefix() . '_*'])
+            )
+                ->sortByDesc('index')
+                ->pluck('index')
+                ->first() ?? '';
     }
 
     /**
-     * @param string $name
-     * @param array $arguments
-     * @return $this|void
-     * @throws Exception
+     * @return string
      */
-    public function __call(string $name, array $arguments)
+    public function buildNewIndexName(): string
     {
-        $method = new Method($name);
+        $lastVersion = (int)Str::afterLast($this->getIndexName(), '_');
 
-        if (!in_array($method->getPrefix(), [Method::GET, Method::SET])) {
-            throw new MethodNotFoundException("Method {$name} not found.", get_class($this), $name);
-        }
-
-        $property = $method->getNameWithoutPrefix();
-        if ($method->isSet()) {
-            $this->setField($property, array_shift($arguments));
-            return $this;
-        }
-
-        return $this->$property;
-    }
-
-    /**
-     * @param array $data
-     * @param array $changeSetMethod
-     * @return $this
-     */
-    public function load(array $data, array $changeSetMethod = [])
-    {
-        try {
-            foreach ($data as $field => $value) {
-                if (isset($changeSetMethod[$field]) && method_exists($this, $changeSetMethod[$field])) {
-                    $this->{$changeSetMethod[$field]}($value);
-                } else {
-                    $this->{'set_' . $field}($value);
-                }
-            }
-
-            return $this;
-        } catch (\Throwable $t) {
-            report($t);
-            abort(500, $t->getMessage());
-        }
+        return $this->indexPrefix() . '_' . ++$lastVersion;
     }
 
     /**
@@ -141,10 +97,10 @@ abstract class Elastic extends Immutable implements ElasticInterface
     /**
      * @param array $params
      * @return array|callable
+     * @throws Exception
      */
     public function index(array $params = [])
     {
-        $this->checkRequiredIsSet();
         return $this->prepareParams(array_merge(['body' => $this->getAttributes()], $params))->client->index($this->params);
     }
 
@@ -155,6 +111,15 @@ abstract class Elastic extends Immutable implements ElasticInterface
     public function update(array $params = [])
     {
         return $this->client->update($params);
+    }
+
+    /**
+     * @param array $params
+     * @return array|callable
+     */
+    public function reindex(array $params = [])
+    {
+        return $this->client->reindex($params);
     }
 
     /**
@@ -186,6 +151,27 @@ abstract class Elastic extends Immutable implements ElasticInterface
         if ($this->client->exists($this->params)) {
             return $this->client->delete($this->params);
         }
+
+        return [];
+    }
+
+    /**
+     * Get entities by ids from provided index
+     *
+     * @param string $index
+     * @param array $ids
+     * @param bool $withSource
+     * @return array|callable
+     */
+    public function mget(string $index, array $ids, bool $withSource = true)
+    {
+        return $this->client->mget([
+            'index' => $index,
+            '_source' => $withSource,
+            'body' => [
+                'ids' => $ids
+            ],
+        ]);
     }
 
     /**
@@ -211,7 +197,7 @@ abstract class Elastic extends Immutable implements ElasticInterface
      */
     public function one(array $searchResult): array
     {
-        return isset($searchResult[0]) ? $searchResult[0] : $searchResult;
+        return $searchResult[0] ?? $searchResult;
     }
 
     /**
@@ -233,7 +219,7 @@ abstract class Elastic extends Immutable implements ElasticInterface
     public function getAttribute(string $attributeName)
     {
         if (!isset($this->attributes[$attributeName])) {
-            throw new Exception("Attribute {$attributeName} not found");
+            throw new Exception("Attribute $attributeName not found");
         }
 
         return $this->attributes[$attributeName];
@@ -248,74 +234,14 @@ abstract class Elastic extends Immutable implements ElasticInterface
     }
 
     /**
-     * @param string $fieldName
-     * @param $fieldValue
-     * @throws Exception
-     */
-    protected function setField(string $fieldName, $fieldValue)
-    {
-        $typeIndication = $this->typeIndication();
-
-        if (!is_null($fieldValue) && array_key_exists($fieldName, $typeIndication)) {
-            $ownType = $typeIndication[$fieldName]['own_type'];
-            $incomingType = gettype($fieldValue);
-
-            if (in_array($incomingType, $typeIndication[$fieldName]['possible_types'])) {
-                if (!settype($fieldValue, $ownType)) {
-                    throw new Exception("Can't transform type of field '{$fieldName}'. Type expected: {$ownType}; Type given: {$incomingType}");
-                }
-            } else {
-                throw new Exception("Can't resolve type of field '{$fieldName}'. Type expected: {$ownType}; Type given: {$incomingType}");
-            }
-        }
-
-        if (property_exists($this, $fieldName)) {
-            $this->$fieldName = $fieldValue;
-            $this->attributes[$fieldName] = $fieldValue;
-        }
-    }
-
-    /**
      * @param array $params
      * @return $this
      */
     private function prepareParams(array $params = []): self
     {
-        $this->params = array_merge(['index' => $this->index], $params);
+        $this->params = array_merge(['index' => $this->getIndexName()], $params);
 
         return $this;
-    }
-
-    /**
-     * Проверяет на наличие обязательных полей
-     *
-     * @throws Exception
-     */
-    private function checkRequired()
-    {
-        $properties = [];
-        array_map(function ($property) use (&$properties) {
-            if (get_class($this) === $property->class) {
-                $properties[] = $property->getName();
-            }
-        }, $this->reflectionClass->getProperties(\ReflectionProperty::IS_PROTECTED));
-
-        $diff = array_diff($this->requiredFields(), $properties);
-        if (!empty($diff)) {
-            throw new Exception(sprintf("Required fields is missing: %s", join(', ', $diff)));
-        }
-    }
-
-    /**
-     * Проверяет заполнены ли обязательные поля
-     */
-    private function checkRequiredIsSet()
-    {
-        array_map(function ($field) {
-            if (!isset($this->$field)) {
-                throw new Exception(sprintf('Field "%s" can not be null', $field));
-            }
-        }, $this->requiredFields());
     }
 
     /**
@@ -351,10 +277,10 @@ abstract class Elastic extends Immutable implements ElasticInterface
 
     /**
      * Проверка на существование индекса
-     * @param $params
+     * @param string $name
      * @return bool
      */
-    public function existIndex($name): bool
+    public function existIndex(string $name): bool
     {
         return $this->client->indices()->exists([
             'index' => $name
@@ -378,9 +304,10 @@ abstract class Elastic extends Immutable implements ElasticInterface
     /**
      * Генерирует поведение для добавления алиаса
      * @param string $index
+     * @param string|null $alias
      * @return array
      */
-    public function addAliasAction(string $index): array
+    public function addAliasAction(string $index, string $alias): array
     {
         if (!$index || !$this->existIndex($index)) {
             return [];
@@ -389,17 +316,17 @@ abstract class Elastic extends Immutable implements ElasticInterface
         return [
             'add' => [
                 'index' => $index,
-                'alias' => $this->indexName()
+                'alias' => $alias
             ]
         ];
     }
 
     /**
-     * Генерирует поведение для удаления алиаса
      * @param string $index
+     * @param string|null $alias
      * @return array
      */
-    public function removeAliasAction(string $index): array
+    public function removeAliasAction(string $index, string $alias): array
     {
         if (!$index || !$this->existIndex($index)) {
             return [];
@@ -408,8 +335,16 @@ abstract class Elastic extends Immutable implements ElasticInterface
         return [
             'remove' => [
                 'index' => $index,
-                'alias' => $this->indexName()
+                'alias' => $alias
             ]
         ];
+    }
+
+    /**
+     * @return array
+     */
+    public function requiredFields(): array
+    {
+        return [];
     }
 }

@@ -2,10 +2,12 @@
 
 namespace App\Processors\GoodsService;
 
+use App\Console\Commands\IndexRefill;
 use App\Models\Eloquent\Goods;
 use App\Models\Eloquent\GoodsOption;
 use App\Processors\AbstractProcessor;
 use App\Processors\Traits\WithUpdate;
+use Illuminate\Support\Facades\Artisan;
 
 class ChangeGoodsOptionProcessor extends AbstractProcessor
 {
@@ -37,6 +39,6 @@ class ChangeGoodsOptionProcessor extends AbstractProcessor
      */
     protected function afterProcess(): void
     {
-        $this->goods->whereId($this->data['goods_id'])->update(['needs_index' => 1]);
+        Artisan::call(IndexRefill::class, ['--goods-ids' => $this->data['goods_id']]);
     }
 }

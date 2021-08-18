@@ -2,16 +2,17 @@
 
 namespace App\Providers;
 
+use App\Macros\SelectNestedTranslation;
+use App\Macros\SelectTranslation;
 use App\Macros\TrueCursor;
 use Illuminate\Database\Eloquent;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Str;
 
 class AppServiceProvider extends ServiceProvider
 {
-    protected $dbLogQueries = [
+    protected array $dbLogQueries = [
         'update',
         'delete'
     ];
@@ -39,12 +40,58 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->logDbQueries();
+        $this->translatableMacros();
     }
 
     /**
-     *
+     * Declare macro for fetch translations
      */
-    protected function logDbQueries()
+    protected function translatableMacros(): void
+    {
+        Eloquent\Builder::macro('selectTranslation', function (string $field, string $alias = '', string $lang = ''): Eloquent\Builder {
+            return (new SelectTranslation($this, $field, $alias, $lang))->build();
+        });
+
+        Eloquent\Builder::macro('selectTranslations', function (array $fields, string $lang = ''): Eloquent\Builder {
+            $query = $this;
+
+            foreach ($fields as $field) {
+                $query = (new SelectTranslation($query, $field, '', $lang))->build();
+            }
+
+            return $query;
+        });
+
+        Eloquent\Builder::macro('selectNestedTranslation', function (
+            string $targetClass,
+            string $field,
+            string $alias = '',
+            string $targetClassAlias = '',
+            string $lang = ''
+        ): Eloquent\Builder {
+            return (new SelectNestedTranslation($this, $targetClass, $field, $alias, $targetClassAlias, $lang))->build();
+        });
+
+        Eloquent\Builder::macro('selectNestedTranslations', function (
+            string $targetClass,
+            array  $fields,
+            string $targetClassAlias = '',
+            string $lang = ''
+        ): Eloquent\Builder {
+            $query = $this;
+
+            foreach ($fields as $field) {
+                $query = (new SelectNestedTranslation($this, $targetClass, $field, '', $targetClassAlias, $lang))->build();
+            }
+
+            return $query;
+        });
+    }
+
+    /**
+     * Declare query logging
+     */
+    protected function logDbQueries(): void
     {
         DB::listen(function ($query) {
             $queryMatches = [

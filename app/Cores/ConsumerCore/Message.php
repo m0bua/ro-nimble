@@ -9,35 +9,42 @@ use PhpAmqpLib\Message\AMQPMessage;
 class Message implements MessageInterface
 {
     /**
+     * Origin message
+     *
      * @var AMQPMessage
      */
     private AMQPMessage $message;
 
     /**
-     * @var object
+     * Message body
+     *
+     * @var object|array
      */
-    private object $body;
+    private $body;
+
+    /**
+     * Decode message body as array
+     *
+     * @var bool
+     */
+    private bool $asArray;
 
     /**
      * Message constructor.
      * @param AMQPMessage $message
+     * @param bool $asArray
      * @throws Exception
      */
-    public function __construct(AMQPMessage $message)
+    public function __construct(AMQPMessage $message, bool $asArray = false)
     {
         $this->message = $message;
-        $this->body = $this->jsonValidate($this->message->body);
+        $this->asArray = $asArray;
+        $this->setBody($message->body);
     }
 
     /**
-     * @return ErrorMessage
-     */
-    public function onError()
-    {
-        return (new ErrorMessage($this->getError()));
-    }
-
-    /**
+     * Get raw message body
+     *
      * @return string
      */
     public function getMessage(): string
@@ -46,31 +53,17 @@ class Message implements MessageInterface
     }
 
     /**
-     * @return object
+     * @inheritDoc
      */
-    public function getBody(): object
+    public function getBody()
     {
         return $this->body;
     }
 
     /**
-     * @return bool
-     */
-    public function hasError(): bool
-    {
-        return property_exists($this->body, 'json_error') ?? false;
-    }
-
-    /**
-     * @return string
-     */
-    public function getError(): string
-    {
-        return $this->hasError() ? $this->body->json_error : "";
-    }
-
-    /**
-     * @return string
+     * @inheritDoc
+     * @noinspection PhpDeprecationInspection
+     * @noinspection PhpInternalEntityUsedInspection
      */
     public function getRoutingKey(): string
     {
@@ -78,8 +71,7 @@ class Message implements MessageInterface
     }
 
     /**
-     * @param string $fieldRoute
-     * @return mixed
+     * @inheritDoc
      * @throws Exception
      */
     public function getField(string $fieldRoute)
@@ -88,27 +80,61 @@ class Message implements MessageInterface
 
         $routes = explode('.', $fieldRoute);
         foreach ($routes as $route) {
-            if (!property_exists($result, $route)) {
-                throw new Exception("Field \"$route\" does not exists.");
-            }
-            $result = $result->$route;
+            $result = $this->asArray
+                ? $this->getFieldArray($result, $route)
+                : $this->getFieldObject($result, $route);
         }
 
         return $result;
     }
 
     /**
-     * @param string $json
-     * @return object
+     * Perform field as array
+     *
+     * @param array $data
+     * @param string $route
+     * @return mixed
      * @throws Exception
      */
-    private function jsonValidate(string $json): object
+    private function getFieldArray(array $data, string $route)
     {
-        $result = json_decode($json);
+        if (!array_key_exists($route, $data)) {
+            throw new Exception("Field \"$route\" does not exists.");
+        }
+
+        return $data[$route];
+    }
+
+    /**
+     * Perform field as object
+     *
+     * @param object $data
+     * @param string $route
+     * @return mixed
+     * @throws Exception
+     */
+    private function getFieldObject(object $data, string $route)
+    {
+        if (!property_exists($data, $route)) {
+            throw new Exception("Field \"$route\" does not exists.");
+        }
+
+        return $data->$route;
+    }
+
+    /**
+     * Validate and set body
+     *
+     * @param string $json
+     * @throws Exception
+     * @noinspection JsonEncodingApiUsageInspection
+     */
+    private function setBody(string $json): void
+    {
+        $this->body = json_decode($json, $this->asArray);
 
         switch (json_last_error()) {
             case JSON_ERROR_NONE:
-                $error = ''; // JSON is valid
                 break;
             case JSON_ERROR_DEPTH:
                 $error = 'The maximum stack depth has been exceeded.';
@@ -139,10 +165,8 @@ class Message implements MessageInterface
                 break;
         }
 
-        if ($error !== '') {
-            return (object)['json_error' => "$error Json was given: $json"];
+        if (isset($error)) {
+            throw new Exception("$error; Json was given: $json");
         }
-
-        return $result;
     }
 }

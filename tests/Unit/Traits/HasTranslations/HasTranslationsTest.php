@@ -104,7 +104,8 @@ class HasTranslationsTest extends TestCase
     public function testItCannotDefineRelationshipWithIncorrectNamespace(): void
     {
         $this->model = new DummyBroken();
-
+        $this->expectException(LogicException::class);
+        
         $this->expectException(LogicException::class);
         $this->model->translations();
     }

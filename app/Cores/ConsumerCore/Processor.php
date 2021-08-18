@@ -89,8 +89,8 @@ class Processor
     /**
      * Start processing message
      */
-    public function start()
+    public function start(): int
     {
-        $this->processor->processMessage($this->message);
+        return $this->processor->processMessage($this->message);
     }
 }

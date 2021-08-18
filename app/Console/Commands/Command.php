@@ -30,6 +30,8 @@ abstract class Command extends BaseCommand
 
     /**
      * Proceed command execution
+     *
+     * @return void
      */
     protected function proceed(): void
     {

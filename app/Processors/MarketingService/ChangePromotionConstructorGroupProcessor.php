@@ -2,9 +2,12 @@
 
 namespace App\Processors\MarketingService;
 
+use App\Console\Commands\IndexRefill;
+use App\Models\Eloquent\Goods;
 use App\Models\Eloquent\PromotionGroupConstructor;
 use App\Processors\AbstractProcessor;
 use App\Processors\Traits\WithUpsert;
+use Illuminate\Support\Facades\Artisan;
 
 class ChangePromotionConstructorGroupProcessor extends AbstractProcessor
 {
@@ -60,5 +63,15 @@ class ChangePromotionConstructorGroupProcessor extends AbstractProcessor
         $this->saveTranslations();
 
         return true;
+    }
+
+    protected function afterProcess(): void
+    {
+        $goods = Goods::query()
+            ->select('id')
+            ->where('group_id', '=', $this->data['group_id'])
+            ->get();
+
+        Artisan::call(IndexRefill::class, ['--goods-ids' => $goods->pluck('id')->toArray()]);
     }
 }

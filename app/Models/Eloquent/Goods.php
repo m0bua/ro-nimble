@@ -91,6 +91,9 @@ class Goods extends Model
     use HasFillable;
     use HasTranslations;
 
+    public const SELL_STATUS_ARCHIVE = 'archive';
+    public const SELL_STATUS_HIDDEN = 'hidden';
+
     public $incrementing = false;
 
     protected $fillable = [

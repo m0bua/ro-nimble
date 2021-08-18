@@ -114,4 +114,5 @@ return [
 
     'password_timeout' => 10800,
 
+    'selfi_header' => env('X_SELFI_TEAM_HEADER', 'megasecureheader'),
 ];

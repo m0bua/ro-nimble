@@ -19,6 +19,6 @@ class DefaultProcessor extends AbstractProcessor
             'body' => $message->getBody()
         ]);
 
-        return Codes::SKIP;
+        return Codes::REJECT;
     }
 }

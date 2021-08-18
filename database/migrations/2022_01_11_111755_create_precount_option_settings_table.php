@@ -1,0 +1,39 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreatePrecountOptionSettingsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up(): void
+    {
+        if (Schema::hasTable('precount_option_settings')) {
+            return;
+        }
+
+        Schema::create('precount_option_settings', static function (Blueprint $table) {
+            $table->bigInteger('option_id');
+            $table->bigInteger('category_id');
+            $table->bigInteger('options_settings_id');
+            $table->smallInteger('is_deleted')->default(0)->index();
+
+            $table->unique(['option_id', 'category_id']);
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('precount_option_settings');
+    }
+}

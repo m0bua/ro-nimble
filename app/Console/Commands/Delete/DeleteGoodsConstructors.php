@@ -86,7 +86,7 @@ class DeleteGoodsConstructors extends Command
     {
         return [
             'update' => [
-                '_index' => $this->elasticGoods->indexName(),
+                '_index' => $this->elasticGoods->getIndexName(),
                 '_id' => $id,
             ],
         ];

@@ -2,9 +2,11 @@
 
 namespace App\Processors\MarketingService;
 
+use App\Console\Commands\IndexRefill;
 use App\Models\Eloquent\PromotionGoodsConstructor;
 use App\Processors\AbstractProcessor;
 use App\Processors\Traits\WithUpsert;
+use Illuminate\Support\Facades\Artisan;
 
 class ChangePromotionConstructorGoodsProcessor extends AbstractProcessor
 {
@@ -60,5 +62,10 @@ class ChangePromotionConstructorGoodsProcessor extends AbstractProcessor
         $this->saveTranslations();
 
         return true;
+    }
+
+    protected function afterProcess(): void
+    {
+        Artisan::call(IndexRefill::class, ['--goods-ids' => $this->data['goods_id']]);
     }
 }

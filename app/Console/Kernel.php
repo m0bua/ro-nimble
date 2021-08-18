@@ -3,26 +3,15 @@
 namespace App\Console;
 
 use App\Console\Commands\Delete;
-
-use App\Console\Commands\DeleteConstructorsCommand;
-use App\Console\Commands\DeleteGoodsConstructorsCommand;
-use App\Console\Commands\DeleteGroupsConstructorsCommand;
-use App\Console\Commands\DeleteMarkedGoodsCommand;
-
 use App\Console\Commands\Dev;
 use App\Console\Commands\FillLostTranslations;
-use App\Console\Commands\Precount;
-use App\Console\Commands\Index;
-use App\Console\Commands\IndexGoodsCommand;
-use App\Console\Commands\IndexGoodsConstructors;
-use App\Console\Commands\IndexGoodsGroupsConstructors;
-use App\Console\Commands\IndexGoodsOptionsPluralCommand;
-use App\Console\Commands\IndexGoodsProducersCommand;
-use App\Console\Commands\Migrate;
-use App\Console\Commands\MigrateOptionsCommand;
-use App\Console\Commands\MigrateOptionValuesCommand;
-use App\Console\Commands\MigrateProducersCommand;
+use App\Console\Commands\IndexingConsumer;
+use App\Console\Commands\IndexProducers;
+use App\Console\Commands\IndexRefill;
 use App\Console\Commands\StartConsumer;
+use App\Console\Commands\Precount\FillPrecountOptionSettings;
+use App\Console\Commands\Precount\FillPrecountOptionSliders;
+
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -34,40 +23,23 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        StartConsumer::class,
         FillLostTranslations::class,
-
-        IndexGoodsConstructors::class,
-        IndexGoodsGroupsConstructors::class,
-//        Index\IndexGoodsConstructors::class,
-//        Index\IndexGoodsGroupsConstructors::class,
-        Index\IndexGoodsOptions::class,
-//        Index\IndexGoodsOptionsPlural::class,
-        Index\IndexGoodsProducers::class,
-        Index\IndexMarkedGoods::class,
-        Index\IndexProducers::class,
-
-        IndexGoodsOptionsPluralCommand::class,
 
         Delete\DeleteConstructors::class,
         Delete\DeleteGoodsConstructors::class,
         Delete\DeleteGroupsConstructors::class,
         Delete\DeleteMarkedGoods::class,
 
-        Migrate\MigrateGoods::class,
-        Migrate\MigrateOptions::class,
-        Migrate\MigrateOptionValues::class,
-        Migrate\MigrateProducers::class,
-
-        MigrateOptionsCommand::class,
-        MigrateOptionValuesCommand::class,
-        MigrateProducersCommand::class,
-
+        StartConsumer::class,
+        IndexingConsumer::class,
+        IndexRefill::class,
         Dev\TestCommand::class,
         Dev\GenerateModelMeta::class,
 
-        Precount\FillPrecountOptionSettings::class,
-        Precount\FillPrecountOptionSliders::class,
+        IndexProducers::class,
+
+        FillPrecountOptionSettings::class,
+        FillPrecountOptionSliders::class,
     ];
 
     /**
@@ -75,38 +47,17 @@ class Kernel extends ConsoleKernel
      *
      * @param Schedule $schedule
      * @return void
-     * @noinspection ReturnTypeCanBeDeclaredInspection
      */
-    protected function schedule(Schedule $schedule)
+    protected function schedule(Schedule $schedule): void
     {
         $schedule->command(FillLostTranslations::class)->runInBackground()->withoutOverlapping();
 
-        $schedule->command(Migrate\MigrateGoods::class)->runInBackground()->withoutOverlapping();
-        $schedule->command(Migrate\MigrateGoods::class, ['--entity' => 'groups'])->runInBackground()->withoutOverlapping();
+        $schedule->command(IndexProducers::class)->dailyAt('00:00');
+        $schedule->command(IndexRefill::class)->dailyAt('01:00');
 
-        $schedule->command(Index\IndexMarkedGoods::class)->runInBackground()->withoutOverlapping();
-        $schedule->command(Index\IndexGoodsOptions::class)->runInBackground()->withoutOverlapping();
-//        $schedule->command(Index\IndexGoodsOptionsPlural::class)->runInBackground()->withoutOverlapping();
-//        $schedule->command(Index\IndexGoodsProducers::class)->runInBackground()->withoutOverlapping();
-        $schedule->command(Index\IndexProducers::class)->hourlyAt(10)->runInBackground()->withoutOverlapping();
-
-        $schedule->command(Delete\DeleteConstructors::class)->runInBackground()->withoutOverlapping();
-        $schedule->command(Delete\DeleteGoodsConstructors::class)->runInBackground()->withoutOverlapping();
-        $schedule->command(Delete\DeleteGroupsConstructors::class)->runInBackground()->withoutOverlapping();
-        $schedule->command(Delete\DeleteMarkedGoods::class)->runInBackground()->withoutOverlapping();
-
-//        $schedule->command(Index\IndexGoodsConstructors::class)->runInBackground()->withoutOverlapping();
-//        $schedule->command(Index\IndexGoodsGroupsConstructors::class)->runInBackground()->withoutOverlapping();
-        $schedule->command(IndexGoodsConstructors::class)->runInBackground()->withoutOverlapping();
-        $schedule->command(IndexGoodsGroupsConstructors::class)->runInBackground()->withoutOverlapping();
-        $schedule->command(IndexGoodsOptionsPluralCommand::class)->runInBackground()->withoutOverlapping();
-
-//        $this->schedulePrecounts($schedule);
-    }
-
-    private function schedulePrecounts(Schedule $schedule): void
-    {
-        $schedule->command(Precount\FillPrecountOptionSettings::class)->everyThirtyMinutes()->runInBackground()->withoutOverlapping();
-        $schedule->command(Precount\FillPrecountOptionSliders::class)->everyThirtyMinutes()->runInBackground()->withoutOverlapping();
+        $schedule->command(Delete\DeleteMarkedGoods::class);
+        $schedule->command(Delete\DeleteConstructors::class);
+        $schedule->command(Delete\DeleteGroupsConstructors::class);
+        $schedule->command(Delete\DeleteGoodsConstructors::class);
     }
 }

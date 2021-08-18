@@ -49,8 +49,8 @@ class IndexProducers extends ExtCommand
         $this->fillIndex();
 
         $this->elasticProducers->updateAliases([
-            $this->elasticProducers->removeAliasAction($this->elasticProducers->getDeletingIndex()),
-            $this->elasticProducers->addAliasAction($this->elasticProducers->getCreatingIndex())
+            $this->elasticProducers->removeAliasAction($this->elasticProducers->getDeletingIndex(), 'producers'),
+            $this->elasticProducers->addAliasAction($this->elasticProducers->getCreatingIndex(), 'producers')
         ]);
 
         $this->elasticProducers->deleteIndex($this->elasticProducers->getDeletingIndex());

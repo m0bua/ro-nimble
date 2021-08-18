@@ -16,12 +16,12 @@ class GoodsSeeder extends Seeder
      * @return void
      * @throws BindingResolutionException
      */
-    public function run()
+    public function run(): void
     {
         $faker = app()->make(Generator::class);
         $translatableProperties = Goods::make()->getTranslatableProperties();
         Goods::factory()
-            ->count(10)
+            ->count(10000)
             ->create()
             ->each(static function (Goods $goods) use ($translatableProperties, $faker) {
                 foreach ($translatableProperties as $property) {
