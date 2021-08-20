@@ -6,6 +6,8 @@ require 'recipe/common.php';
 
 set('ms_consumer_threads', 5);
 set('gs_consumer_threads', 10);
+set('bs_consumer_threads', 1);
+set('ps_consumer_threads', 1);
 
 // Project name
 set('application', 'ivv-nimble');
@@ -78,6 +80,28 @@ task('consumers:gs:start', function () {
     }
 })->onRoles('app');
 
+task('consumers:bs:stop', function () {
+    run("sudo /usr/bin/systemctl stop bs-consumer@*");
+})->onRoles('app');
+
+task('consumers:bs:start', function () {
+    $numprocs = get('bs_consumer_threads');
+    for ($counter = 1; $counter <= $numprocs; $counter++) {
+        run("sudo /usr/bin/systemctl start bs-consumer@" . $counter);
+    }
+})->onRoles('app');
+
+task('consumers:ps:stop', function () {
+    run("sudo /usr/bin/systemctl stop ps-consumer@*");
+})->onRoles('app');
+
+task('consumers:ps:start', function () {
+    $numprocs = get('ps_consumer_threads');
+    for ($counter = 1; $counter <= $numprocs; $counter++) {
+        run("sudo /usr/bin/systemctl start ps-consumer@" . $counter);
+    }
+})->onRoles('app');
+
 task('deploy:migratedb', function () {
     run('{{bin/php}} {{release_path}}/artisan migrate');
 })->onRoles('app')->once();
@@ -90,6 +114,16 @@ task('consumers:ms:restart', [
 task('consumers:gs:restart', [
     'consumers:gs:stop',
     'consumers:gs:start'
+])->onRoles('app');
+
+task('consumers:bs:restart', [
+    'consumers:bs:stop',
+    'consumers:bs:start'
+])->onRoles('app');
+
+task('consumers:ps:restart', [
+    'consumers:ps:stop',
+    'consumers:ps:start'
 ])->onRoles('app');
 
 task('cachetool:clear:opcache', function () {
@@ -124,9 +158,13 @@ task('deploy', [
 ######## DEPLOY AFTER ###########
 after('deploy:symlink', 'consumers:ms:restart');
 after('deploy:symlink', 'consumers:gs:restart');
+after('deploy:symlink', 'consumers:bs:restart');
+after('deploy:symlink', 'consumers:ps:restart');
 after('deploy:symlink', 'cachetool:clear:opcache');
 after('rollback', 'consumers:ms:restart');
 after('rollback', 'consumers:gs:restart');
+after('rollback', 'consumers:bs:restart');
+after('rollback', 'consumers:ps:restart');
 after('rollback', 'cachetool:clear:opcache');
 
 // If deploy fails automatically unlock.
