@@ -21,10 +21,13 @@ return [
         ],
 
         'consumer_message' => [
-            'driver' => 'daily',
+            'driver' => 'monolog',
+            'handler' => App\Logging\Handlers\RotatingFileHandler::class,
+            'with' => [
+                'filename' => storage_path('logs/consumer-messages.log'),
+                'maxFiles' => 7, // days
+            ],
             'tap' => [ConsumerInfoLogger::class],
-            'path' => storage_path('logs/consumer-messages.log'),
-            'days' => 7,
         ],
 
         'consumer_error_message' => [
