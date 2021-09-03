@@ -20,6 +20,7 @@ services:
     volumes:
       - ./:/var/www/selection-api
       - ~/.ssh:/root/.ssh
+      - ~/.ssh:/home/www-data/.ssh
     extra_hosts:
       - "selection-api.local : ${DOCKER_NETWORK:-172.33.0}.2"
     networks:
