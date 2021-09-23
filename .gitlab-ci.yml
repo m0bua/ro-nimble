@@ -8,6 +8,7 @@ variables:
   CONFIGURATION_MESSAGEBUS_ROUTINGKEY: '#'
   RABBITMQ_DEFAULT_USER: guest
   RABBITMQ_DEFAULT_PASS: guest
+  TELEGRAM_CHAT_ID: "-1001552457457"
 
 before_script:
   - export VAULT_ADDR=https://vault.rozetka.company:8200
@@ -17,7 +18,7 @@ before_script:
 stages:
   - build
   - run_autotest
-  - final
+  - report
   - deploy
   - rollback
   - stop-restart
@@ -102,7 +103,7 @@ run_autotest:
 
 report:
   image: registry.gitlab.rozetka.company/automation-testing-tools/ci-helper-front:allure1.1
-  stage: final
+  stage: report
   except: [ tags ]
   before_script:
     - echo
@@ -247,3 +248,12 @@ start-gs:
   when: manual
   only:
     - master
+
+jirabot:
+  stage: report
+  extends: .jirabot-template
+
+include:
+  - project: 'common/rozetka-pipelines'
+    file: '/support/.jirabot-template.yml'
+
