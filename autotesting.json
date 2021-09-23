@@ -1,0 +1,7 @@
+{
+    "jiraBot": {
+        "mergeRequestWhiteList": [
+            "ivv/nimble"
+        ]
+    }
+}
