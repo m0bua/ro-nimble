@@ -19,19 +19,21 @@ class MigrateGoodsTranslations extends Migration
      */
     public function up(): void
     {
-        /** @var Goods $goods */
-        foreach (Goods::cursor() as $goods) {
-            foreach ($this->translatable as $item) {
-                $value = $goods->getRawOriginal($item);
-                if ($value === null) {
-                    continue;
-                }
+        Goods::chunkById(1000, function ($goods) {
+            /** @var Goods $model */
+            foreach ($goods as $model) {
+                foreach ($this->translatable as $item) {
+                    $value = $model->getRawOriginal($item);
+                    if ($value === null) {
+                        continue;
+                    }
 
-                $goods->$item = [
-                    Language::RU => $value,
-                ];
+                    $model->$item = [
+                        Language::RU => $value,
+                    ];
+                }
             }
-        }
+        });
 
 //        Schema::table('goods', function (Blueprint $table) {
 //            $table->dropColumn($this->translatable);
