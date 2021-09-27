@@ -13,13 +13,13 @@ class MakeGoodsIdAndOptionIdUniqueInGoodsOptionsTable extends Migration
      */
     public function up()
     {
-        Schema::table('goods_options', function (Blueprint $table) {
-            $table->unique([
-                'goods_id',
-                'option_id',
-                'type',
-            ]);
-        });
+//        Schema::table('goods_options', function (Blueprint $table) {
+//            $table->unique([
+//                'goods_id',
+//                'option_id',
+//                'type',
+//            ]);
+//        });
     }
 
     /**
