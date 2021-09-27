@@ -24,23 +24,23 @@ class MigrateOptionValueTranslations extends Migration
      */
     public function up()
     {
-        OptionValue::all()
-            ->each(function (OptionValue $model) {
-                foreach ($this->translatable as $item) {
-                    $value = $model->getRawOriginal($item);
-                    if ($value === null) {
-                        continue;
-                    }
-
-                    $model->$item = [
-                        Language::RU => $value,
-                    ];
+        /** @var OptionValue $optionValue */
+        foreach (OptionValue::cursor() as $optionValue) {
+            foreach ($this->translatable as $item) {
+                $value = $optionValue->getRawOriginal($item);
+                if ($value === null) {
+                    continue;
                 }
-            });
 
-        Schema::table('option_values', function (Blueprint $table) {
-            $table->dropColumn($this->translatable);
-        });
+                $optionValue->$item = [
+                    Language::RU => $value,
+                ];
+            }
+        }
+
+//        Schema::table('option_values', function (Blueprint $table) {
+//            $table->dropColumn($this->translatable);
+//        });
     }
 
     /**

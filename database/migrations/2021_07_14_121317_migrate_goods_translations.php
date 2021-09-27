@@ -17,25 +17,25 @@ class MigrateGoodsTranslations extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Goods::all()
-            ->each(function (Goods $model) {
-                foreach ($this->translatable as $item) {
-                    $value = $model->getRawOriginal($item);
-                    if ($value === null) {
-                        continue;
-                    }
-
-                    $model->$item = [
-                        Language::RU => $value,
-                    ];
+        /** @var Goods $goods */
+        foreach (Goods::cursor() as $goods) {
+            foreach ($this->translatable as $item) {
+                $value = $goods->getRawOriginal($item);
+                if ($value === null) {
+                    continue;
                 }
-            });
 
-        Schema::table('goods', function (Blueprint $table) {
-            $table->dropColumn($this->translatable);
-        });
+                $goods->$item = [
+                    Language::RU => $value,
+                ];
+            }
+        }
+
+//        Schema::table('goods', function (Blueprint $table) {
+//            $table->dropColumn($this->translatable);
+//        });
     }
 
     /**
@@ -43,7 +43,7 @@ class MigrateGoodsTranslations extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('goods', function (Blueprint $table) {
             foreach ($this->translatable as $item) {

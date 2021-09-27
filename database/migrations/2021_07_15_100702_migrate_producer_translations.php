@@ -20,23 +20,23 @@ class MigrateProducerTranslations extends Migration
      */
     public function up()
     {
-        Producer::all()
-            ->each(function (Producer $model) {
-                $name = $model->getRawOriginal('name');
-                $title = $model->getRawOriginal('title');
+        /** @var Producer $producer */
+        foreach (Producer::cursor() as $producer) {
+            $name = $producer->getRawOriginal('name');
+            $title = $producer->getRawOriginal('title');
 
-                $model->title = [
-                    Language::RU => $title,
-                ];
+            $producer->title = [
+                Language::RU => $title,
+            ];
 
-                $model->name = [
-                    Language::RU => $name,
-                ];
-            });
+            $producer->name = [
+                Language::RU => $name,
+            ];
+        }
 
-        Schema::table('producers', function (Blueprint $table) {
-            $table->dropColumn($this->translatable);
-        });
+//        Schema::table('producers', function (Blueprint $table) {
+//            $table->dropColumn($this->translatable);
+//        });
     }
 
     /**
