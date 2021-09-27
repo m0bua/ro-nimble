@@ -58,6 +58,7 @@ class Consumer
                     $errorsCount = 0;
                 }
             } catch (Throwable $t) {
+                $resolver->reject($amqpMessage);
                 $errMessageStr = $t->getMessage();
                 ConsumerErrorLogger::log($errMessageStr, $this->config, [
                     'file' => $t->getFile(),
@@ -78,7 +79,6 @@ class Consumer
                 }
 
                 $errorsCount++;
-                $resolver->reject($amqpMessage);
             }
         });
     }

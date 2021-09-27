@@ -168,7 +168,7 @@ abstract class AbstractProcessor implements ProcessorInterface
         $translations = Arr::only($this->data, $translatable);
         $entity = $this->resolveEntity();
 
-        if (!method_exists($entity, 'setTranslation')) {
+        if (!$entity->exists || !method_exists($entity, 'setTranslation')) {
             return;
         }
 
@@ -196,9 +196,9 @@ abstract class AbstractProcessor implements ProcessorInterface
     protected function resolveEntity(): Model
     {
         if (static::$compoundKey) {
-            return $this->model->where(Arr::only($this->data, static::$compoundKey))->firstOrFail();
+            return $this->model->where(Arr::only($this->data, static::$compoundKey))->firstOrNew();
         }
 
-        return $this->model->findOrFail($this->data['id']);
+        return $this->model->findOrNew($this->data['id']);
     }
 }
