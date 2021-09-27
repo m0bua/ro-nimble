@@ -20,23 +20,23 @@ class MigrateOptionSettingTranslations extends Migration
      */
     public function up(): void
     {
-        OptionSetting::all()
-            ->each(function (OptionSetting $model) {
-                foreach ($this->translatable as $item) {
-                    $value = $model->getRawOriginal($item);
-                    if ($value === null) {
-                        continue;
-                    }
-
-                    $model->$item = [
-                        Language::RU => $value,
-                    ];
-                }
-            });
-
-        Schema::table('option_settings', function (Blueprint $table) {
-            $table->dropColumn($this->translatable);
-        });
+//        OptionSetting::all()
+//            ->each(function (OptionSetting $model) {
+//                foreach ($this->translatable as $item) {
+//                    $value = $model->getRawOriginal($item);
+//                    if ($value === null) {
+//                        continue;
+//                    }
+//
+//                    $model->$item = [
+//                        Language::RU => $value,
+//                    ];
+//                }
+//            });
+//
+//        Schema::table('option_settings', function (Blueprint $table) {
+//            $table->dropColumn($this->translatable);
+//        });
     }
 
     /**

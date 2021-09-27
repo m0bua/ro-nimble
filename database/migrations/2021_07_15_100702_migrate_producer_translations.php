@@ -20,21 +20,21 @@ class MigrateProducerTranslations extends Migration
      */
     public function up()
     {
-        Producer::chunkById(1000, function ($producers) {
-            /** @var Producer $model */
-            foreach ($producers as $model) {
-                $name = $model->getRawOriginal('name');
-                $title = $model->getRawOriginal('title');
-
-                $model->title = [
-                    Language::RU => $title,
-                ];
-
-                $model->name = [
-                    Language::RU => $name,
-                ];
-            }
-        });
+//        Producer::chunkById(1000, function ($producers) {
+//            /** @var Producer $model */
+//            foreach ($producers as $model) {
+//                $name = $model->getRawOriginal('name');
+//                $title = $model->getRawOriginal('title');
+//
+//                $model->title = [
+//                    Language::RU => $title,
+//                ];
+//
+//                $model->name = [
+//                    Language::RU => $name,
+//                ];
+//            }
+//        });
 
 //        Schema::table('producers', function (Blueprint $table) {
 //            $table->dropColumn($this->translatable);
