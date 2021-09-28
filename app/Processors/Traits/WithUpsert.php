@@ -3,8 +3,10 @@
 namespace App\Processors\Traits;
 
 use App\Cores\ConsumerCore\Interfaces\MessageInterface;
+use App\Cores\ConsumerCore\Loggers\ConsumerErrorLogger;
 use App\Cores\Shared\Codes;
 use BadMethodCallException;
+use Exception;
 
 /**
  * Process message and update or insert entity
@@ -16,19 +18,29 @@ trait WithUpsert
 {
     /**
      * @inheritDoc
+     * @throws Exception
      */
     public function processMessage(MessageInterface $message): int
     {
-        $this->beforeProcess();
+        try {
+            $this->beforeProcess();
+            $this->setDataFromMessage($message);
 
-        $this->setDataFromMessage($message);
+            if (!isset(static::$uniqueBy)) {
+                throw new BadMethodCallException('Declare public static static::$uniqueBy before use upsert in [' . static::class . '] class');
+            }
 
-        if (!isset(static::$uniqueBy)) {
-            throw new BadMethodCallException('Declare public static static::$uniqueBy before use upsert in [' . static::class . '] class');
+            $this->upsertModel(static::$uniqueBy);
+            $this->afterProcess();
+        } catch (Exception $e) {
+            ConsumerErrorLogger::log($e->getMessage(), 'gs', [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'consumer_got_message' => $this->data,
+            ]);
+
+            throw $e;
         }
-        $this->upsertModel(static::$uniqueBy);
-
-        $this->afterProcess();
 
         return Codes::SUCCESS;
     }
