@@ -29,10 +29,11 @@ abstract class MigrateCommand extends Command
     /**
      * @param Builder $query
      * @param callable $callback
+     * @noinspection PhpUndefinedMethodInspection
      */
     protected function iterateQueryByCursor(Builder $query, callable $callback): void
     {
-        foreach ($query->cursor() as $entity) {
+        foreach ($query->trueCursor() as $entity) {
             $callback($entity);
         }
     }

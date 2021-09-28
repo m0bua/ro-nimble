@@ -60,10 +60,11 @@ abstract class IndexCommand extends Command
      *
      * @param Builder $query
      * @param callable $callback
+     * @noinspection PhpUndefinedMethodInspection
      */
     protected function iterateQueryByCursor(Builder $query, callable $callback): void
     {
-        foreach ($query->cursor() as $entity) {
+        foreach ($query->trueCursor() as $entity) {
             $callback($entity);
         }
     }
@@ -122,7 +123,7 @@ abstract class IndexCommand extends Command
      * Check result and fill errored ids
      *
      * @param array $result
-     * @return bool Return true if all of items executed successfully
+     * @return bool Return true if all items executed successfully
      */
     protected function processElasticResult(array $result): bool
     {
