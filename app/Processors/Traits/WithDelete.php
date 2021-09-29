@@ -43,11 +43,11 @@ trait WithDelete
     /**
      * Delete or mark entity as deleted
      *
-     * @return int
+     * @return void
      */
-    protected function deleteModel(): int
+    protected function deleteModel(): void
     {
-        return $this->model
+        $this->model
             ->when(
                 static::$compoundKey,
                 fn($q, $compoundKey) => $q->where(Arr::only($this->data, $compoundKey)),
