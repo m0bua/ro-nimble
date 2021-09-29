@@ -21,20 +21,10 @@ trait WithCreate
      */
     public function processMessage(MessageInterface $message): int
     {
-        try {
-            $this->beforeProcess();
-            $this->setDataFromMessage($message);
-            $this->createModel();
-            $this->afterProcess();
-        } catch (Exception $e) {
-            ConsumerErrorLogger::log($e->getMessage(), 'gs', [
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'code' => $e->getCode(),
-                'consumer_got_message' => $this->data,
-            ]);
-            throw $e;
-        }
+        $this->beforeProcess();
+        $this->setDataFromMessage($message);
+        $this->createModel();
+        $this->afterProcess();
 
         return Codes::SUCCESS;
     }
@@ -48,16 +38,7 @@ trait WithCreate
     protected function createModel(): bool
     {
         $data = $this->prepareData();
-//        try {
-            $this->model->create($data);
-//        } catch (Exception $e) {
-//            $code = (int)$e->getCode();
-//            if ($code !== 23505) {
-//                throw $e;
-//            }
-//
-//            return false;
-//        }
+        $this->model->create($data);
 
         // saving translations after creating record if we can do that
         $this->saveTranslations();

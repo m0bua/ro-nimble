@@ -22,25 +22,15 @@ trait WithUpsert
      */
     public function processMessage(MessageInterface $message): int
     {
-        try {
-            $this->beforeProcess();
-            $this->setDataFromMessage($message);
+        $this->beforeProcess();
+        $this->setDataFromMessage($message);
 
-            if (!isset(static::$uniqueBy)) {
-                throw new BadMethodCallException('Declare public static static::$uniqueBy before use upsert in [' . static::class . '] class');
-            }
-
-            $this->upsertModel(static::$uniqueBy);
-            $this->afterProcess();
-        } catch (Exception $e) {
-            ConsumerErrorLogger::log($e->getMessage(), 'gs', [
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'consumer_got_message' => $this->data,
-            ]);
-
-            throw $e;
+        if (!isset(static::$uniqueBy)) {
+            throw new BadMethodCallException('Declare public static static::$uniqueBy before use upsert in [' . static::class . '] class');
         }
+
+        $this->upsertModel(static::$uniqueBy);
+        $this->afterProcess();
 
         return Codes::SUCCESS;
     }

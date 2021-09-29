@@ -68,18 +68,8 @@ abstract class AbstractTranslationProcessor implements ProcessorInterface
      */
     public function processMessage(MessageInterface $message): int
     {
-        try {
-            $this->setDataFromMessage($message);
-            $this->saveTranslations();
-        } catch (Exception $e) {
-            ConsumerErrorLogger::log($e->getMessage(), 'gs', [
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'consumer_got_message' => $this->data,
-            ]);
-
-            throw $e;
-        }
+        $this->setDataFromMessage($message);
+        $this->saveTranslations();
 
         return Codes::SUCCESS;
     }

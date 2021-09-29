@@ -22,20 +22,10 @@ trait WithUpdate
      */
     public function processMessage(MessageInterface $message): int
     {
-        try {
-            $this->beforeProcess();
-            $this->setDataFromMessage($message);
-            $this->updateModel();
-            $this->afterProcess();
-        } catch (Exception $e) {
-            ConsumerErrorLogger::log($e->getMessage(), 'gs', [
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'consumer_got_message' => $this->data,
-            ]);
-
-            throw $e;
-        }
+        $this->beforeProcess();
+        $this->setDataFromMessage($message);
+        $this->updateModel();
+        $this->afterProcess();
 
         return Codes::SUCCESS;
     }
