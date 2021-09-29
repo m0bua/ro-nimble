@@ -152,10 +152,11 @@ class MigrateGoods extends Command
     {
         $ids = $this->pluckIdsFromCollection($collection);
 
-        $this->graphQlBatchModel->getByBatch($ids, fn(array $nodes) => $this->saveNodes($nodes));
+        if (!empty($ids)) {
+            $this->graphQlBatchModel->getByBatch($ids, fn(array $nodes) => $this->saveNodes($nodes));
+        }
 
         $field = $this->config['field'];
-
         $this->model
             ->whereIn($field, $collection->pluck($field))
             ->update(['needs_migrate' => 0]);
