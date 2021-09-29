@@ -164,6 +164,30 @@ stop-dev-gs:
   except:
     - master
 
+stop-dev-ps:
+  stage: stop-restart
+  tags:
+    - rozetka-shared-standart
+  script:
+    - dep consumers:ps:stop dev -p -vv
+  when: manual
+  only:
+    - branches
+  except:
+    - master
+
+stop-dev-bs:
+  stage: stop-restart
+  tags:
+    - rozetka-shared-standart
+  script:
+    - dep consumers:bs:stop dev -p -vv
+  when: manual
+  only:
+    - branches
+  except:
+    - master
+
 deploy-prod:
   stage: deploy
   tags:
@@ -209,24 +233,22 @@ stop-gs:
   only:
     - master
 
-restart-ms:
+stop-bs:
   stage: stop-restart
   tags:
     - rozetka-shared-standart
   script:
-    - dep consumers:ms:stop prod -p -vv
-    - dep consumers:ms:start prod -p -vv
+    - dep consumers:bs:stop prod -p -vv
   when: manual
   only:
     - master
 
-restart-gs:
+stop-ps:
   stage: stop-restart
   tags:
     - rozetka-shared-standart
   script:
-    - dep consumers:gs:stop prod -p -vv
-    - dep consumers:gs:start prod -p -vv
+    - dep consumers:ps:stop prod -p -vv
   when: manual
   only:
     - master
@@ -247,6 +269,26 @@ start-gs:
     - rozetka-shared-standart
   script:
     - dep consumers:gs:start prod -p -vv
+  when: manual
+  only:
+    - master
+
+start-ps:
+  stage: start
+  tags:
+    - rozetka-shared-standart
+  script:
+    - dep consumers:ps:start prod -p -vv
+  when: manual
+  only:
+    - master
+
+start-bs:
+  stage: start
+  tags:
+    - rozetka-shared-standart
+  script:
+    - dep consumers:bs:start prod -p -vv
   when: manual
   only:
     - master
