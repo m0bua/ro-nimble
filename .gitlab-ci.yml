@@ -17,8 +17,8 @@ before_script:
 
 stages:
   - build
-  - run_autotest
-  - report
+#  - run_autotest
+#  - report
   - deploy
   - rollback
   - stop-restart
