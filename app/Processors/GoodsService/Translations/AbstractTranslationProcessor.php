@@ -4,7 +4,9 @@ namespace App\Processors\GoodsService\Translations;
 
 use App\Cores\ConsumerCore\Interfaces\MessageInterface;
 use App\Cores\ConsumerCore\Interfaces\ProcessorInterface;
+use App\Cores\ConsumerCore\Loggers\ConsumerErrorLogger;
 use App\Cores\Shared\Codes;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
@@ -62,11 +64,22 @@ abstract class AbstractTranslationProcessor implements ProcessorInterface
 
     /**
      * @inheritDoc
+     * @throws Exception
      */
     public function processMessage(MessageInterface $message): int
     {
-        $this->setDataFromMessage($message);
-        $this->saveTranslations();
+        try {
+            $this->setDataFromMessage($message);
+            $this->saveTranslations();
+        } catch (Exception $e) {
+            ConsumerErrorLogger::log($e->getMessage(), 'gs', [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'consumer_got_message' => $this->data,
+            ]);
+
+            throw $e;
+        }
 
         return Codes::SUCCESS;
     }
