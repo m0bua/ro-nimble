@@ -30,6 +30,7 @@ trait WithCreate
             ConsumerErrorLogger::log($e->getMessage(), 'gs', [
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
+                'code' => $e->getCode(),
                 'consumer_got_message' => $this->data,
             ]);
             throw $e;
@@ -47,20 +48,21 @@ trait WithCreate
     protected function createModel(): bool
     {
         $data = $this->prepareData();
-        try {
+//        try {
             $this->model->create($data);
-        } catch (Exception $e) {
-            $code = (int)$e->getCode();
-            if ($code !== 23505) {
-                throw $e;
-            }
-
-            return false;
-        }
+//        } catch (Exception $e) {
+//            $code = (int)$e->getCode();
+//            if ($code !== 23505) {
+//                throw $e;
+//            }
+//
+//            return false;
+//        }
 
         // saving translations after creating record if we can do that
         $this->saveTranslations();
 
         return true;
+//        return true;
     }
 }
