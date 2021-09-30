@@ -6,8 +6,8 @@ require 'recipe/common.php';
 
 set('ms_consumer_threads', 5);
 set('gs_consumer_threads', 10);
-set('bs_consumer_threads', 1);
-set('ps_consumer_threads', 1);
+set('bs_consumer_threads', 5);
+set('ps_consumer_threads', 5);
 
 // Project name
 set('application', 'ivv-nimble');
