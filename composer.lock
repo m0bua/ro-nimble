@@ -7821,7 +7821,7 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.rozetka.company:ivv/nimble-test.git",
-                "reference": "736f686597635e705a3951c2914c2e907574254f"
+                "reference": "67048c26976f4a8f36310b92ed07d119fab3e168"
             },
             "require": {
                 "automation-testing-tools/allure-codeception": "*",
@@ -7835,7 +7835,7 @@
                 "Open Source"
             ],
             "description": "API tests for nimble",
-            "time": "2021-09-29T11:10:44+00:00"
+            "time": "2021-09-30T14:31:09+00:00"
         },
         {
             "name": "jms/metadata",
