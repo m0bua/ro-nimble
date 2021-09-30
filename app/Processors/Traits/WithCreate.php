@@ -3,7 +3,6 @@
 namespace App\Processors\Traits;
 
 use App\Cores\ConsumerCore\Interfaces\MessageInterface;
-use App\Cores\ConsumerCore\Loggers\ConsumerErrorLogger;
 use App\Cores\Shared\Codes;
 use Exception;
 
@@ -30,6 +29,18 @@ trait WithCreate
     }
 
     /**
+     * @inheritDoc
+     */
+    protected function prepareData(): array
+    {
+        $data = parent::prepareData();
+        $data['created_at'] = now();
+        $data['updated_at'] = $data['created_at'];
+
+        return $data;
+    }
+
+    /**
      * Store entity in DB
      *
      * @return bool
@@ -38,12 +49,11 @@ trait WithCreate
     protected function createModel(): bool
     {
         $data = $this->prepareData();
-        $this->model->create($data);
+        $this->model->insertOrIgnore($data);
 
         // saving translations after creating record if we can do that
         $this->saveTranslations();
 
         return true;
-//        return true;
     }
 }

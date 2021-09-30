@@ -8,7 +8,9 @@ use App\Processors\Traits\WithCreate;
 
 class CreateOptionValueProcessor extends AbstractProcessor
 {
-    use WithCreate;
+    use WithCreate {
+        prepareData as traitPrepareData;
+    }
 
     protected OptionValue $model;
 
@@ -26,7 +28,7 @@ class CreateOptionValueProcessor extends AbstractProcessor
      */
     protected function prepareData(): array
     {
-        $data = parent::prepareData();
+        $data = $this->traitPrepareData();
 
         if (isset($data['show_value_in_short_set'])) {
             $data['show_value_in_short_set'] = $data['show_value_in_short_set'] === 'true' ? 1 : 0;

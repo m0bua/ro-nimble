@@ -33,11 +33,11 @@ class ProcessorClassnameResolver
      */
     public static function resolve(string $routingKey): string
     {
-        $isItTranslation = Str::endsWith($routingKey, self::SUPPORTED_LANGUAGES);
-
         $namespace = self::PROCESSOR_NAMESPACE;
         $keywords = explode('.', ucwords($routingKey, '.'));
         $thirdPart = str_replace('_', '', ucwords($keywords[2], '_'));
+
+        $isItTranslation = in_array(Str::lower($thirdPart), self::SUPPORTED_LANGUAGES, true);
 
         return $namespace . ($isItTranslation ? 'Translations\\' : '' ) . "$keywords[0]$keywords[1]{$thirdPart}Processor";
     }
