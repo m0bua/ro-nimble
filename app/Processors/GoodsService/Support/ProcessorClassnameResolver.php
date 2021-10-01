@@ -37,7 +37,7 @@ class ProcessorClassnameResolver
         $keywords = explode('.', ucwords($routingKey, '.'));
         $thirdPart = str_replace('_', '', ucwords($keywords[2], '_'));
 
-        $isItTranslation = in_array(Str::lower($thirdPart), self::SUPPORTED_LANGUAGES, true);
+        $isItTranslation = Str::of($thirdPart)->lower()->endsWith(self::SUPPORTED_LANGUAGES);
 
         return $namespace . ($isItTranslation ? 'Translations\\' : '' ) . "$keywords[0]$keywords[1]{$thirdPart}Processor";
     }
