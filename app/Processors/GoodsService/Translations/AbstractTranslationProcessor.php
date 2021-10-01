@@ -4,13 +4,11 @@ namespace App\Processors\GoodsService\Translations;
 
 use App\Cores\ConsumerCore\Interfaces\MessageInterface;
 use App\Cores\ConsumerCore\Interfaces\ProcessorInterface;
-use App\Cores\ConsumerCore\Loggers\ConsumerErrorLogger;
 use App\Cores\Shared\Codes;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use LogicException;
 
@@ -188,31 +186,5 @@ abstract class AbstractTranslationProcessor implements ProcessorInterface
         }
 
         return true;
-    }
-
-    /**
-     * Disable DB checks about foreign key
-     *
-     * @param Model $model
-     * @noinspection PhpUndefinedMethodInspection
-     */
-    protected static function disableForeignTriggerForEntity(Model $model): void
-    {
-        $table = $model->translations()->getRelated()->getTable();
-
-        DB::statement("alter table $table disable trigger all");
-    }
-
-    /**
-     * Enable DB checks about foreign key
-     *
-     * @param Model $model
-     * @noinspection PhpUndefinedMethodInspection
-     */
-    protected static function enableForeignTriggerForEntity(Model $model): void
-    {
-        $table = $model->translations()->getRelated()->getTable();
-
-        DB::statement("alter table $table enable trigger all");
     }
 }

@@ -15,8 +15,6 @@ abstract class CreateAbstractTranslationProcessor extends AbstractTranslationPro
      */
     protected function saveTranslationsForEntity(Model $entity): bool
     {
-        static::disableForeignTriggerForEntity($entity);
-
         foreach ($entity->getTranslatableProperties() as $column) {
             $translation = $this->data[$column] ?? null;
 
@@ -26,8 +24,6 @@ abstract class CreateAbstractTranslationProcessor extends AbstractTranslationPro
 
             $entity->setTranslation(static::$language, $column, $translation);
         }
-
-        static::enableForeignTriggerForEntity($entity);
 
         return true;
     }
