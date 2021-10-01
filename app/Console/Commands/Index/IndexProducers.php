@@ -6,6 +6,7 @@ use App\Models\Elastic\ProducersModel;
 use App\Models\Eloquent\Producer;
 use App\Support\Language;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Throwable;
@@ -77,10 +78,29 @@ class IndexProducers extends IndexCommand
         DB::transaction(function () {
             $query = $this->buildQuery();
             $this->iterateQueryByCursor($query, [$this, 'operateWithEntity']);
+        });
+    }
+
+    /**
+     * @inheritDoc
+     * @noinspection PhpUndefinedMethodInspection
+     */
+    protected function iterateQueryByCursor(Builder $query, callable $callback): void
+    {
+        /** @var Collection $entities */
+        foreach ($query->trueCursor(500) as $entities) {
+            $this->data = [];
+            $this->bulkOperations = [
+                'body' => [],
+            ];
+
+            foreach ($entities as $entity) {
+                $callback($entity);
+            }
 
             $this->buildElasticOperations();
             $this->executeElasticOperations();
-        });
+        }
     }
 
     /**
