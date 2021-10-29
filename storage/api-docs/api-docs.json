@@ -1,0 +1,50 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Selection & Filter Service API",
+        "version": "1"
+    },
+    "paths": {
+        "/api/v1/goods": {
+            "get": {
+                "summary": "Получение списка ID товаров",
+                "description": "Производит подбор, фильтрацию и сортировку товаров по входящим параметрам (фильтрам)",
+                "operationId": "index",
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ"
+                    }
+                },
+                "deprecated": false
+            }
+        },
+        "/api/v1/goods/details": {
+            "get": {
+                "summary": "Детали по товарам",
+                "description": "Возвращает дополнительную информацию по ID товарам",
+                "operationId": "d12a4fea1119de8845f5a4a1e427a355",
+                "parameters": [
+                    {
+                        "name": "ids",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ"
+                    }
+                }
+            }
+        }
+    },
+    "security": [
+        []
+    ]
+}

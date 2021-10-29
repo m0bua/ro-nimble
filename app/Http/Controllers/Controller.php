@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * @OA\Info(title="Selection & Filter Service API", version="1")
+ */
 namespace App\Http\Controllers;
 
 use Illuminate\Contracts\Routing\ResponseFactory;

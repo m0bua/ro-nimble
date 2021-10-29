@@ -11,12 +11,19 @@ use Illuminate\Support\Str;
 
 class GoodsController extends Controller
 {
-//    public function rules()
-//    {
-//        ''
-//    }
-
     /**
+     * @OA\Get(
+     *     path="/api/v1/goods",
+     *     summary="Получение списка ID товаров",
+     *     description="Производит подбор, фильтрацию и сортировку товаров по входящим параметрам (фильтрам)",
+     *     operationId="index",
+     *     deprecated=false,
+     *     @OA\Response(
+     *          response=200,
+     *          description="Успешный ответ",
+     *     )
+     * )
+     *
      * @return GoodsResource
      */
     public function index(): GoodsResource
@@ -28,6 +35,31 @@ class GoodsController extends Controller
         return GoodsResource::make($data);
     }
 
+    /**
+     * @OA\Get (
+     *     path="/api/v1/goods/details",
+     *     summary="Детали по товарам",
+     *     description="Возвращает дополнительную информацию по ID товарам",
+     *     @OA\Parameter (
+     *          name="ids",
+     *          in="query",
+     *          required=true,
+     *          @OA\Schema (
+     *              type="array",
+     *              @OA\Items (
+     *                  type="integer"
+     *              )
+     *          )
+     *     ),
+     *     @OA\Response (
+     *          response=200,
+     *          description="Успешный ответ"
+     *     )
+     * )
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
     public function details(Request $request)
     {
         $goodsIds = $request->get('ids', []);
