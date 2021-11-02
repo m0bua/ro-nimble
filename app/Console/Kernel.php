@@ -53,10 +53,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-//        $schedule->command(FillLostTranslations::class)->runInBackground()->withoutOverlapping();
+        $schedule->command(FillLostTranslations::class)->runInBackground()->withoutOverlapping();
 
-//        $schedule->command(Migrate\MigrateGoods::class)->runInBackground()->withoutOverlapping();
-//        $schedule->command(Migrate\MigrateGoods::class, ['--entity' => 'groups'])->runInBackground()->withoutOverlapping();
+        $schedule->command(Migrate\MigrateGoods::class)->runInBackground()->withoutOverlapping();
+        $schedule->command(Migrate\MigrateGoods::class, ['--entity' => 'groups'])->runInBackground()->withoutOverlapping();
 
         $schedule->command(Index\IndexMarkedGoods::class)->runInBackground()->withoutOverlapping();
         $schedule->command(Index\IndexGoodsOptions::class)->runInBackground()->withoutOverlapping();
