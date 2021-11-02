@@ -12,6 +12,7 @@ use App\Console\Commands\DeleteMarkedGoodsCommand;
 use App\Console\Commands\Dev;
 use App\Console\Commands\FillLostTranslations;
 use App\Console\Commands\Index;
+use App\Console\Commands\IndexGoodsConstructors;
 use App\Console\Commands\Migrate;
 use App\Console\Commands\MigrateGoodsCommand;
 use App\Console\Commands\MigrateOptionsCommand;
@@ -50,12 +51,12 @@ class Kernel extends ConsoleKernel
         DeleteGroupsConstructorsCommand::class,
         DeleteMarkedGoodsCommand::class,
 
-//        Migrate\MigrateGoods::class,
+        Migrate\MigrateGoods::class,
 //        Migrate\MigrateOptions::class,
 //        Migrate\MigrateOptionValues::class,
 //        Migrate\MigrateProducers::class,
 
-        MigrateGoodsCommand::class,
+//        MigrateGoodsCommand::class,
         MigrateOptionsCommand::class,
         MigrateOptionValuesCommand::class,
         MigrateProducersCommand::class,
@@ -75,8 +76,8 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command(FillLostTranslations::class)->runInBackground()->withoutOverlapping();
 
-        $schedule->command(MigrateGoodsCommand::class)->runInBackground()->withoutOverlapping();
-        $schedule->command(MigrateGoodsCommand::class, ['--entity' => 'groups'])->runInBackground()->withoutOverlapping();
+        $schedule->command(Migrate\MigrateGoods::class)->runInBackground()->withoutOverlapping();
+        $schedule->command(Migrate\MigrateGoods::class, ['--entity' => 'groups'])->runInBackground()->withoutOverlapping();
 
         $schedule->command(Index\IndexMarkedGoods::class)->runInBackground()->withoutOverlapping();
         $schedule->command(Index\IndexGoodsOptions::class)->runInBackground()->withoutOverlapping();
