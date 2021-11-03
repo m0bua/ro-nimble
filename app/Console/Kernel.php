@@ -13,8 +13,8 @@ use App\Console\Commands\Dev;
 use App\Console\Commands\FillLostTranslations;
 use App\Console\Commands\Index;
 use App\Console\Commands\IndexGoodsConstructors;
+use App\Console\Commands\IndexGoodsGroupsConstructors;
 use App\Console\Commands\Migrate;
-use App\Console\Commands\MigrateGoodsCommand;
 use App\Console\Commands\MigrateOptionsCommand;
 use App\Console\Commands\MigrateOptionValuesCommand;
 use App\Console\Commands\MigrateProducersCommand;
@@ -33,23 +33,25 @@ class Kernel extends ConsoleKernel
         StartConsumer::class,
         FillLostTranslations::class,
 
-        Index\IndexGoodsConstructors::class,
-        Index\IndexGoodsGroupsConstructors::class,
+        IndexGoodsConstructors::class,
+        IndexGoodsGroupsConstructors::class,
+//        Index\IndexGoodsConstructors::class,
+//        Index\IndexGoodsGroupsConstructors::class,
         Index\IndexGoodsOptions::class,
         Index\IndexGoodsOptionsPlural::class,
         Index\IndexGoodsProducers::class,
         Index\IndexMarkedGoods::class,
         Index\IndexProducers::class,
 
-//        Delete\DeleteConstructors::class,
-//        Delete\DeleteGoodsConstructors::class,
-//        Delete\DeleteGroupsConstructors::class,
-//        Delete\DeleteMarkedGoods::class,
+        Delete\DeleteConstructors::class,
+        Delete\DeleteGoodsConstructors::class,
+        Delete\DeleteGroupsConstructors::class,
+        Delete\DeleteMarkedGoods::class,
 
-        DeleteConstructorsCommand::class,
-        DeleteGoodsConstructorsCommand::class,
-        DeleteGroupsConstructorsCommand::class,
-        DeleteMarkedGoodsCommand::class,
+//        DeleteConstructorsCommand::class,
+//        DeleteGoodsConstructorsCommand::class,
+//        DeleteGroupsConstructorsCommand::class,
+//        DeleteMarkedGoodsCommand::class,
 
         Migrate\MigrateGoods::class,
 //        Migrate\MigrateOptions::class,
@@ -85,12 +87,16 @@ class Kernel extends ConsoleKernel
         $schedule->command(Index\IndexGoodsProducers::class)->runInBackground()->withoutOverlapping();
         $schedule->command(Index\IndexProducers::class)->hourlyAt(10)->runInBackground()->withoutOverlapping();
 
-        $schedule->command(DeleteConstructorsCommand::class)->runInBackground()->withoutOverlapping();
-        $schedule->command(DeleteGoodsConstructorsCommand::class)->runInBackground()->withoutOverlapping();
-        $schedule->command(DeleteGroupsConstructorsCommand::class)->runInBackground()->withoutOverlapping();
-        $schedule->command(DeleteMarkedGoodsCommand::class)->runInBackground()->withoutOverlapping();
+        $schedule->command(Delete\DeleteConstructors::class)->runInBackground()->withoutOverlapping();
+        $schedule->command(Delete\DeleteGoodsConstructors::class)->runInBackground()->withoutOverlapping();
+        $schedule->command(Delete\DeleteGroupsConstructors::class)->runInBackground()->withoutOverlapping();
+        $schedule->command(Delete\DeleteMarkedGoods::class)->runInBackground()->withoutOverlapping();
 
-        $schedule->command(Index\IndexGoodsConstructors::class)->runInBackground()->withoutOverlapping();
-        $schedule->command(Index\IndexGoodsGroupsConstructors::class)->runInBackground()->withoutOverlapping();
+//        $schedule->command(Index\IndexGoodsConstructors::class)->runInBackground()->withoutOverlapping();
+//        $schedule->command(Index\IndexGoodsGroupsConstructors::class)->runInBackground()->withoutOverlapping();
+        $schedule->command(IndexGoodsConstructors::class)->runInBackground()->withoutOverlapping();
+        $schedule->command(IndexGoodsGroupsConstructors::class)->runInBackground()->withoutOverlapping();
+
+
     }
 }
