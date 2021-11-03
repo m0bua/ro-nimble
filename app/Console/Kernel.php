@@ -14,6 +14,7 @@ use App\Console\Commands\FillLostTranslations;
 use App\Console\Commands\Index;
 use App\Console\Commands\IndexGoodsConstructors;
 use App\Console\Commands\IndexGoodsGroupsConstructors;
+use App\Console\Commands\IndexGoodsOptionsPluralCommand;
 use App\Console\Commands\Migrate;
 use App\Console\Commands\MigrateOptionsCommand;
 use App\Console\Commands\MigrateOptionValuesCommand;
@@ -38,20 +39,17 @@ class Kernel extends ConsoleKernel
 //        Index\IndexGoodsConstructors::class,
 //        Index\IndexGoodsGroupsConstructors::class,
         Index\IndexGoodsOptions::class,
-        Index\IndexGoodsOptionsPlural::class,
+//        Index\IndexGoodsOptionsPlural::class,
         Index\IndexGoodsProducers::class,
         Index\IndexMarkedGoods::class,
         Index\IndexProducers::class,
+
+        IndexGoodsOptionsPluralCommand::class,
 
         Delete\DeleteConstructors::class,
         Delete\DeleteGoodsConstructors::class,
         Delete\DeleteGroupsConstructors::class,
         Delete\DeleteMarkedGoods::class,
-
-//        DeleteConstructorsCommand::class,
-//        DeleteGoodsConstructorsCommand::class,
-//        DeleteGroupsConstructorsCommand::class,
-//        DeleteMarkedGoodsCommand::class,
 
         Migrate\MigrateGoods::class,
 //        Migrate\MigrateOptions::class,
@@ -83,7 +81,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command(Index\IndexMarkedGoods::class)->runInBackground()->withoutOverlapping();
         $schedule->command(Index\IndexGoodsOptions::class)->runInBackground()->withoutOverlapping();
-        $schedule->command(Index\IndexGoodsOptionsPlural::class)->runInBackground()->withoutOverlapping();
+//        $schedule->command(Index\IndexGoodsOptionsPlural::class)->runInBackground()->withoutOverlapping();
         $schedule->command(Index\IndexGoodsProducers::class)->runInBackground()->withoutOverlapping();
         $schedule->command(Index\IndexProducers::class)->hourlyAt(10)->runInBackground()->withoutOverlapping();
 
@@ -96,6 +94,7 @@ class Kernel extends ConsoleKernel
 //        $schedule->command(Index\IndexGoodsGroupsConstructors::class)->runInBackground()->withoutOverlapping();
         $schedule->command(IndexGoodsConstructors::class)->runInBackground()->withoutOverlapping();
         $schedule->command(IndexGoodsGroupsConstructors::class)->runInBackground()->withoutOverlapping();
+        $schedule->command(IndexGoodsOptionsPluralCommand::class)->runInBackground()->withoutOverlapping();
 
 
     }
