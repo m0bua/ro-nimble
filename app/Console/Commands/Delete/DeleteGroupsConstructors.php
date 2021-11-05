@@ -61,6 +61,7 @@ class DeleteGroupsConstructors extends Command
         $deletedConstructors = $this->model
             ->markedAsDeleted()
             ->get([
+                'id',
                 'constructor_id',
                 'group_id',
             ])
