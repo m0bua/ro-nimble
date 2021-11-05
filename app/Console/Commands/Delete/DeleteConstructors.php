@@ -50,7 +50,7 @@ class DeleteConstructors extends Command
      */
     protected function proceed(): void
     {
-        $this->model
+        $deletedConstructorIds = $this->model
             ->markedAsDeleted()
             ->pluck('id')
             ->each(function (int $id) {
@@ -72,7 +72,11 @@ class DeleteConstructors extends Command
             $this->elasticGoods->bulk($this->params);
         }
 
-        $this->model->markedAsDeleted()->delete();
+        if ($deletedConstructorIds->isNotEmpty()) {
+            $this->model
+                ->whereIn('id', $deletedConstructorIds)
+                ->delete();
+        }
     }
 
     /**

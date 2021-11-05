@@ -78,7 +78,11 @@ class DeleteGroupsConstructors extends Command
             $this->elasticGoods->bulk($this->params);
         }
 
-        $this->model->markedAsDeleted()->delete();
+        if ($deletedConstructors->isNotEmpty()) {
+            $this->model
+                ->whereIn('id', $deletedConstructors->pluck('id'))
+                ->delete();
+        }
     }
 
     /**
