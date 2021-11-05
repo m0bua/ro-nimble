@@ -7,10 +7,14 @@ use Illuminate\Database\Eloquent;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Str;
 
 class AppServiceProvider extends ServiceProvider
 {
+    protected $dbLogQueries = [
+        'update',
+        'delete'
+    ];
+
     /**
      * Register any application services.
      *
@@ -33,20 +37,30 @@ class AppServiceProvider extends ServiceProvider
             return new TrueCursor($this, $count);
         });
 
+        $this->logDbQueries();
+    }
 
+    /**
+     *
+     */
+    protected function logDbQueries()
+    {
         DB::listen(function ($query) {
-            $availQueries = [
-                'delete from'
+            $queryMatches = [
+                'delete',
+                'update'
             ];
 
-            if (Str::contains($query->sql, $availQueries)) {
-                Log::channel('db_queries')->info('PostgreSQL Query',
-                    [
-                        'sql' => $query->sql,
-                        'bindings' => $query->bindings,
-                        'executed_time' => $query->time,
-                    ]
-                );
+            foreach ($queryMatches as $match) {
+                if (preg_match("/^$match.*$/", $query->sql)) {
+                    Log::channel('db_queries')->info('PostgreSQL Query',
+                        [
+                            'sql' => $query->sql,
+                            'bindings' => $query->bindings,
+                            'executed_time' => $query->time,
+                        ]
+                    );
+                }
             }
         });
     }
