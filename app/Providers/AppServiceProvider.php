@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -32,14 +33,21 @@ class AppServiceProvider extends ServiceProvider
             return new TrueCursor($this, $count);
         });
 
+
         DB::listen(function ($query) {
-            Log::channel('db_queries')->info('PostgreSQL Query',
-                [
-                    'sql' => $query->sql,
-                    'bindings' => $query->bindings,
-                    'executed_time' => $query->time,
-                ]
-            );
+            $availQueries = [
+                'delete from'
+            ];
+
+            if (Str::contains($query->sql, $availQueries)) {
+                Log::channel('db_queries')->info('PostgreSQL Query',
+                    [
+                        'sql' => $query->sql,
+                        'bindings' => $query->bindings,
+                        'executed_time' => $query->time,
+                    ]
+                );
+            }
         });
     }
 }
