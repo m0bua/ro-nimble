@@ -30,6 +30,13 @@ return [
             'tap' => [ConsumerInfoLogger::class],
         ],
 
+        'db_queries' => [
+            'driver' => 'daily',
+            'tap' => [DefaultLogger::class],
+            'path' => storage_path('logs/db-queries.log'),
+            'days' => 3
+        ],
+
         'consumer_error_message' => [
             'driver' => 'daily',
             'tap' => [ConsumerErrorLogger::class],

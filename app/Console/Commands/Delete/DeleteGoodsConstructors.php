@@ -53,7 +53,7 @@ class DeleteGoodsConstructors extends Command
      */
     protected function proceed(): void
     {
-        $deletedConstructorIds = $this->model
+        $this->model
             ->markedAsDeleted()
             ->get([
                 'id',
@@ -69,9 +69,7 @@ class DeleteGoodsConstructors extends Command
             $this->elasticGoods->bulk($this->params);
         }
 
-        $this->model
-            ->whereIn('id', $deletedConstructorIds->pluck('id'))
-            ->delete();
+        $this->model->markedAsDeleted()->delete();
     }
 
     /**

@@ -12,6 +12,7 @@ use App\Console\Commands\DeleteMarkedGoodsCommand;
 use App\Console\Commands\Dev;
 use App\Console\Commands\FillLostTranslations;
 use App\Console\Commands\Index;
+use App\Console\Commands\IndexGoodsCommand;
 use App\Console\Commands\IndexGoodsConstructors;
 use App\Console\Commands\IndexGoodsGroupsConstructors;
 use App\Console\Commands\IndexGoodsOptionsPluralCommand;
@@ -52,11 +53,10 @@ class Kernel extends ConsoleKernel
         Delete\DeleteMarkedGoods::class,
 
         Migrate\MigrateGoods::class,
-//        Migrate\MigrateOptions::class,
-//        Migrate\MigrateOptionValues::class,
-//        Migrate\MigrateProducers::class,
+        Migrate\MigrateOptions::class,
+        Migrate\MigrateOptionValues::class,
+        Migrate\MigrateProducers::class,
 
-//        MigrateGoodsCommand::class,
         MigrateOptionsCommand::class,
         MigrateOptionValuesCommand::class,
         MigrateProducersCommand::class,
