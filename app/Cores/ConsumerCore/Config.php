@@ -11,8 +11,8 @@ class Config
         return [
             'ms' => true,
             'gs' => false,
-            'ps' => true,
-            'bs' => true,
+            'ps' => false,
+            'bs' => false,
         ];
     }
 

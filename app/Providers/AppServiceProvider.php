@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -51,15 +52,25 @@ class AppServiceProvider extends ServiceProvider
                 'update'
             ];
 
-            foreach ($queryMatches as $match) {
-                if (preg_match("/^$match.*$/", $query->sql)) {
-                    Log::channel('db_queries')->info('PostgreSQL Query',
-                        [
-                            'sql' => $query->sql,
-                            'bindings' => $query->bindings,
-                            'executed_time' => $query->time,
-                        ]
-                    );
+            $tableMatches = [
+                'promotion_constructors',
+                'promotion_goods_constructors',
+                'promotion_groups_constructors'
+            ];
+
+            foreach ($queryMatches as $queryMatch) {
+                if (preg_match("/^$queryMatch.*$/", $query->sql)) {
+                    foreach ($tableMatches as $tableMatch) {
+                        if (preg_match("/\s+\"$tableMatch\"\s+/", $query->sql)) {
+                            Log::channel('db_queries')->info('PostgreSQL Query',
+                                [
+                                    'sql' => $query->sql,
+                                    'bindings' => $query->bindings,
+                                    'executed_time' => $query->time,
+                                ]
+                            );
+                        }
+                    }
                 }
             }
         });
