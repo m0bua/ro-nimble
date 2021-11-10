@@ -191,6 +191,131 @@ stop-dev-bs:
   except:
     - master
 
+deploy-preprod:
+  stage: deploy
+  tags:
+    - rozetka-shared-standart
+  script:
+    - consul-template -template "env.preprod:.env" -once
+    - dep build preprod -p -vv
+#    - curl -X POST -H "Content-Type:application/json" -d "{\"alias\":\"gitlab\",\"text\":\"* ${CI_PROJECT_NAME}:*   пользователь *${GITLAB_USER_LOGIN}* запустил деплой  \nversion:*$CI_COMMIT_REF_NAME* \npipeline:${CI_PROJECT_URL}/pipelines/${CI_PIPELINE_ID}/   \"}" ${rocket}
+    - dep deploy preprod -p -vv
+  when: manual
+  only:
+    - branches
+  except:
+    - master
+
+rollback-preprod:
+  stage: rollback
+  tags:
+    - rozetka-shared-standart
+  script:
+#    - curl -X POST -H "Content-Type:application/json" -d "{\"alias\":\"gitlab\",\"text\":\"* ${CI_PROJECT_NAME}:*   пользователь *${GITLAB_USER_LOGIN}* запустил откат  \nversion:*$CI_COMMIT_REF_NAME* \npipeline:${CI_PROJECT_URL}/pipelines/${CI_PIPELINE_ID}/   \"}" ${rocket}
+    - dep rollback preprod -p -vv
+  allow_failure: true
+  when: manual
+  only:
+    - branches
+  except:
+    - master
+
+stop-preprod-ms:
+  stage: stop-restart
+  tags:
+    - rozetka-shared-standart
+  script:
+    - dep consumers:ms:stop preprod -p -vv
+  when: manual
+  only:
+    - branches
+  except:
+    - master
+
+stop-preprod-gs:
+  stage: stop-restart
+  tags:
+    - rozetka-shared-standart
+  script:
+    - dep consumers:gs:stop preprod -p -vv
+  when: manual
+  only:
+    - branches
+  except:
+    - master
+
+stop-preprod-bs:
+  stage: stop-restart
+  tags:
+    - rozetka-shared-standart
+  script:
+    - dep consumers:bs:stop preprod -p -vv
+  when: manual
+  only:
+    - branches
+  except:
+    - master
+
+stop-preprod-ps:
+  stage: stop-restart
+  tags:
+    - rozetka-shared-standart
+  script:
+    - dep consumers:ps:stop preprod -p -vv
+  when: manual
+  only:
+    - branches
+  except:
+    - master
+
+start-preprod-ms:
+  stage: start
+  tags:
+    - rozetka-shared-standart
+  script:
+    - dep consumers:ms:start preprod -p -vv
+  when: manual
+  only:
+    - branches
+  except:
+    - master
+
+start-preprod-gs:
+  stage: start
+  tags:
+    - rozetka-shared-standart
+  script:
+    - dep consumers:gs:start preprod -p -vv
+  when: manual
+  only:
+    - branches
+  except:
+    - master
+
+start-preprod-ps:
+  stage: start
+  tags:
+    - rozetka-shared-standart
+  script:
+    - dep consumers:ps:start preprod -p -vv
+  when: manual
+  only:
+    - branches
+  except:
+    - master
+
+start-preprod-bs:
+  stage: start
+  tags:
+    - rozetka-shared-standart
+  script:
+    - dep consumers:bs:start preprod -p -vv
+  when: manual
+  only:
+    - branches
+  except:
+    - master
+
 deploy-prod:
   stage: deploy
   tags:

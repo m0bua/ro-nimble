@@ -43,6 +43,17 @@ host('10.10.12.221')
     ->multiplexing(true)
     ->addSshOption('StrictHostKeyChecking', 'no');
 
+######## PREPROD ENV ###########
+host('10.10.16.191')
+    ->stage('preprod')
+    ->roles('app', 'api')
+    ->set('deploy_path', '/var/www/ivv-nimble')
+    ->user('rzk')
+    ->port(10022)
+    ->multiplexing(true)
+    ->addSshOption('StrictHostKeyChecking', 'no');
+
+
 ######## TEST ENV ###########
 host('10.10.29.66')
     ->stage('dev')
