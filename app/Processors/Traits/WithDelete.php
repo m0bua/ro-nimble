@@ -40,7 +40,7 @@ trait WithDelete
         $this->model
             ->when(
                 static::$compoundKey,
-                fn($q, $compoundKey) => $q->where(Arr::only($this->data, $compoundKey)),
+                fn($q, $compoundKey) => $q->where(Arr::only($this->prepareData(), $compoundKey)),
                 fn($q) => $q->where('id', $this->data['id'])
             )
             ->when(

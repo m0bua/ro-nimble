@@ -19,6 +19,10 @@ class DeletePromotionConstructorGoodsProcessor extends AbstractProcessor
         'goods_id',
     ];
 
+    protected static array $aliases = [
+        'promotion_constructor_id' => 'constructor_id',
+    ];
+
     protected PromotionGoodsConstructor $model;
 
     /**
