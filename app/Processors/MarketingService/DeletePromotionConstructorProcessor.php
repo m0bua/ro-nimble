@@ -42,7 +42,8 @@ class DeletePromotionConstructorProcessor extends AbstractProcessor
     {
         // Mark group and goods constructors as deleted too
         $constructorId = $this->data['id'];
-        $this->groupConstructor->whereConstructorId($constructorId)->update(['is_deleted' => 1]);
-        $this->goodsConstructor->whereConstructorId($constructorId)->update(['is_deleted' => 1]);
+        $updatableFields = ['is_deleted' => 1, 'needs_index' => 0, 'needs_migrate' => 0];
+        $this->groupConstructor->whereConstructorId($constructorId)->update($updatableFields);
+        $this->goodsConstructor->whereConstructorId($constructorId)->update($updatableFields);
     }
 }

@@ -10,20 +10,23 @@ class ChangePromotionConstructorGroupProcessor extends AbstractProcessor
 {
     use WithUpsert;
 
+    const CONSTRUCTOR_ID_KEY = 'constructor_id';
+    const GROUP_ID_KEY = 'group_id';
+
     public static array $uniqueBy = [
-        'constructor_id',
-        'group_id',
+        self::CONSTRUCTOR_ID_KEY,
+        self::GROUP_ID_KEY,
     ];
 
     public static ?string $dataRoot = 'fields_data';
 
     public static ?array $compoundKey = [
-        'constructor_id',
-        'group_id',
+        self::CONSTRUCTOR_ID_KEY,
+        self::GROUP_ID_KEY,
     ];
 
     protected static array $aliases = [
-        'promotion_constructor_id' => 'constructor_id',
+        'promotion_constructor_id' => self::CONSTRUCTOR_ID_KEY,
     ];
 
     protected PromotionGroupConstructor $model;
@@ -49,6 +52,7 @@ class ChangePromotionConstructorGroupProcessor extends AbstractProcessor
         $data = $this->prepareData();
         $data['needs_index'] = 1;
         $data['needs_migrate'] = 1;
+        $data['is_deleted'] = 0;
 
         $this->model->upsert($data, $uniqueBy, $update);
 

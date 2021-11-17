@@ -45,8 +45,13 @@ trait WithDelete
             )
             ->when(
                 static::$softDelete ?? false,
-                fn($q) => $q->update(['is_deleted' => 1]),
+                fn($q) => $q->update(self::updatableFields()),
                 fn($q) => $q->delete(),
             );
+    }
+
+    public static function updatableFields(): array
+    {
+        return ['is_deleted' => 1];
     }
 }
