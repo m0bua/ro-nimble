@@ -10,11 +10,11 @@ use LogicException;
  * Trait HasTranslations
  *
  * Trait to make Eloquent models translatable
- * First of all must be created a table for translations for each entity. For example
+ * First must be created a table for translations for each entity. For example
  *
  * Schema::create('category_translations', function (Blueprint $table) {
  *      $table->id();
- *      $table->foreignId('category_id')->constrained()->onDelete('cascade');
+ *      $table->unsignedBigInteger('category_id');
  *      $table->string('lang', 3);
  *      $table->string('column');
  *      $table->text('value');

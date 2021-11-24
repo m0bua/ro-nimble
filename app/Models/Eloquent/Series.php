@@ -2,10 +2,13 @@
 
 namespace App\Models\Eloquent;
 
+use App\Casts\Translatable;
 use App\Traits\Eloquent\HasFillable;
+use App\Traits\Eloquent\HasTranslations;
 use Database\Factories\Eloquent\SeriesFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
@@ -20,6 +23,9 @@ use Illuminate\Support\Carbon;
  * @property string|null $ext_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read Collection|SeriesTranslation[] $translations
+ * @property-read int|null $translations_count
+ * @property array<string> $title title translations
  * @method static SeriesFactory factory(...$parameters)
  * @method static Builder|Series newModelQuery()
  * @method static Builder|Series newQuery()
@@ -37,6 +43,7 @@ class Series extends Model
 {
     use HasFactory;
     use HasFillable;
+    use HasTranslations;
 
     public $incrementing = false;
 
@@ -48,5 +55,7 @@ class Series extends Model
         'ext_id',
     ];
 
-    protected $casts = [];
+    protected $casts = [
+        'title' => Translatable::class,
+    ];
 }

@@ -11,10 +11,10 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 /**
- * App\Models\Eloquent\GoodsTranslation
+ * App\Models\Eloquent\Translation
  *
  * @property int $id
- * @property int|null $goods_id
+ * @property int|null $foreign_key
  * @property string $lang
  * @property string $column
  * @property string $value
