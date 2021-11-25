@@ -201,10 +201,6 @@ deploy-preprod:
 #    - curl -X POST -H "Content-Type:application/json" -d "{\"alias\":\"gitlab\",\"text\":\"* ${CI_PROJECT_NAME}:*   пользователь *${GITLAB_USER_LOGIN}* запустил деплой  \nversion:*$CI_COMMIT_REF_NAME* \npipeline:${CI_PROJECT_URL}/pipelines/${CI_PIPELINE_ID}/   \"}" ${rocket}
     - dep deploy preprod -p -vv
   when: manual
-  only:
-    - branches
-  except:
-    - master
 
 rollback-preprod:
   stage: rollback
@@ -227,10 +223,6 @@ stop-preprod-ms:
   script:
     - dep consumers:ms:stop preprod -p -vv
   when: manual
-  only:
-    - branches
-  except:
-    - master
 
 stop-preprod-gs:
   stage: stop-restart
@@ -239,10 +231,6 @@ stop-preprod-gs:
   script:
     - dep consumers:gs:stop preprod -p -vv
   when: manual
-  only:
-    - branches
-  except:
-    - master
 
 stop-preprod-bs:
   stage: stop-restart
@@ -251,10 +239,6 @@ stop-preprod-bs:
   script:
     - dep consumers:bs:stop preprod -p -vv
   when: manual
-  only:
-    - branches
-  except:
-    - master
 
 stop-preprod-ps:
   stage: stop-restart
@@ -263,10 +247,6 @@ stop-preprod-ps:
   script:
     - dep consumers:ps:stop preprod -p -vv
   when: manual
-  only:
-    - branches
-  except:
-    - master
 
 start-preprod-ms:
   stage: start
@@ -275,10 +255,6 @@ start-preprod-ms:
   script:
     - dep consumers:ms:start preprod -p -vv
   when: manual
-  only:
-    - branches
-  except:
-    - master
 
 start-preprod-gs:
   stage: start
@@ -287,10 +263,6 @@ start-preprod-gs:
   script:
     - dep consumers:gs:start preprod -p -vv
   when: manual
-  only:
-    - branches
-  except:
-    - master
 
 start-preprod-ps:
   stage: start
@@ -299,10 +271,6 @@ start-preprod-ps:
   script:
     - dep consumers:ps:start preprod -p -vv
   when: manual
-  only:
-    - branches
-  except:
-    - master
 
 start-preprod-bs:
   stage: start
@@ -311,10 +279,6 @@ start-preprod-bs:
   script:
     - dep consumers:bs:start preprod -p -vv
   when: manual
-  only:
-    - branches
-  except:
-    - master
 
 deploy-prod:
   stage: deploy
