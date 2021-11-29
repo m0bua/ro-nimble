@@ -5,6 +5,7 @@ namespace App\Models\Eloquent;
 use App\Casts\Translatable;
 use App\Traits\Eloquent\HasFillable;
 use App\Traits\Eloquent\HasTranslations;
+use App\ValueObjects\Options;
 use Database\Factories\Eloquent\OptionFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -14,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\Eloquent\Option
@@ -106,5 +108,19 @@ class Option extends Model
     public function goodsOptions(): HasMany
     {
         return $this->hasMany(GoodsOption::class);
+    }
+
+    public function getSpecificOptions(): array
+    {
+        $optionTable = self::getTable();
+        $optionSettingsTable = OptionSetting::getModel()->getTable();
+
+        return $this->query()->from($optionTable, 'o')
+            ->selectRaw('DISTINCT(o.id) AS id')
+            ->join("{$optionSettingsTable} as os", 'os.option_id', 'o.id')
+            ->whereIn('os.comparable', ['main', 'bottom'])
+            ->where('o.category_id', 0)
+            ->whereNotIn('o.type', Options::OPTIONS_BY_TYPES['text'])
+            ->pluck('id')->toArray();
     }
 }

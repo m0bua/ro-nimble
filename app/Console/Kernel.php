@@ -11,6 +11,7 @@ use App\Console\Commands\DeleteMarkedGoodsCommand;
 
 use App\Console\Commands\Dev;
 use App\Console\Commands\FillLostTranslations;
+use App\Console\Commands\Precount;
 use App\Console\Commands\Index;
 use App\Console\Commands\IndexGoodsCommand;
 use App\Console\Commands\IndexGoodsConstructors;
@@ -64,6 +65,9 @@ class Kernel extends ConsoleKernel
 
         Dev\TestCommand::class,
         Dev\GenerateModelMeta::class,
+
+        Precount\FillPrecountOptionSettings::class,
+        Precount\FillPrecountOptionSliders::class,
     ];
 
     /**
@@ -97,6 +101,12 @@ class Kernel extends ConsoleKernel
         $schedule->command(IndexGoodsGroupsConstructors::class)->runInBackground()->withoutOverlapping();
         $schedule->command(IndexGoodsOptionsPluralCommand::class)->runInBackground()->withoutOverlapping();
 
+        $this->schedulePrecounts($schedule);
+    }
 
+    private function schedulePrecounts(Schedule $schedule): void
+    {
+        $schedule->command(Precount\FillPrecountOptionSettings::class)->everyThirtyMinutes()->runInBackground()->withoutOverlapping();
+        $schedule->command(Precount\FillPrecountOptionSliders::class)->everyThirtyMinutes()->runInBackground()->withoutOverlapping();
     }
 }
