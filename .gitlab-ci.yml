@@ -106,6 +106,8 @@ run_autotest:
       - ${CI_PROJECT_DIR}/console/runtime
       - ${CI_PROJECT_DIR}/vendor/ivv/nimble-test/tests/_output/allure-results
     expire_in: 1 week
+  when: always
+ 
 
 
 
