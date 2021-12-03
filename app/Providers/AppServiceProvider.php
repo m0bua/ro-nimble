@@ -49,13 +49,12 @@ class AppServiceProvider extends ServiceProvider
         DB::listen(function ($query) {
             $queryMatches = [
                 'delete',
-                'update'
+                'update',
+                'insert'
             ];
 
             $tableMatches = [
-                'promotion_constructors',
-                'promotion_goods_constructors',
-                'promotion_groups_constructors'
+                'categories',
             ];
 
             foreach ($queryMatches as $queryMatch) {

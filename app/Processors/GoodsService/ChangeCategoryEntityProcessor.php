@@ -4,13 +4,17 @@ namespace App\Processors\GoodsService;
 
 use App\Models\Eloquent\Category;
 use App\Processors\AbstractProcessor;
-use App\Processors\Traits\WithUpdate;
+use App\Processors\Traits\WithUpsert;
 
 class ChangeCategoryEntityProcessor extends AbstractProcessor
 {
-    use WithUpdate;
+    use WithUpsert;
 
     protected Category $model;
+
+    public static array $uniqueBy = [
+        'id',
+    ];
 
     /**
      * ChangeCategoryEntityProcessor constructor.
