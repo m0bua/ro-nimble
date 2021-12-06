@@ -47,7 +47,6 @@ class Kernel extends ConsoleKernel
         Index\IndexProducers::class,
 
         IndexGoodsOptionsPluralCommand::class,
-        IndexGoodsProducersCommand::class,
 
         Delete\DeleteConstructors::class,
         Delete\DeleteGoodsConstructors::class,
@@ -85,7 +84,6 @@ class Kernel extends ConsoleKernel
         $schedule->command(Index\IndexGoodsOptions::class)->runInBackground()->withoutOverlapping();
 //        $schedule->command(Index\IndexGoodsOptionsPlural::class)->runInBackground()->withoutOverlapping();
 //        $schedule->command(Index\IndexGoodsProducers::class)->runInBackground()->withoutOverlapping();
-        $schedule->command(IndexGoodsProducersCommand::class)->runInBackground()->withoutOverlapping();
         $schedule->command(Index\IndexProducers::class)->hourlyAt(10)->runInBackground()->withoutOverlapping();
 
         $schedule->command(Delete\DeleteConstructors::class)->runInBackground()->withoutOverlapping();
