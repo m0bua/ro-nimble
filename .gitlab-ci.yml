@@ -107,14 +107,14 @@ run_autotest:
       - ${CI_PROJECT_DIR}/vendor/ivv/nimble-test/tests/_output/allure-results
     expire_in: 1 week
   when: always
- 
+
 
 
 
 run-unit:
   image: registry.gitlab.rozetka.company/ivv/nimble/php-ci:1.1
   stage: unit-tests
-  except:  [tags]
+  #except:  [tags]
   tags:
     - kube-prod
   services:
@@ -155,6 +155,8 @@ run-unit:
     - php artisan test --testsuite=Unit
   only:
     - branches
+  except:
+    - master
 
 
 report:
