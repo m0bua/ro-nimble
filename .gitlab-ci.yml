@@ -9,6 +9,12 @@ variables:
   RABBITMQ_DEFAULT_USER: guest
   RABBITMQ_DEFAULT_PASS: guest
   TELEGRAM_CHAT_ID: "-1001552457457"
+  #for CI pipelines
+  CI_HELPER_GET_DEPENDENCIES_V2: 1
+  PROJECT_PREFIX: SELFI
+  MAIN_BRANCH: master
+  GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
+
 
 before_script:
   - export VAULT_ADDR=https://vault.rozetka.company:8200
@@ -26,23 +32,19 @@ stages:
   - start
 
 build:
-  image: registry.gitlab.rozetka.company/ivv/nimble/php-ci:1.1
+  image: registry.gitlab.rozetka.company/common/ci-docker-images/ci-php74:latest
   stage: build
   tags:
-    - kube-prod
+   - rozetka-shared-standart
   before_script:
-    - curl http://repo.dev.rozetka.com.ua/devops/vault-1.3.2 --output /bin/vault
-    - chmod a+x /bin/vault
-    - curl http://repo.dev.rozetka.com.ua/devops/deployer.phar-6.8.0 --output /bin/dep --silent
-    - chmod a+x /bin/dep
     - git config --global core.sshCommand 'ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
-    - mkdir /root/.ssh
     - chmod 600 /root/.ssh
     - export VAULT_ADDR=https://vault.rozetka.company:8200
     - export VAULT_TOKEN="$(vault write -field=token auth/jwt/login role=nimble-staging jwt=$CI_JOB_JWT)"
     - vault read -field=PROD_PRIVATE devops/infra/rzk > /root/.ssh/id_rsa
     - chmod 600 /root/.ssh/id_rsa
   script:
+    - ci-helper rebase-main
     - cp env.test-default .env.test
     - cp env.test-default .env
     - composer install
@@ -52,7 +54,7 @@ build:
   when: always
   artifacts:
     paths:
-      - vendor/
+      - ./
     expire_in: 1 day
 
 run_autotest:
@@ -60,7 +62,7 @@ run_autotest:
   stage: run_autotest
   except:  [tags]
   tags:
-    - kube-prod
+    - rozetka-shared-standart
   services:
     - name: registry.gitlab.rozetka.company/ivv/nimble/php-ci:1.1
       alias: php
@@ -116,7 +118,7 @@ run-unit:
   stage: unit-tests
   #except:  [tags]
   tags:
-    - kube-prod
+    - rozetka-shared-standart
   services:
     - name: registry.gitlab.rozetka.company/ivv/nimble/php-ci:1.1
       alias: php
@@ -167,7 +169,7 @@ report:
     - echo
   cache: { }
   tags:
-    - kube-prod
+    - rozetka-shared-standart
   when: always
   script:
     - allure generate --clean ${CI_PROJECT_DIR}/vendor/ivv/nimble-test/tests/_output/allure-results --report-dir ${CI_PROJECT_DIR}/allure-report
