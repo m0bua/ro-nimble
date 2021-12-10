@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\Eloquent\Goods
@@ -166,5 +167,68 @@ class Goods extends Model
     public function scopeNeedsIndex(Builder $builder): Builder
     {
         return $builder->where('needs_index', 1);
+    }
+
+    public function getGoodsDetails(array $goodsIds): array
+    {
+        $goodsIdsStr = implode(',', $goodsIds);
+        return static::query()->select(
+            [
+                'goods.id as id',
+                //TODO: delete this string when will be one bonus for one goods in DB
+                DB::raw("(SELECT jsonb_build_object(
+                                 'comment_bonus_charge', b.comment_bonus_charge,
+                                 'comment_photo_bonus_charge', b.comment_photo_bonus_charge,
+                                 'comment_video_bonus_charge', b.comment_video_bonus_charge,
+                                 'bonus_not_allowed_pcs', b.bonus_not_allowed_pcs,
+                                 'comment_video_child_bonus_charge', b.comment_video_child_bonus_charge,
+                                 'bonus_charge_pcs', b.bonus_charge_pcs,
+                                 'use_instant_bonus', b.use_instant_bonus,
+                                 'premium_bonus_charge_pcs', b.premium_bonus_charge_pcs)
+                          FROM bonuses as b
+                          WHERE b.goods_id in ($goodsIdsStr)
+                          order by b.updated_at DESC
+                          limit 1) as bonuses"
+                ),
+                //TODO: uncomment this string when will be one bonus for one goods in DB
+//                DB::raw("jsonb_agg(
+//                distinct
+//                    jsonb_build_object(
+//                        'comment_bonus_charge', b.comment_bonus_charge,
+//                        'comment_photo_bonus_charge', b.comment_photo_bonus_charge,
+//                        'comment_video_bonus_charge', b.comment_video_bonus_charge,
+//                        'bonus_not_allowed_pcs', b.bonus_not_allowed_pcs,
+//                        'comment_video_child_bonus_charge', b.comment_video_child_bonus_charge,
+//                        'bonus_charge_pcs',         bonuses.bonus_charge_pcs,
+//                        'use_instant_bonus',        bonuses.use_instant_bonus,
+//                        'premium_bonus_charge_pcs', bonuses.premium_bonus_charge_pcs))
+//                filter (where bonuses.goods_id is not null)
+//                AS bonuses"),
+                DB::raw("jsonb_agg(distinct
+                    jsonb_build_object(
+                        'id',        pm.id,
+                        'parent_id', pm.parent_id,
+                        'name',      pm.name,
+                        'order',     pm.order,
+                        'status',    pm.status
+                    ))
+                filter (where gpm.goods_id is not null and pm.id is not null)
+                AS payment_methods"
+                )
+            ]
+        )
+            ->from('goods')
+            //TODO: uncomment this string when will be one bonus for one goods in DB
+//            ->leftJoin('bonuses', 'bonuses.goods_id', '=', 'goods.id')
+            ->leftJoin('goods_payment_method as gpm', 'gpm.goods_id', '=', 'goods.id')
+            ->leftJoin('payment_methods as pm',  function($join) {
+                $join->on('gpm.payment_method_id', '=', 'pm.id')
+                    ->where('pm.status', '=', 'active');
+            })
+            ->whereIn('goods.id', $goodsIds)
+            ->groupBy('goods.id')
+            ->get()
+            ->toArray()
+        ;
     }
 }

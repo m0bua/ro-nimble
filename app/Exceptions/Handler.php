@@ -68,18 +68,6 @@ class Handler extends ExceptionHandler
     {
         $e = $this->prepareException($e);
 
-        if ($e instanceof HttpResponseException) {
-            $e = $e->getResponse();
-        }
-
-        if ($e instanceof AuthenticationException) {
-            $e = $this->unauthenticated($request, $e);
-        }
-
-        if ($e instanceof ValidationException) {
-            $e = $this->convertValidationExceptionToResponse($e, $request);
-        }
-
         return $this->prepareApiResponse($e);
     }
 
