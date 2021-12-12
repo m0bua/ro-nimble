@@ -5,7 +5,7 @@
 
 ### Полезные ссылки (для работы с исходным кодом)
 <ul>
-    <li><a href="#">Разворачивание локального проекта (в разработке)</a></li>
+    <li><a href="https://wiki.sd.local/pages/viewpage.action?pageId=123732294">Разворачивание локального проекта</a></li>
     <li><a href="https://wiki.sd.local/pages/viewpage.action?pageId=120186792">Правила работы с репозиторием</a></li>
     <li><a href="https://wiki.sd.local/pages/viewpage.action?pageId=120186796">Соединение коммитов в один с помощью git rebase</a></li>
 </ul>
@@ -27,7 +27,7 @@
     <li>Loyalty (Bonuses) Service</li>
 </ol>
 
-### Памятка новым и бывалым членам команды (в разработке)
+### Памятка новым и бывалым членам команды (раздел в разработке)
 <ol>
     <li><a href="#">Система процессоров</a></li>
     <li><a href="#">Консюмеры</a></li>
