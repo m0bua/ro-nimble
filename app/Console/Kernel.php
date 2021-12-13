@@ -101,7 +101,7 @@ class Kernel extends ConsoleKernel
         $schedule->command(IndexGoodsGroupsConstructors::class)->runInBackground()->withoutOverlapping();
         $schedule->command(IndexGoodsOptionsPluralCommand::class)->runInBackground()->withoutOverlapping();
 
-        $this->schedulePrecounts($schedule);
+//        $this->schedulePrecounts($schedule);
     }
 
     private function schedulePrecounts(Schedule $schedule): void

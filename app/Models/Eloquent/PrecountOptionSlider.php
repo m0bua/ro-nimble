@@ -62,6 +62,7 @@ class PrecountOptionSlider extends Model
                     JOIN $optionSettingsTable os ON
                         os.option_id=go.option_id
                         AND (os.comparable NOT IN ('disable','locked'))
+                WHERE go.type = 'number'
                 GROUP BY
                     g.category_id
                     ,go.option_id
