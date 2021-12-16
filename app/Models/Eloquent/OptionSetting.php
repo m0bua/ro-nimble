@@ -81,6 +81,18 @@ class OptionSetting extends Model
     use HasFillable;
     use HasTranslations;
 
+    public const STATUS_ACTIVE = 'active';
+    public const STATUS_FACET = 'facet';
+
+    /**
+     * Список активных статусов
+     * @var string[]
+     */
+    public static array $availableStatuses = [
+        self::STATUS_ACTIVE,
+        self::STATUS_FACET,
+    ];
+
     public $incrementing = false;
 
     protected $fillable = [

@@ -71,6 +71,8 @@ class OptionValue extends Model
     use HasTranslations;
     use HasDynamicBinds;
 
+    public const STATUS_ACTIVE = 'active';
+
     public $incrementing = false;
 
     protected $fillable = [
