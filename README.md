@@ -8,6 +8,7 @@
     <li><a href="https://wiki.sd.local/pages/viewpage.action?pageId=123732294">Разворачивание локального проекта</a></li>
     <li><a href="https://wiki.sd.local/pages/viewpage.action?pageId=120186792">Правила работы с репозиторием</a></li>
     <li><a href="https://wiki.sd.local/pages/viewpage.action?pageId=120186796">Соединение коммитов в один с помощью git rebase</a></li>
+    <li><a href="https://wiki.sd.local/pages/viewpage.action?pageId=123741974">Unit тестирование</a></li>
 </ul>
 
 ### Полезные ссылки (для работы с апи)
