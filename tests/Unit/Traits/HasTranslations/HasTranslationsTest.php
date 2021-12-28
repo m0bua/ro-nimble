@@ -105,8 +105,6 @@ class HasTranslationsTest extends TestCase
     {
         $this->model = new DummyBroken();
         $this->expectException(LogicException::class);
-        
-        $this->expectException(LogicException::class);
         $this->model->translations();
     }
 
