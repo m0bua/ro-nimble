@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use LogicException;
 use Tests\TestCase;
 
 class HasTranslationsTest extends TestCase
@@ -70,7 +71,7 @@ class HasTranslationsTest extends TestCase
         }
     }
 
-    protected function dropDatabase()
+    protected function dropDatabase(): void
     {
         Schema::dropIfExists('dummy_translations');
         Schema::dropIfExists('dummies');
@@ -85,39 +86,30 @@ class HasTranslationsTest extends TestCase
             ->save();
     }
 
-    /**
-     * @test
-     */
-    public function testItCanDefineRelationship()
+    /** @noinspection UnnecessaryAssertionInspection */
+    public function testItCanDefineRelationship(): void
     {
         $this->setUpModel();
         $this->assertInstanceOf(HasMany::class, $this->model->translations());
     }
 
-    /**
-     * @test
-     */
-    public function testItCanDefineCustomRelationship()
+    /** @noinspection UnnecessaryAssertionInspection */
+    public function testItCanDefineCustomRelationship(): void
     {
         $this->model = new DummyCustom();
 
         $this->assertInstanceOf(HasMany::class, $this->model->translations());
     }
 
-    /**
-     * @test
-     */
-    public function testItCannotDefineRelationshipWithIncorrectNamespace()
+    public function testItCannotDefineRelationshipWithIncorrectNamespace(): void
     {
         $this->model = new DummyBroken();
 
-        $this->assertNull($this->model->translations());
+        $this->expectException(LogicException::class);
+        $this->model->translations();
     }
 
-    /**
-     * @test
-     */
-    public function testItCanCreateSingleTranslation()
+    public function testItCanCreateSingleTranslation(): void
     {
         $this->setUpModel();
         $this->model->setTranslation(Language::RU, 'title', 'title_ru');
@@ -130,10 +122,7 @@ class HasTranslationsTest extends TestCase
         ]);
     }
 
-    /**
-     * @test
-     */
-    public function testItCanCreateManyTranslations()
+    public function testItCanCreateManyTranslations(): void
     {
         $this->setUpModel();
         $translations = [
@@ -164,10 +153,7 @@ class HasTranslationsTest extends TestCase
         ]);
     }
 
-    /**
-     * @test
-     */
-    public function testItCanOverrideSingleTranslation()
+    public function testItCanOverrideSingleTranslation(): void
     {
         $this->setUpModel();
         $this->model->setTranslation(Language::RU, 'title', 'title_ru');
@@ -181,10 +167,7 @@ class HasTranslationsTest extends TestCase
         ]);
     }
 
-    /**
-     * @test
-     */
-    public function testItCanOverrideManyTranslations()
+    public function testItCanOverrideManyTranslations(): void
     {
         $this->setUpModel();
         $translations = [
@@ -221,10 +204,7 @@ class HasTranslationsTest extends TestCase
         ]);
     }
 
-    /**
-     * @test
-     */
-    public function testItWillReturnSingleTranslation()
+    public function testItWillReturnSingleTranslation(): void
     {
         $this->setUpModel();
         $this->model->setTranslation(Language::EN, 'title', 'title_en');
@@ -232,10 +212,7 @@ class HasTranslationsTest extends TestCase
         $this->assertEquals('title_en', $this->model->getTranslation('title', Language::EN));
     }
 
-    /**
-     * @test
-     */
-    public function testItWillReturnManyTranslations()
+    public function testItWillReturnManyTranslations(): void
     {
         $this->setUpModel();
         $translations = [
@@ -250,30 +227,21 @@ class HasTranslationsTest extends TestCase
         $this->assertEquals($translations, $result);
     }
 
-    /**
-     * @test
-     */
-    public function testItWillReturnNullForUndefinedSingleTranslation()
+    public function testItWillReturnNullForUndefinedSingleTranslation(): void
     {
         $this->setUpModel();
 
         $this->assertNull($this->model->getTranslation('title', Language::EN));
     }
 
-    /**
-     * @test
-     */
-    public function testItWillReturnEmptyCollectionForUndefinedTranslations()
+    public function testItWillReturnEmptyCollectionForUndefinedTranslations(): void
     {
         $this->setUpModel();
 
         $this->assertEmpty($this->model->getTranslations('title'));
     }
 
-    /**
-     * @test
-     */
-    public function testItWillReturnBoolWhenCheckTranslation()
+    public function testItWillReturnBoolWhenCheckTranslation(): void
     {
         $this->setUpModel();
         $this->model->setTranslation(Language::EN, 'title', 'title_en');
@@ -282,10 +250,7 @@ class HasTranslationsTest extends TestCase
         $this->assertFalse($this->model->hasTranslation('title', Language::RU));
     }
 
-    /**
-     * @test
-     */
-    public function testItCanSaveTranslationsViaMagicProperty()
+    public function testItCanSaveTranslationsViaMagicProperty(): void
     {
         $this->setUpModel();
 
@@ -301,10 +266,7 @@ class HasTranslationsTest extends TestCase
         ]);
     }
 
-    /**
-     * @test
-     */
-    public function testItCanSaveAndWillReturnPlainFieldViaMagicProperty()
+    public function testItCanSaveAndWillReturnPlainFieldViaMagicProperty(): void
     {
         $this->setUpModel();
         $this->model->test_column = 'test';
@@ -312,10 +274,7 @@ class HasTranslationsTest extends TestCase
         $this->assertEquals('test', $this->model->test_column);
     }
 
-    /**
-     * @test
-     */
-    public function testItWillReturnTranslationsViaMagicProperty()
+    public function testItWillReturnTranslationsViaMagicProperty(): void
     {
         $this->setUpModel();
 
