@@ -3,7 +3,6 @@
 namespace App\Processors\Traits;
 
 use App\Cores\ConsumerCore\Interfaces\MessageInterface;
-use App\Cores\ConsumerCore\Loggers\ConsumerErrorLogger;
 use App\Cores\Shared\Codes;
 use BadMethodCallException;
 use Exception;

@@ -9,7 +9,6 @@ use Bschmitt\Amqp\Consumer as BaseConsumer;
 use Closure;
 use Exception;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class Consumer
@@ -85,7 +84,6 @@ class Consumer
                 ];
 
                 ConsumerErrorLogger::log($errorMessage, $this->config, $data);
-                Log::error($errorMessage, $data);
 
                 // Missed server heartbeat
                 if ($errorMessage === 'Missed server heartbeat') {

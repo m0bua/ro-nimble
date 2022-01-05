@@ -13,6 +13,7 @@ class Config
             'gs' => false,
             'ps' => false,
             'bs' => false,
+            'me' => true,
         ];
     }
 
@@ -23,6 +24,7 @@ class Config
             'gs' => true,
             'ps' => true,
             'bs' => true,
+            'me' => true,
         ];
     }
 }

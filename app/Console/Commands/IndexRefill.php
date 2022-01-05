@@ -8,6 +8,8 @@ use App\Models\Eloquent\Goods;
 use Bschmitt\Amqp\Amqp;
 use Bschmitt\Amqp\Message;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Str;
+use JsonException;
 
 class IndexRefill extends Command
 {
@@ -58,6 +60,7 @@ class IndexRefill extends Command
 
     /**
      * @inheritDoc
+     * @throws JsonException
      */
     protected function proceed(): void
     {
@@ -83,7 +86,7 @@ class IndexRefill extends Command
         foreach ($query->trueCursor(self::MAX_BATCH) as $goods) {
             $amqp->publish(
                 'indexing.goods.ids',
-                new Message(json_encode($goods->pluck('id'))),
+                new Message(json_encode($goods->pluck('id'), JSON_THROW_ON_ERROR)),
                 config('amqp.properties.local')
             );
         }
@@ -93,7 +96,7 @@ class IndexRefill extends Command
      * Create new index with new generated name
      * @return void
      */
-    protected function createIndex()
+    protected function createIndex(): void
     {
         $this->goodsElastic->createIndex(
             $this->goodsElastic->buildNewIndexName(),
