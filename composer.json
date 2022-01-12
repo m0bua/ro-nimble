@@ -25,6 +25,7 @@
         "psr/log": "1.1.4"
     },
     "require-dev": {
+        "automation-testing-tools/allure-codeception": "2.1.9.5",
         "automation-testing-tools/codeception-test-helper": "^2.0",
         "barryvdh/laravel-ide-helper": "2.10",
         "codeception/module-amqp": "^1.1",

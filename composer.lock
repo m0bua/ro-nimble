@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1156fd003f675fdaab53a9d3c341633a",
+    "content-hash": "bdebf2388c722a3b08cd7309c40d4456",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -6905,11 +6905,11 @@
         },
         {
             "name": "automation-testing-tools/allure-codeception",
-            "version": "2.1.9.4",
+            "version": "2.1.9.5",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.rozetka.company:automation-testing-tools/allure-codeception.git",
-                "reference": "2a929fdbbcfad81836db7f4ff00a8ee8d9fac282"
+                "reference": "f5a9a1fc1175759f4a1cb54f48145877e8b496bc"
             },
             "require": {
                 "allure-framework/allure-php-api": "1.1.*|1.2.*|1.3.*|1.4.*",
@@ -6934,7 +6934,7 @@
                 "steps",
                 "testing"
             ],
-            "time": "2021-12-14T09:12:28+00:00"
+            "time": "2022-01-11T11:56:39+00:00"
         },
         {
             "name": "automation-testing-tools/codeception-test-helper",
@@ -11586,5 +11586,5 @@
         "ext-pdo": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.1.0"
 }
