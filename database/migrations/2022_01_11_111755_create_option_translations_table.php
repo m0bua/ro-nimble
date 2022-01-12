@@ -13,7 +13,7 @@ class CreateOptionTranslationsTable extends Migration
      */
     public function up(): void
     {
-        if (Schema::hasTable('options_translations')) {
+        if (Schema::hasTable('option_translations')) {
             return;
         }
 

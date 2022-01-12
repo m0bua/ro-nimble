@@ -13,7 +13,7 @@ class CreatePromotionGroupsConstructorsTable extends Migration
      */
     public function up(): void
     {
-        if (Schema::hasTable('goods')) {
+        if (Schema::hasTable('promotion_groups_constructors')) {
             return;
         }
 
