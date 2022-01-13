@@ -22,6 +22,7 @@ class CreatePromotionGroupsConstructorsTable extends Migration
             $table->bigInteger('constructor_id');
             $table->bigInteger('group_id')->index();
             $table->smallInteger('needs_index')->default(1)->index();
+            $table->smallInteger('needs_migrate')->default(1)->index();
             $table->smallInteger('is_deleted')->default(0)->index('idx_groups_constr_is_deleted');
             $table->timestamp('created_at')->nullable()->useCurrent();
             $table->timestamp('updated_at')->nullable()->useCurrent();

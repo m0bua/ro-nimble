@@ -176,6 +176,28 @@ report:
       - ./allure-report
     expire_in: 1 week
 
+tests-to-alluretestops:
+    stage: report
+    variables:
+        ALLURE_LAUNCH_NAME: "${CI_PROJECT_NAME} - ${CI_JOB_STARTED}"
+        ALLURE_ENDPOINT: https://allure.rozetka.company
+        ALLURE_TOKEN: 6df0627e-b6e8-46c8-9c10-775dad11201b
+        ALLURE_PROJECT_ID: 3
+    image: registry.gitlab.rozetka.company/automation-testing-tools/allure-to-bq:latest
+    tags: [ rozetka-shared-highcpu ]
+    when: always
+    allow_failure: true
+    dependencies: ["run_autotest"]
+    needs: ["run_autotest"]
+    before_script:
+        - wget https://github.com/allure-framework/allurectl/releases/latest/download/allurectl_linux_386 -O ${CI_PROJECT_DIR}/allurectl
+        - chmod +x ${CI_PROJECT_DIR}/allurectl
+        - echo "Выгрузка результатов тестов в allure testops "
+        - cd ${CI_PROJECT_DIR}
+        - ls -la
+    script:
+        - ./allurectl upload ${CI_PROJECT_DIR}/vendor/ivv/nimble-test/tests/_output/allure-results
+
 
 deploy-dev:
   stage: deploy
