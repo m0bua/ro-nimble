@@ -1,21 +1,20 @@
 <?php
 
-
 namespace App\Http\Resources;
-
 
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use RuntimeException;
 
 abstract class BaseResource extends JsonResource
 {
-    const RESERVED_FIELD = 'field';
-    const RESERVED_ALIAS = 'alias';
-    const RESERVED_INSIDE = 'inside';
-    const RESERVED_RESOURCE = 'resource';
-    const RESERVED_CLASS = 'class';
-    const RESERVED_METHOD = 'method';
+    public const RESERVED_FIELD = 'field';
+    public const RESERVED_ALIAS = 'alias';
+    public const RESERVED_INSIDE = 'inside';
+    public const RESERVED_RESOURCE = 'resource';
+    public const RESERVED_CLASS = 'class';
+    public const RESERVED_METHOD = 'method';
 
     /**
      * Returns list of fields for resource
@@ -50,20 +49,21 @@ abstract class BaseResource extends JsonResource
             }
 
             if (!isset($field[self::RESERVED_FIELD])) {
-                throw new Exception("Parameter 'field' not found in resource: " . static::class);
+                throw new RuntimeException("Parameter 'field' not found in resource: " . static::class);
             }
 
             $parameterName = $this->resolveParameterName($field);
 
             if ($this->leaveEmpty($resource, $field)) {
-                $response[$parameterName] = null;
                 continue;
             }
 
             if (isset($field[self::RESERVED_RESOURCE])) {
                 $callable = $this->resolveResource($field[self::RESERVED_RESOURCE]);
                 if (is_callable($callable)) {
-                    $response[$parameterName] = $callable($this->resolveArrayField($resource, $field[self::RESERVED_FIELD]));
+                    if (isset($resource[$parameterName])) {
+                        $response[$parameterName] = $callable($this->resolveArrayField($resource, $field[self::RESERVED_FIELD]));
+                    }
                 }
 
                 continue;
@@ -133,15 +133,19 @@ abstract class BaseResource extends JsonResource
         $resourceMethod = $this->resolveField($resource, self::RESERVED_METHOD);
 
         if (!$resourceClass) {
-            throw new Exception("Resource must have a 'class' parameter");
-        } elseif (!class_exists($resourceClass)) {
-            throw new Exception("Class '$resourceClass' does not exist");
+            throw new RuntimeException("Resource must have a 'class' parameter");
+        }
+
+        if (!class_exists($resourceClass)) {
+            throw new RuntimeException("Class '$resourceClass' does not exist");
         }
 
         if (!$resourceMethod) {
-            throw new Exception("Resource must have a 'method' parameter");
-        } elseif (!method_exists($resourceClass, $resourceMethod)) {
-            throw new Exception("Method '$resourceMethod' does not exist in class '$resourceClass'");
+            throw new RuntimeException("Resource must have a 'method' parameter");
+        }
+
+        if (!method_exists($resourceClass, $resourceMethod)) {
+            throw new RuntimeException("Method '$resourceMethod' does not exist in class '$resourceClass'");
         }
 
         return [$resourceClass, $resourceMethod];

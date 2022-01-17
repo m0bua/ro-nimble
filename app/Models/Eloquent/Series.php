@@ -58,4 +58,26 @@ class Series extends Model
     protected $casts = [
         'title' => Translatable::class,
     ];
+
+    /**
+     * @param array $names
+     * @return array
+     */
+    public static function getIdsByNames(array $names): array
+    {
+        return static::whereIn('name', $names)
+            ->pluck('id')
+            ->toArray();
+    }
+
+    /**
+     * @param array $ids
+     * @return mixed
+     */
+    public static function getSeriesForFilters(array $ids)
+    {
+        return static::whereIn('id', $ids)
+            ->with('translations')
+            ->get();
+    }
 }

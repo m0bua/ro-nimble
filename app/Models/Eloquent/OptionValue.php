@@ -7,12 +7,14 @@ use App\Traits\Eloquent\HasDynamicBinds;
 use App\Traits\Eloquent\HasFillable;
 use App\Traits\Eloquent\HasTranslations;
 use Database\Factories\Eloquent\OptionValueFactory;
+use DB;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Carbon;
 
 /**
@@ -22,12 +24,18 @@ use Illuminate\Support\Carbon;
  * @property int|null $option_id
  * @property int|null $parent_id
  * @property string|null $ext_id
+ * @property string $title
  * @property string|null $name
  * @property string|null $status
  * @property int|null $order
  * @property string|null $similars_value
  * @property int|null $show_value_in_short_set
  * @property string|null $color
+ * @property string $title_genetive
+ * @property string $title_accusative
+ * @property string $title_prepositional
+ * @property string $description
+ * @property string $shortening
  * @property int|null $record_type
  * @property int|null $is_section
  * @property int $is_deleted
@@ -37,18 +45,14 @@ use Illuminate\Support\Carbon;
  * @property-read OptionValue|null $parent
  * @property-read Collection|OptionValueTranslation[] $translations
  * @property-read int|null $translations_count
- * @property array<string> $title title translations
- * @property array<string> $title_genetive title_genetive translations
- * @property array<string> $title_accusative title_accusative translations
- * @property array<string> $title_prepositional title_prepositional translations
- * @property array<string> $description description translations
- * @property array<string> $shortening shortening translations
  * @method static OptionValueFactory factory(...$parameters)
+ * @method static Builder|OptionValue loadTranslations() WARNING! This scope must be in start of all query
  * @method static Builder|OptionValue newModelQuery()
  * @method static Builder|OptionValue newQuery()
  * @method static Builder|OptionValue query()
  * @method static Builder|OptionValue whereColor($value)
  * @method static Builder|OptionValue whereCreatedAt($value)
+ * @method static Builder|OptionValue whereDescription($value)
  * @method static Builder|OptionValue whereExtId($value)
  * @method static Builder|OptionValue whereId($value)
  * @method static Builder|OptionValue whereIsDeleted($value)
@@ -58,9 +62,14 @@ use Illuminate\Support\Carbon;
  * @method static Builder|OptionValue whereOrder($value)
  * @method static Builder|OptionValue whereParentId($value)
  * @method static Builder|OptionValue whereRecordType($value)
+ * @method static Builder|OptionValue whereShortening($value)
  * @method static Builder|OptionValue whereShowValueInShortSet($value)
  * @method static Builder|OptionValue whereSimilarsValue($value)
  * @method static Builder|OptionValue whereStatus($value)
+ * @method static Builder|OptionValue whereTitle($value)
+ * @method static Builder|OptionValue whereTitleAccusative($value)
+ * @method static Builder|OptionValue whereTitleGenetive($value)
+ * @method static Builder|OptionValue whereTitlePrepositional($value)
  * @method static Builder|OptionValue whereUpdatedAt($value)
  * @mixin Eloquent
  */
@@ -71,9 +80,10 @@ class OptionValue extends Model
     use HasTranslations;
     use HasDynamicBinds;
 
-    public const STATUS_ACTIVE = 'active';
-
     public $incrementing = false;
+
+    public const STATUS_NOT_USE = 'not-use';
+    public const STATUS_ACTIVE = 'active';
 
     protected $fillable = [
         'id',
@@ -114,5 +124,24 @@ class OptionValue extends Model
     public function parent(): BelongsTo
     {
         return $this->belongsTo(static::class)->withDefault();
+    }
+
+    /**
+     * @param int $optionId
+     * @param array $names
+     * @return array
+     */
+    public static function getOptValueIdsByNames(int $optionId, array $names): array
+    {
+        return static::select([DB::raw("COALESCE(ov_parent.id, ov.id) as id")])
+            ->from('option_values', 'ov')
+            ->leftJoin('option_values as ov_parent', function (JoinClause $join) {
+                $join->on('ov.parent_id', '=', 'ov_parent.id')
+                    ->whereColumn('ov_parent.status', '!=', DB::raw("'not-use'"));
+            })
+            ->where('ov.option_id', $optionId)
+            ->whereIn('ov.name', $names)
+            ->pluck('id')
+            ->toArray();
     }
 }

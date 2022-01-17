@@ -20,6 +20,7 @@ use Illuminate\Support\Carbon;
  *
  * @property int $id
  * @property string|null $mpath
+ * @property string $title
  * @property string|null $status
  * @property string|null $status_inherited
  * @property int|null $order
@@ -48,8 +49,9 @@ use Illuminate\Support\Carbon;
  * @property-read Category|null $parent
  * @property-read Collection|CategoryTranslation[] $translations
  * @property-read int|null $translations_count
- * @property array<string> $title title translations
+ * @method static Builder|Category active()
  * @method static CategoryFactory factory(...$parameters)
+ * @method static Builder|Category loadTranslations() WARNING! This scope must be in start of all query
  * @method static Builder|Category newModelQuery()
  * @method static Builder|Category newQuery()
  * @method static Builder|Category query()
@@ -76,6 +78,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Category whereSectionsList($value)
  * @method static Builder|Category whereStatus($value)
  * @method static Builder|Category whereStatusInherited($value)
+ * @method static Builder|Category whereTitle($value)
  * @method static Builder|Category whereTitlesMode($value)
  * @method static Builder|Category whereUpdatedAt($value)
  * @mixin Eloquent
@@ -113,6 +116,8 @@ class Category extends Model
         'disable_kit_ratio',
         'is_rozetka_top',
         'is_deleted',
+        'status',
+        'status_inherited',
     ];
 
     protected $casts = [
@@ -127,5 +132,74 @@ class Category extends Model
     public function children(): HasMany
     {
         return $this->hasMany(static::class, 'parent_id');
+    }
+
+    /**
+     * @param static|Builder $query
+     */
+    public function scopeActive($query): Builder
+    {
+        return $query
+            ->where('status', '!=', 'locked')
+            ->where('status_inherited', '!=', 'locked');
+    }
+
+    /**
+     * @param array $names
+     * @return array
+     */
+    public static function getIdsByNames(array $names): array
+    {
+        return static::whereIn('name', $names)
+            ->active()
+            ->pluck('id')
+            ->toArray();
+    }
+
+    /**
+     * @param int $id
+     * @return Category|null
+     */
+    public static function getById(int $id): ?Category
+    {
+        return static::where('id', $id)
+            ->active()
+            ->first();
+    }
+
+    /**
+     * @param array $ids
+     * @return mixed
+     */
+    public static function getByIds(array $ids, array $fields = []): array
+    {
+        $query = static::whereIn('id', $ids)
+            ->with('translations')
+            ->orderBy('order')
+            ->active();
+
+        if ($fields) {
+            $query->select($fields);
+        }
+
+        return $query
+            ->get()
+            ->toArray();
+    }
+
+    /**
+     * @param Category $category
+     * @return Collection|array<Category>
+     */
+    public static function getChildCategories(Category $category): Collection
+    {
+        return static::where('left_key', '>', $category->left_key)
+            ->where('right_key', '<', $category->right_key)
+            ->with('translations')
+            ->orderByDesc('level')
+            ->orderByDesc('order')
+            ->orderByDesc('id')
+            ->active()
+            ->get();
     }
 }

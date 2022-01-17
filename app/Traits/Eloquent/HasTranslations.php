@@ -3,7 +3,10 @@
 namespace App\Traits\Eloquent;
 
 use App\Casts\Translatable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
 use LogicException;
 
 /**
@@ -43,7 +46,7 @@ use LogicException;
  *      'ru' => 'на Русском'
  * ];
  *
- * $model->i_am_translatable will return that array of translations
+ * $model->i_am_translatable will return active or default language translation
  *
  * Nota bene: All of these actions can be performed using public trait methods, without having to set up casts
  *
@@ -73,6 +76,31 @@ trait HasTranslations
         }
 
         return $this->hasMany($model);
+    }
+
+    /**
+     * @comment WARNING! This scope must be in start of all query
+     * @param Builder $builder
+     * @return Builder
+     */
+    public function scopeLoadTranslations(Builder $builder): Builder
+    {
+        return $builder->with('translations', function (HasMany $q) {
+            $tableName = $this->translations()->getRelated()->getTable();
+            $lang = App::getLocale();
+            $defaultLang = config('translatable.default_language');
+
+            return $q->select()
+                ->fromSub(
+                    DB::query()
+                        ->select(DB::raw('distinct on ("column") *'))
+                        ->from($tableName)
+                        ->whereIn('lang', [$lang, $defaultLang])
+                        ->orderByRaw('"column", (lang = ?)::INT desc', [$lang]),
+                    $tableName
+                )
+                ->orderByRaw('(lang = ?)::INT desc', [$lang]);
+        });
     }
 
     /**
@@ -131,11 +159,19 @@ trait HasTranslations
      */
     public function getTranslation(string $column, string $lang): ?string
     {
-        return $this
-            ->translations()
-            ->where('column', $column)
-            ->where('lang', $lang)
-            ->value('value');
+        if ($this->relationLoaded('translations')) {
+            $value = $this->translations
+                    ->where('column', $column)
+                    ->where('lang', $lang)
+                    ->first()->value ?? null;
+        }
+
+        return $value ?? $this
+                ->translations()
+                ->where('column', $column)
+                ->whereIn('lang', [$lang, config('translatable.default_language')])
+                ->orderByRaw('(lang = ?)::INT desc', [$lang])
+                ->value('value');
     }
 
     /**

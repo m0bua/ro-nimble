@@ -1,0 +1,117 @@
+#!/usr/bin/env php
+<?php
+
+$envFile = '.env';
+$envExampleFile = '.env.example';
+$confFile = 'config/local.php';
+$confFileCont = "<?php
+// keys - is the config file names,
+// values - array of replaced data
+
+return [
+    'database' => [
+        'default' => env('DB_DEFAULT', 'pgsql'),
+        'connections' => [
+            'logsdb' => [
+                'host'      => 'localhost',
+                'database'  => 'logs',
+                'username'  => 'postgres',
+                'password'  => 'postgres',
+                'schema'  => 'public'
+            ],
+            'pgsql' => [
+                'host'      => 'ivv-postgre',
+                'database'  => 'store',
+                'username'  => 'postgres',
+                'password'  => 'postgres',
+                'schema' => 'public'
+            ],
+            'pgsql_testing' => [
+                'driver'   => 'pgsql',
+                'host' => 'localhost',
+                'database' => 'store_test',
+                'username' => 'postgres',
+                'password' => 'postgres',
+                'schema' => 'public',
+                'charset'  => 'utf8'
+            ],
+        ],
+        // cmd must be only in master and slaves or on top level (if it's identical for all)
+        'sphinx' => [
+            'master' => [
+                // server ip
+                'ip' => '',
+                // user and password, for ssh connect
+                'user' => '',
+                'password' => '',
+            ],
+            'slaves' => [
+                [
+                    'host' => 'localhost',
+                    // user and password, for ssh connect
+                    'user' => '',
+                    'password' => '',
+                    'port' => '9306',
+                    'wordforms_path' => '/var/lib/sphinxsearch/wordforms/dict.txt',
+                    'ssh_port' => '22',
+                ]
+            ],
+        ],
+    ],
+    'rozetkaApi' => [
+        'ip' => '89.184.81.201',
+        'version' => 'v1.1',
+        'url' => 'api.rozetka.com.ua',
+        'authLogin' => 'api-test',
+        'authPass' => '123321',
+        'authEnable' => '1',
+        'tries_count' => '5',
+        'tries_time' => '5',
+        'ssl' => '0'
+    ],
+    'googleApi' => [
+        'client_id' => '5458514456-u16fia7pfegovi0dus19nqb0jmtiu6eh.apps.googleusercontent.com',
+        'client_email' => '5458514456-u16fia7pfegovi0dus19nqb0jmtiu6eh@developer.gserviceaccount.com',
+        'private_key' => \"-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCKs7Gn5gvpqukq\nvxJoiAlnJdoyMBn6Dit+g6h7K3Dz5Jv8wtGRfesRXDUceHRLQPNNWTdxzypMi5DU\nbuPGwkAEsvxtN2UCufuCkyhTfdDFXH6rirHxqjPWPjELFu9cU/o5jWj2tVG0FfqT\n0NW7AJL05DLfxtDR3IWLasi9yp3Q4DYHj9uvF7dlT4VoBRT8VvK6sl56tpmcfoNs\nbsR/aLQ9UyBwpMQ/CaxRuUYTByL5/jkqE3dRGzOE3u08l4dHRxVi2B6r4tp6Tnh1\nCSbck35B1obA2442u4Ye2z35NyvdJWcUJImU5eeJBuQhSo9ATFJhAHFLUt4JyDzA\n96HM/96VAgMBAAECggEAPyCyBvzJBzzmirIUKsdfoDa2LImACTNR0G8Ty5tl+Vtf\nM5dn0pRA3NHeymp4Y5fYJKgqd/4V/mi3LjiaKuhWQs1D3mGL88W6Fx/rBrUIxArp\nDCJAAwG4PhZoM+foYVlHVdJqp363BQPL3GL8I/SK7jK+hOL0P8/iaCXd36PMWDhF\nK47aVAiGQZZG2pMNrhmIAPrHL12ewAQwfSwIvjexpmwpw5QA9xPzSvuFSsoURLa/\n9WCbS9AAioVc84HHQqHkLgIqjjhAbixHpszNw6SyZeoBAI/2cvF5KxEK3skOb8tN\nifhapFC3YIC+ZPhReut7O8qXSSnYylQWvVcZpeU1gQKBgQDkVNS+SKnzHfD1TFcg\nXUkofh/noNdgh8YpUtpxb64vsiq+Y1d9X5W/sAZ88MWhmqhijVZ7YingDgC4NQqi\n+pwEOspejGB6vN5idTEUXqBu8+IDe8rP0xtmJrAIN29KEh0s8naQtvZfWGAhupmI\n+uX/CFmWiaPK8jMltVBb9Zl2CQKBgQCbgm2dkGymBAsaPtE133+Tj7rwJ8tldK6Z\nDLxEsS34oUj+vK3yJ2anDbYUOnbLOhhzQnq4m7t+SWYFk+coB4R0rjIit0sLnDwG\nl9Hah62XpDkusUzUeQxVJGbBlc3yrR2ac3jbrjjl72xN+Q1ROGom7edVoFbuqpOa\nyttKrGTnLQKBgAnE52VMzpisS0bzgTbNRvgIjWznoM9sf7n85YO894Lq6JFExtWC\nZXHSIjTuSEZly5aL3Yth49DGSJmZC191wX8c1NO+xdH6irlDslngwpR8ssrbXQ4P\nRjjUputzE7vjkoP9y7zdVyU1LsfCqBcIRRboUIz0TqG8Qxv16f5FP8+hAoGAFJsX\nw0Ub4HOwtO2V8zmGQhtNff0H6o2nhQg2+jMwED3u2jJOKkQmSgR7F/sXOp6cFsm8\nUTHxii5Xom2St68nUf6zDf6Tpxowqf78A6Tuz6UnHpTHxW+0vqNwKj6bZ4ig35Jl\ndVaEm5M6GqrhpN2A01+6w5HXcxCPNneizyZAyJECgYBezCUfTmdfw5zT1hAjK9TF\ngqjwOOOtCf+WecFBqpX4VXbnwJhUkSZJRButi0l7lzcLxCVgbxoqbKXGbbcMIU9h\na3PAPb2+5Rbg/7IjFveEBeAqEqwZTgRvMeTESbtUvhnVyXptkAVbs0L7aLwwPl2K\nL+uczJklAwCK38O88S1WwQ==\n-----END PRIVATE KEY-----\n\",
+        'project_id' => 'rozetka-com-ua',
+        'database' => 'UserFeedDemo',
+        'type' => 'service_account',
+        'tables' => [
+            'keywords' => 'Collections.sku_adwords_pairs',
+            'synonims'      => 'Collections.synonims',
+            'keyword_suggest' => 'Collections.keyword_suggest',
+            'similar_keywords' =>  'Collections.similarKeywords',
+            'topFashionProducers' => 'Collections.TOPfashionProducers',
+            'categories_rank' => 'Collections.categories_rank',
+        ]
+    ]
+];
+";
+
+if (!file_exists($envFile)) {
+    if (!copy($envExampleFile, $envFile)) {
+        echo "Failed to create " . $envFile . " file.\n";
+    } else {
+        $conf = file_get_contents($envFile);
+        // 'cause we don't use memcached
+        $conf = preg_replace(
+            ['/CACHE_DRIVER=memcached/', '/SESSION_DRIVER=memcached/'],
+            ['CACHE_DRIVER=array', 'SESSION_DRIVER=array'],
+            $conf
+        );
+        $addition = PHP_EOL . 'APP_BASE_PATH=' . __DIR__ . PHP_EOL . 'APP_TIMEZONE=Europe/Kiev' . PHP_EOL;
+        file_put_contents($envFile, $conf . $addition);
+        echo "Created " . $envFile . " file.\n";
+    }
+} else {
+    echo "You already have file " . $envFile . ".\n";
+}
+
+if (!file_exists($confFile)) {
+    $f = fopen($confFile, "w");
+    fwrite($f, $confFileCont);
+    fclose($f);
+    echo "Created " . $confFile . " file.\n";
+} else {
+    echo "You already have file " . $confFile . ".\n";
+}

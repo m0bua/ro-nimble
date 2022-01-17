@@ -4,7 +4,7 @@ namespace App\Casts;
 
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
-use stdClass;
+use Illuminate\Support\Facades\App;
 
 class Translatable implements CastsAttributes
 {
@@ -15,13 +15,13 @@ class Translatable implements CastsAttributes
      * @param string $key
      * @param mixed $value
      * @param array $attributes
-     * @return mixed
+     * @return string|null
      */
-    public function get($model, string $key, $value, array $attributes)
+    public function get($model, string $key, $value, array $attributes): ?string
     {
-        return method_exists($model, 'getTranslations')
-            ? $model->getTranslations($key)
-            : $value;
+        return $value ?? (method_exists($model, 'getTranslation')
+                ? $model->getTranslation($key, App::getLocale())
+                : $value);
     }
 
     /**
@@ -29,20 +29,20 @@ class Translatable implements CastsAttributes
      *
      * @param Model $model
      * @param string $key
-     * @param mixed $value
+     * @param array|string $value
      * @param array $attributes
-     * @return mixed
+     * @return void
+     * @noinspection ReturnTypeCanBeDeclaredInspection
      */
     public function set($model, string $key, $value, array $attributes)
     {
-        if ((is_array($value) || $value instanceof stdClass) && method_exists($model, 'setTranslations')) {
-            return $model->setTranslations($key, (array)$value);
+        if (is_array($value) && method_exists($model, 'setTranslations')) {
+            $model->setTranslations($key, $value);
+            return;
         }
 
         if (method_exists($model, 'setTranslation')) {
-            return $model->setTranslation(config('translatable.default_language'), $key, $value);
+            $model->setTranslation(App::getLocale(), $key, $value);
         }
-
-        return $value;
     }
 }

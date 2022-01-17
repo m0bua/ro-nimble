@@ -26,7 +26,6 @@ use Illuminate\Support\Str;
  * @method static Builder|Translation query()
  * @method static Builder|Translation whereColumn($value)
  * @method static Builder|Translation whereCreatedAt($value)
- * @method static Builder|Translation whereGoodsId($value)
  * @method static Builder|Translation whereId($value)
  * @method static Builder|Translation whereLang($value)
  * @method static Builder|Translation whereUpdatedAt($value)

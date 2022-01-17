@@ -3,11 +3,8 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\GoodsDetailsResource;
-use App\Http\Resources\GoodsResource;
-use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
+use App\Http\Resources\GoodsResource\GoodsResource;
+use App\Modules\GoodsModule\GoodsService;
 
 class GoodsController extends Controller
 {
@@ -24,14 +21,11 @@ class GoodsController extends Controller
      *     )
      * )
      *
+     * @param GoodsService $goodsService
      * @return GoodsResource
      */
-    public function index(): GoodsResource
+    public function index(GoodsService $goodsService): GoodsResource
     {
-        $data = [
-            'ids' => [1, 2, 3, 4, 5]
-        ];
-
-        return GoodsResource::make($data);
+        return GoodsResource::make($goodsService->getGoods());
     }
 }

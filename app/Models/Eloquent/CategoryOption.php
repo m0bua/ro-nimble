@@ -20,14 +20,15 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property int|null $category_id
  * @property int|null $option_id
+ * @property string $value
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Category|null $category
  * @property-read Option|null $option
  * @property-read Collection|CategoryOptionTranslation[] $translations
  * @property-read int|null $translations_count
- * @property array<string> $value value translations
  * @method static CategoryOptionFactory factory(...$parameters)
+ * @method static Builder|CategoryOption loadTranslations() WARNING! This scope must be in start of all query
  * @method static Builder|CategoryOption newModelQuery()
  * @method static Builder|CategoryOption newQuery()
  * @method static Builder|CategoryOption query()
@@ -36,6 +37,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder|CategoryOption whereId($value)
  * @method static Builder|CategoryOption whereOptionId($value)
  * @method static Builder|CategoryOption whereUpdatedAt($value)
+ * @method static Builder|CategoryOption whereValue($value)
  * @mixin Eloquent
  */
 class CategoryOption extends Model

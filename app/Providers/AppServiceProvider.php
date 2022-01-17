@@ -6,6 +6,7 @@ use App\Macros\SelectNestedTranslation;
 use App\Macros\SelectTranslation;
 use App\Macros\TrueCursor;
 use Illuminate\Database\Eloquent;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
@@ -41,10 +42,11 @@ class AppServiceProvider extends ServiceProvider
 
         $this->logDbQueries();
         $this->translatableMacros();
+        $this->collectionMacros();
     }
 
     /**
-     * Declare macro for fetch translations
+     * Declare query logging
      */
     protected function translatableMacros(): void
     {
@@ -55,8 +57,11 @@ class AppServiceProvider extends ServiceProvider
         Eloquent\Builder::macro('selectTranslations', function (array $fields, string $lang = ''): Eloquent\Builder {
             $query = $this;
 
-            foreach ($fields as $field) {
-                $query = (new SelectTranslation($query, $field, '', $lang))->build();
+            foreach ($fields as $alias => $field) {
+                $query = (new SelectTranslation($query,
+                    $field,
+                    is_string($alias) ? $alias : '',
+                    $lang))->build();
             }
 
             return $query;
@@ -80,8 +85,14 @@ class AppServiceProvider extends ServiceProvider
         ): Eloquent\Builder {
             $query = $this;
 
-            foreach ($fields as $field) {
-                $query = (new SelectNestedTranslation($this, $targetClass, $field, '', $targetClassAlias, $lang))->build();
+            foreach ($fields as $alias => $field) {
+                $query = (new SelectNestedTranslation(
+                    $this,
+                    $targetClass,
+                    $field,
+                    is_string($alias) ? $alias : '',
+                    $targetClassAlias,
+                    $lang))->build();
             }
 
             return $query;
@@ -119,6 +130,24 @@ class AppServiceProvider extends ServiceProvider
                     }
                 }
             }
+        });
+    }
+
+    /**
+     * Base collection macros
+     *
+     * @return void
+     */
+    protected function collectionMacros(): void
+    {
+        Collection::macro('recursive', function () {
+            return $this->map(function ($value) {
+                if (is_array($value) || is_object($value)) {
+                    return collect($value)->recursive();
+                }
+
+                return $value;
+            });
         });
     }
 }

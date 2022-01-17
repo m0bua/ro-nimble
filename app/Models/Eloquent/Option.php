@@ -3,6 +3,7 @@
 namespace App\Models\Eloquent;
 
 use App\Casts\Translatable;
+use App\Enums\Filters;
 use App\Traits\Eloquent\HasFillable;
 use App\Traits\Eloquent\HasTranslations;
 use App\ValueObjects\Options;
@@ -16,12 +17,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection as SupportCollection;
 
 /**
  * App\Models\Eloquent\Option
  *
  * @property int $id
+ * @property string $title
  * @property string|null $name
  * @property string|null $type
  * @property string|null $ext_id
@@ -43,8 +45,9 @@ use Illuminate\Support\Facades\DB;
  * @property-read int|null $goods_options_count
  * @property-read Collection|OptionTranslation[] $translations
  * @property-read int|null $translations_count
- * @property array<string> $title title translations
+ * @method static Builder|Option active()
  * @method static OptionFactory factory(...$parameters)
+ * @method static Builder|Option loadTranslations() WARNING! This scope must be in start of all query
  * @method static Builder|Option newModelQuery()
  * @method static Builder|Option newQuery()
  * @method static Builder|Option query()
@@ -63,6 +66,7 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|Option whereParentId($value)
  * @method static Builder|Option whereRecordType($value)
  * @method static Builder|Option whereState($value)
+ * @method static Builder|Option whereTitle($value)
  * @method static Builder|Option whereType($value)
  * @method static Builder|Option whereUpdatedAt($value)
  * @method static Builder|Option whereValueSeparator($value)
@@ -74,11 +78,18 @@ class Option extends Model
     use HasFillable;
     use HasTranslations;
 
-    public const TYPE_SLIDER = 'number';
-    public const TYPE_CHECKBOX = 'bool';
+    public const TYPE_INTEGER = 'Integer';
+    public const TYPE_DECIMAL = 'Decimal';
+    public const TYPE_CHECKBOX = 'CheckBox';
+
     public const STATE_ACTIVE = 'active';
 
     public $incrementing = false;
+
+    public static array $sliderTypes = [
+        self::TYPE_INTEGER,
+        self::TYPE_DECIMAL
+    ];
 
     protected $fillable = [
         'id',
@@ -124,10 +135,27 @@ class Option extends Model
     }
 
     /**
-     * @param Category $category
-     * @return array
+     * @param static|Builder $query
      */
-    public function getOptionsByCategory(Category $category): array
+    public function scopeActive($query)
+    {
+        return $query->where('state', 'active');
+    }
+
+    /**
+     * @param array $names
+     * @return \Illuminate\Support\Collection
+     */
+    public static function getOptsByNames(array $names): \Illuminate\Support\Collection
+    {
+        return static::whereIn('name', $names)->active()->get();
+    }
+
+    /**
+     * @param array $categoryIds
+     * @return SupportCollection
+     */
+    public function getOptionsByCategory(array $categoryIds): SupportCollection
     {
         $optionTable = $this->getTable();
         $optionValueTable = OptionValue::make()->getTable();
@@ -156,11 +184,11 @@ class Option extends Model
                 $join->on('ov.option_id', 'o.id')
                     ->where('ov.status', OptionValue::STATUS_ACTIVE);
             })
-            ->where('pos.category_id', $category->id)
-            ->whereIn('os.comparable', ['main', 'bottom'])
+            ->whereIn('pos.category_id', $categoryIds)
+            ->whereIn('os.comparable', [Filters::COMPARABLE_MAIN, Filters::COMPARABLE_BOTTOM])
             ->where('o.state', self::STATE_ACTIVE)
             ->whereIn('os.status', OptionSetting::$availableStatuses)
-            ->where('o.type', '<>', self::TYPE_SLIDER)
+            ->whereNotIn('o.type', self::$sliderTypes)
             ->orderBy('os.order')
             ->orderBy('ov.order')
             ->orderBy('ov.title')
@@ -179,6 +207,51 @@ class Option extends Model
                 'option_title_prepositional' => 'title_prepositional',
             ], 'os');
 
-        return $query->get()->toArray();
+        return $query->get()->recursive();
+    }
+
+    /**
+     * @param array $categoryIds
+     * @return SupportCollection
+     */
+    public function getSliders(array $categoryIds): SupportCollection
+    {
+        $optionTable = $this->getTable();
+        $precountOptionSliderTable = PrecountOptionSlider::make()->getTable();
+        $optionSettingTable = OptionSetting::make()->getTable();
+
+        $query = static::query()
+            ->select([
+                'o.id as option_id',
+                \DB::raw('COALESCE(option_setting_translations_option_title.value, option_translations_title.value) as option_title'),
+                'o.name as option_name',
+                'o.type as option_type',
+                'os.special_combobox_view',
+                'os.order',
+                'os.category_id as category_id',
+                'pos.min_value',
+                'pos.max_value'
+            ])
+            ->from($precountOptionSliderTable, 'pos')
+            ->join("{$optionTable} as o", 'pos.option_id', 'o.id')
+            ->join("{$optionSettingTable} as os", 'os.option_id', 'o.id')
+            ->whereIn('pos.category_id', $categoryIds)
+            ->where('o.state', self::STATE_ACTIVE)
+            ->whereIn('o.type', self::$sliderTypes)
+            ->whereNotIn('os.comparable', [Filters::COMPARABLE_DISABLE, Filters::COMPARABLE_LOCKED])
+            ->where(function(Builder $query) use ($categoryIds) {
+                $query->whereIn('os.category_id', $categoryIds)
+                    ->orWhereNull('os.category_id');
+            })
+            ->orderBy('option_id')
+            ->orderBy('category_id')
+            ->selectNestedTranslation(Option::class, 'title', '', 'o')
+            ->selectNestedTranslations(OptionSetting::class, [
+                'os_option_title' => 'option_title',
+                'unit' => 'unit',
+            ], 'os');
+
+        //если одинаковых опций пришло две, оставляем ту что с категорией
+        return $query->get()->keyBy('option_id')->values()->recursive();
     }
 }

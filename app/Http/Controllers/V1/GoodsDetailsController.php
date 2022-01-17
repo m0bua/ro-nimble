@@ -4,7 +4,7 @@ namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GoodsDetailsRequest;
-use App\Http\Resources\GoodsDetailsResource;
+use App\Http\Resources\GoodsDetailsResource\GoodsDetailsResource;
 use App\Models\Eloquent\Goods;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 

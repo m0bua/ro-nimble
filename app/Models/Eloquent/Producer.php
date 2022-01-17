@@ -21,6 +21,8 @@ use Illuminate\Support\Carbon;
  * @property int|null $order_for_promotion
  * @property int|null $producer_rank
  * @property string|null $name
+ * @property string $title
+ * @property string|null $title_rus
  * @property string|null $ext_id
  * @property string|null $text
  * @property string|null $status
@@ -36,8 +38,9 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $goods_count
  * @property-read Collection|ProducerTranslation[] $translations
  * @property-read int|null $translations_count
- * @property array<string> $title title translations
+ * @method static Builder|Producer active()
  * @method static ProducerFactory factory(...$parameters)
+ * @method static Builder|Producer loadTranslations() WARNING! This scope must be in start of all query
  * @method static Builder|Producer needsIndex()
  * @method static Builder|Producer newModelQuery()
  * @method static Builder|Producer newQuery()
@@ -56,6 +59,8 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Producer whereShowLogo($value)
  * @method static Builder|Producer whereStatus($value)
  * @method static Builder|Producer whereText($value)
+ * @method static Builder|Producer whereTitle($value)
+ * @method static Builder|Producer whereTitleRus($value)
  * @method static Builder|Producer whereUpdatedAt($value)
  * @mixin Eloquent
  */
@@ -88,13 +93,65 @@ class Producer extends Model
         'title' => Translatable::class,
     ];
 
+    /**
+     * @return HasMany
+     */
     public function goods(): HasMany
     {
         return $this->hasMany(Goods::class);
     }
 
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
     public function scopeNeedsIndex(Builder $builder): Builder
     {
         return $builder->where('needs_index', 1);
+    }
+
+    /**
+     * @param static|Builder $query
+     */
+    public function scopeActive($query)
+    {
+        return $query
+            ->where('status', '!=', 'locked');
+    }
+
+    /**
+     * @param array $names
+     * @return array
+     */
+    public static function getIdsByNames(array $names): array
+    {
+        return static::whereIn('name', $names)
+            ->active()
+            ->pluck('id')
+            ->toArray();
+    }
+
+    /**
+     * @param array $ids
+     * @return array
+     */
+    public static function getActiveByIds(array $ids): array
+    {
+        return static::whereIn('id', $ids)
+            ->active()
+            ->pluck('id')
+            ->toArray();
+    }
+
+    /**
+     * @param array $ids
+     * @return mixed
+     */
+    public static function getProducersForFilters(array $ids)
+    {
+        return static::whereIn('id', $ids)
+            ->with('translations')
+            ->active()
+            ->get();
     }
 }

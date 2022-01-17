@@ -90,6 +90,7 @@ class HasTranslationsTest extends TestCase
     public function testItCanDefineRelationship(): void
     {
         $this->setUpModel();
+        /** @noinspection UnnecessaryAssertionInspection */
         $this->assertInstanceOf(HasMany::class, $this->model->translations());
     }
 
@@ -98,6 +99,7 @@ class HasTranslationsTest extends TestCase
     {
         $this->model = new DummyCustom();
 
+        /** @noinspection UnnecessaryAssertionInspection */
         $this->assertInstanceOf(HasMany::class, $this->model->translations());
     }
 
@@ -285,6 +287,6 @@ class HasTranslationsTest extends TestCase
 
         $this->model->title = $translations;
 
-        $this->assertEquals($translations, $this->model->title);
+        $this->assertEquals('title_ru', $this->model->title);
     }
 }
