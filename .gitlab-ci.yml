@@ -176,17 +176,12 @@ report:
       - ./allure-report
     expire_in: 1 week
 
-alluretestops:
+allure-testops:
     stage: report
     extends: .alluretestops-template
     variables:
-        ALLURE_RESULT_PATH: "path/to/allure-results"
+        ALLURE_RESULT_PATH: "vendor/ivv/nimble-test/tests/_output/allure-results"
         ALLURE_PROJECT_ID: 3
-    include:
-    - project: 'ivv/nimble'
-    - file: '/support/.alluretestops-template.yml'
-
-
 
 deploy-dev:
   stage: deploy
@@ -453,4 +448,5 @@ jirabot:
 include:
   - project: 'common/rozetka-pipelines'
     file: '/support/.jirabot-template.yml'
-
+  - project: 'common/rozetka-pipelines'
+    file: '/support/.alluretestops-template.yml'
