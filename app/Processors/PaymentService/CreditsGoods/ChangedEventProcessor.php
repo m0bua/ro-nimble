@@ -5,12 +5,10 @@ namespace App\Processors\PaymentService\CreditsGoods;
 use App\Cores\ConsumerCore\Interfaces\MessageInterface;
 use App\Cores\Shared\Codes;
 use App\Models\Eloquent\Goods;
-use App\Processors\AbstractProcessor;
+use App\Processors\Processor;
 
-class ChangedEventProcessor extends AbstractProcessor
+class ChangedEventProcessor extends Processor
 {
-    protected Goods $model;
-
     /**
      * ChangedEventProcessor constructor.
      * @param Goods $model

@@ -7,7 +7,7 @@ use App\Cores\ConsumerCore\Interfaces\MessageInterface;
 use App\Cores\Shared\Codes;
 use Illuminate\Support\Facades\Log;
 
-class DefaultProcessor extends AbstractProcessor
+class DefaultProcessor extends Processor
 {
     /**
      * @inheritDoc

@@ -3,17 +3,33 @@
 namespace App\Models\Eloquent;
 
 use App\Traits\Eloquent\HasFillable;
-use App\Traits\Eloquent\HasTranslations;
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 
+/**
+ * App\Models\Eloquent\PrecountOptionSetting
+ *
+ * @property int $option_id
+ * @property int $category_id
+ * @property int $options_settings_id
+ * @property int $is_deleted
+ * @method static Builder|PrecountOptionSetting newModelQuery()
+ * @method static Builder|PrecountOptionSetting newQuery()
+ * @method static Builder|PrecountOptionSetting query()
+ * @method static Builder|PrecountOptionSetting whereCategoryId($value)
+ * @method static Builder|PrecountOptionSetting whereIsDeleted($value)
+ * @method static Builder|PrecountOptionSetting whereOptionId($value)
+ * @method static Builder|PrecountOptionSetting whereOptionsSettingsId($value)
+ * @mixin Eloquent
+ */
 class PrecountOptionSetting extends Model
 {
     use HasFactory;
     use HasFillable;
-    use HasTranslations;
 
     public $incrementing = false;
     public $timestamps = false;
@@ -44,7 +60,7 @@ class PrecountOptionSetting extends Model
         $categoryTable = $this->category->getTable();
         $optTable = $this->option->getTable();
         $specificOptions = array_merge($this->option->getSpecificOptions(), [26294, 218618]);
-        $specificOptions = join(',', $specificOptions);
+        $specificOptions = implode(',', $specificOptions);
         static::query()->update(['is_deleted' => 1]);
 
         $upsertQuery = <<<UPSERT_QUERY

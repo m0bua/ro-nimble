@@ -2,9 +2,13 @@
 
 namespace App\Processors\MarketingService\Support;
 
+use Illuminate\Support\Str;
+
 class ProcessorClassnameResolver
 {
     public const PROCESSOR_NAMESPACE = 'MarketingService\\';
+    public const ROUTING_SEPARATOR = '.';
+    public const CHANGE_EVENT = 'change';
 
     /**
      * @param string $routingKey
@@ -23,14 +27,11 @@ class ProcessorClassnameResolver
      */
     public static function resolve(string $routingKey): string
     {
-        return self::PROCESSOR_NAMESPACE . ucfirst(
-                str_replace(
-                    '_', '', str_replace(
-                        '_record', '_Processor', str_replace(
-                            '.', '_', $routingKey
-                        )
-                    )
-                )
-            );
+        [$event, $entity] = explode(self::ROUTING_SEPARATOR, $routingKey);
+
+        $preparedEvent = $event === self::CHANGE_EVENT ? 'Upsert' : Str::studly($event);
+        $preparedEntity = Str::studly($entity);
+
+        return self::PROCESSOR_NAMESPACE . "$preparedEntity\\{$preparedEvent}EventProcessor";
     }
 }

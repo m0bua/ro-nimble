@@ -4,33 +4,27 @@ namespace App\Processors\MarketEnterprise\ProductsType;
 
 use App\Models\Eloquent\GoodsCarInfo;
 use App\Models\Eloquent\IndexGoods;
-use App\Processors\AbstractProcessor;
-use App\Processors\Traits\WithUpsert;
+use App\Processors\UpsertProcessor;
 
-class UpsertEventProcessor extends AbstractProcessor
+class UpsertEventProcessor extends UpsertProcessor
 {
-    use WithUpsert;
+    protected string $dataRoot = 'fields_data';
 
-    public static ?string $dataRoot = 'fields_data';
-
-    protected static array $uniqueBy = [
+    protected array $compoundKey = [
         'goods_id',
         'car_trim_id',
     ];
 
-    /**
-     * Model
-     *
-     * @var GoodsCarInfo
-     */
-    protected GoodsCarInfo $model;
+    private IndexGoods $indexGoods;
 
     /**
      * @param GoodsCarInfo $model
+     * @param IndexGoods $indexGoods
      */
-    public function __construct(GoodsCarInfo $model)
+    public function __construct(GoodsCarInfo $model, IndexGoods $indexGoods)
     {
         $this->model = $model;
+        $this->indexGoods = $indexGoods;
     }
 
     /**
@@ -38,6 +32,6 @@ class UpsertEventProcessor extends AbstractProcessor
      */
     protected function afterProcess(): void
     {
-        IndexGoods::query()->insertOrIgnore(['id' => $this->data['goods_id']]);
+        $this->indexGoods->query()->insertOrIgnore(['id' => $this->data['goods_id']]);
     }
 }

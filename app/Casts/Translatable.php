@@ -4,6 +4,7 @@ namespace App\Casts;
 
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
+use stdClass;
 
 class Translatable implements CastsAttributes
 {
@@ -34,8 +35,8 @@ class Translatable implements CastsAttributes
      */
     public function set($model, string $key, $value, array $attributes)
     {
-        if (is_array($value) && method_exists($model, 'setTranslations')) {
-            return $model->setTranslations($key, $value);
+        if ((is_array($value) || $value instanceof stdClass) && method_exists($model, 'setTranslations')) {
+            return $model->setTranslations($key, (array)$value);
         }
 
         if (method_exists($model, 'setTranslation')) {

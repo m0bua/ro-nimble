@@ -4,33 +4,27 @@ namespace App\Processors\MarketEnterprise\ProductsType;
 
 use App\Models\Eloquent\GoodsCarInfo;
 use App\Models\Eloquent\IndexGoods;
-use App\Processors\AbstractProcessor;
-use App\Processors\Traits\WithDelete;
+use App\Processors\DeleteProcessor;
 
-class DeleteEventProcessor extends AbstractProcessor
+class DeleteEventProcessor extends DeleteProcessor
 {
-    use WithDelete;
+    protected string $dataRoot = 'fields_data';
 
-    public static ?string $dataRoot = 'fields_data';
-
-    public static ?array $compoundKey = [
+    protected array $compoundKey = [
         'goods_id',
         'car_trim_id',
     ];
 
-    /**
-     * Model
-     *
-     * @var GoodsCarInfo
-     */
-    protected GoodsCarInfo $model;
+    private IndexGoods $indexGoods;
 
     /**
      * @param GoodsCarInfo $model
+     * @param IndexGoods $indexGoods
      */
-    public function __construct(GoodsCarInfo $model)
+    public function __construct(GoodsCarInfo $model, IndexGoods $indexGoods)
     {
         $this->model = $model;
+        $this->indexGoods = $indexGoods;
     }
 
     /**
@@ -38,6 +32,6 @@ class DeleteEventProcessor extends AbstractProcessor
      */
     protected function afterProcess(): void
     {
-        IndexGoods::query()->insertOrIgnore(['id' => $this->data['goods_id']]);
+        $this->indexGoods->query()->insertOrIgnore(['id' => $this->data['goods_id']]);
     }
 }

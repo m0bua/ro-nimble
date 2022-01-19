@@ -110,6 +110,15 @@ return [
             'processor_name'        => [App\Processors\MarketEnterprise\Support\ProcessorClassnameResolver::class, 'resolve'],
         ]),
 
+        // market enterprise
+        'msl' => array_merge($default, [
+            'host'                  => env('AMQP_MSL_HOST', 'localhost'),
+            'port'                  => env('AMQP_MSL_PORT', 5672),
+            'username'              => env('AMQP_MSL_USERNAME', ''),
+            'password'              => env('AMQP_MSL_PASSWORD', ''),
+            'processor_name'        => [App\Processors\MarketingService\Support\LabelProcessorClassnameResolver::class, 'resolve'],
+        ]),
+
         'local' => [
             'host'                  => env('AMQP_LOCAL_HOST', 'localhost'),
             'port'                  => env('AMQP_LOCAL_PORT', 5672),

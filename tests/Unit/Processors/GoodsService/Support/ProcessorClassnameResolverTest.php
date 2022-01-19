@@ -9,27 +9,74 @@ class ProcessorClassnameResolverTest extends TestCase
 {
     private ProcessorClassnameResolver $resolver;
 
-    public function testItWillReturnNamespaceForEntity(): void
+    public function testItWillReturnUpsertProcessorForCreateEntity(): void
     {
         $routingKey = 'create.category.entity';
         $result = $this->resolver->resolve($routingKey);
-        $this->assertEquals('GoodsService\\CreateCategoryEntityProcessor', $result);
+        $this->assertEquals('GoodsService\Category\UpsertEventProcessor', $result);
     }
 
-    public function testItWillReturnNamespaceForTranslation(): void
+    public function testItWillReturnUpsertProcessorForUpdateEntity(): void
+    {
+        $routingKey = 'change.category.entity';
+        $result = $this->resolver->resolve($routingKey);
+        $this->assertEquals('GoodsService\Category\UpsertEventProcessor', $result);
+    }
+
+    public function testItWillReturnUpsertProcessorForSyncEntity(): void
+    {
+        $routingKey = 'sync.category.entity';
+        $result = $this->resolver->resolve($routingKey);
+        $this->assertEquals('GoodsService\Category\UpsertEventProcessor', $result);
+    }
+
+    public function testItWillReturnUpsertProcessorForCreateRelation(): void
+    {
+        $routingKey = 'create.goods.option_plural';
+        $result = $this->resolver->resolve($routingKey);
+        $this->assertEquals('GoodsService\GoodsOptionPlural\UpsertEventProcessor', $result);
+    }
+
+    public function testItWillReturnUpsertProcessorForUpdateRelation(): void
+    {
+        $routingKey = 'change.goods.option_plural';
+        $result = $this->resolver->resolve($routingKey);
+        $this->assertEquals('GoodsService\GoodsOptionPlural\UpsertEventProcessor', $result);
+    }
+
+    public function testItWillReturnUpsertProcessorForSyncRelation(): void
+    {
+        $routingKey = 'sync.goods.option_plural';
+        $result = $this->resolver->resolve($routingKey);
+        $this->assertEquals('GoodsService\GoodsOptionPlural\UpsertEventProcessor', $result);
+    }
+
+    public function testItWillReturnUpsertProcessorForCreateEntityTranslation(): void
+    {
+        $routingKey = 'create.goods.uk';
+        $result = $this->resolver->resolve($routingKey);
+        $this->assertEquals('GoodsService\Translations\Goods\UpsertEventProcessor', $result);
+    }
+
+    public function testItWillReturnUpsertProcessorForUpdateEntityTranslation(): void
+    {
+        $routingKey = 'change.goods.uk';
+        $result = $this->resolver->resolve($routingKey);
+        $this->assertEquals('GoodsService\Translations\Goods\UpsertEventProcessor', $result);
+    }
+
+    public function testItWillReturnUpsertProcessorForCreateRelationTranslation(): void
     {
         $routingKey = 'create.option.value_uk';
         $result = $this->resolver->resolve($routingKey);
-        $this->assertEquals('GoodsService\\Translations\\CreateOptionValueUkProcessor', $result);
+        $this->assertEquals('GoodsService\Translations\OptionValue\UpsertEventProcessor', $result);
     }
 
-    public function testItCannotReturnNamespaceForInvalidRoutingKey(): void
+    public function testItWillReturnUpsertProcessorForChangeRelationTranslation(): void
     {
-        $routingKey = 'create.producer.';
-
+        $routingKey = 'change.option.value_uk';
         $result = $this->resolver->resolve($routingKey);
-
-        $this->assertNotEquals('GoodsService\\CreateProducerEntityProcessor', $result);
+        $this->assertEquals('GoodsService\Translations\OptionValue\UpsertEventProcessor', $result);
     }
 
     /**

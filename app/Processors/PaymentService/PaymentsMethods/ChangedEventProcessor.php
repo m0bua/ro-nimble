@@ -3,20 +3,15 @@
 namespace App\Processors\PaymentService\PaymentsMethods;
 
 use App\Models\Eloquent\PaymentMethod;
-use App\Processors\AbstractProcessor;
-use App\Processors\Traits\WithUpsert;
+use App\Processors\UpsertProcessor;
 
-class ChangedEventProcessor extends AbstractProcessor
+class ChangedEventProcessor extends UpsertProcessor
 {
-    use WithUpsert;
-
-    public static array $uniqueBy = [
+    protected array $compoundKey = [
         'id',
     ];
 
-    public static ?string $dataRoot = 'fields_data';
-
-    protected PaymentMethod $model;
+    protected string $dataRoot = 'fields_data';
 
     /**
      * ChangedEventProcessor constructor.

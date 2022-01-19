@@ -11,28 +11,17 @@ class ProcessorNamespaceResolverTest extends TestCase
     {
         $routingKey = 'change.goods_bonuses.CTL';
         $result = ProcessorClassnameResolver::resolve($routingKey);
-        $this->assertEquals('BonusService\\GoodsBonuses\\ChangeEventProcessor', $result);
+        $this->assertEquals('BonusService\\GoodsBonuses\\UpsertEventProcessor', $result);
 
         $routingKey = 'change.goods_bonuses.ALL';
         $result = ProcessorClassnameResolver::resolve($routingKey);
-        $this->assertEquals('BonusService\\GoodsBonuses\\ChangeEventProcessor', $result);
+        $this->assertEquals('BonusService\\GoodsBonuses\\UpsertEventProcessor', $result);
     }
 
     public function testItWillReturnNamespaceIfRoutingKeyWithoutPrefix(): void
     {
         $routingKey = 'change.goods_bonuses';
-
         $result = ProcessorClassnameResolver::resolve($routingKey);
-
-        $this->assertEquals('BonusService\\GoodsBonuses\\ChangeEventProcessor', $result);
-    }
-
-    public function testItCannotReturnNamespaceForInvalidRoutingKey(): void
-    {
-        $routingKey = 'change.goods_bonuses.';
-
-        $result = ProcessorClassnameResolver::resolve($routingKey);
-
-        $this->assertNotEquals('BonusService\\GoodsBonuses\\ChangeEventProcessor', $result);
+        $this->assertEquals('BonusService\\GoodsBonuses\\UpsertEventProcessor', $result);
     }
 }

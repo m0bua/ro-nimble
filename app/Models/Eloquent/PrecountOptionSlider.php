@@ -3,17 +3,36 @@
 namespace App\Models\Eloquent;
 
 use App\Traits\Eloquent\HasFillable;
-use App\Traits\Eloquent\HasTranslations;
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
-
+/**
+ * App\Models\Eloquent\PrecountOptionSlider
+ *
+ * @property int $option_id
+ * @property int $category_id
+ * @property float $max_value
+ * @property float $min_value
+ * @property string $comparable
+ * @property int $is_deleted
+ * @method static Builder|PrecountOptionSlider newModelQuery()
+ * @method static Builder|PrecountOptionSlider newQuery()
+ * @method static Builder|PrecountOptionSlider query()
+ * @method static Builder|PrecountOptionSlider whereCategoryId($value)
+ * @method static Builder|PrecountOptionSlider whereComparable($value)
+ * @method static Builder|PrecountOptionSlider whereIsDeleted($value)
+ * @method static Builder|PrecountOptionSlider whereMaxValue($value)
+ * @method static Builder|PrecountOptionSlider whereMinValue($value)
+ * @method static Builder|PrecountOptionSlider whereOptionId($value)
+ * @mixin Eloquent
+ */
 class PrecountOptionSlider extends Model
 {
     use HasFactory;
     use HasFillable;
-    use HasTranslations;
 
     public $incrementing = false;
     public $timestamps = false;

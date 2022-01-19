@@ -5,12 +5,10 @@ namespace App\Processors\PaymentService\CreditsGoods;
 use App\Cores\ConsumerCore\Interfaces\MessageInterface;
 use App\Cores\Shared\Codes;
 use App\Models\Eloquent\Goods;
-use App\Processors\AbstractProcessor;
+use App\Processors\Processor;
 
-class DeleteEventProcessor extends AbstractProcessor
+class DeleteEventProcessor extends Processor
 {
-    protected Goods $model;
-
     /**
      * DeleteEventProcessor constructor.
      * @param Goods $model

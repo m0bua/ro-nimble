@@ -33,12 +33,27 @@ class ProcessorClassnameResolver
      */
     public static function resolve(string $routingKey): string
     {
-        $namespace = self::PROCESSOR_NAMESPACE;
         $keywords = explode('.', ucwords($routingKey, '.'));
         $thirdPart = str_replace('_', '', ucwords($keywords[2], '_'));
 
+        $event = in_array($keywords[0], ['Create', 'Change', 'Sync'], true) ? 'Upsert' : $keywords[0];
+        $entity = $keywords[1];
         $isItTranslation = Str::of($thirdPart)->lower()->endsWith(self::SUPPORTED_LANGUAGES);
 
-        return $namespace . ($isItTranslation ? 'Translations\\' : '' ) . "$keywords[0]$keywords[1]{$thirdPart}Processor";
+        if ($isItTranslation) {
+            if (Str::length($thirdPart) > 2)  {
+                $thirdPart = Str::substr($thirdPart, 0, -2);
+            } else {
+                $thirdPart = '';
+            }
+
+            return self::PROCESSOR_NAMESPACE . "Translations\\$entity$thirdPart\\{$event}EventProcessor";
+        }
+
+        if ($thirdPart === 'Entity') {
+            $thirdPart = '';
+        }
+
+        return self::PROCESSOR_NAMESPACE . "$entity$thirdPart\\{$event}EventProcessor";
     }
 }
