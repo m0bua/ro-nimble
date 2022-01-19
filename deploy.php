@@ -123,7 +123,7 @@ task('consumers:indexing:start', function () {
 
 task('consumers:indexing:stop', function () {
     run("sudo /usr/bin/systemctl stop ss-consumer@*");
-});
+})->onRoles('app');
 
 task('deploy:migratedb', function () {
     run('{{bin/php}} {{release_path}}/artisan migrate');
@@ -152,7 +152,7 @@ task('consumers:ps:restart', [
 task('consumers:indexing:restart', [
     'consumers:indexing:stop',
     'consumers:indexing:start',
-]);
+])->onRoles('app');
 
 task('cachetool:clear:opcache', function () {
     run("/usr/local/bin/cachetool opcache:reset --fcgi=127.0.0.1:9000 2>&1 || true");
