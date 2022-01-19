@@ -361,6 +361,16 @@ rollback-prod:
   only:
     - master
 
+stop-indexing:
+  stage: stop-restart
+  tags:
+    - rozetka-shared-standart
+  script:
+    - dep consumers:indexing:stop prod -p -vv
+  when: manual
+  only:
+    - master
+
 stop-ms:
   stage: stop-restart
   tags:
@@ -397,6 +407,16 @@ stop-ps:
     - rozetka-shared-standart
   script:
     - dep consumers:ps:stop prod -p -vv
+  when: manual
+  only:
+    - master
+
+start-indexing:
+  stage: start
+  tags:
+    - rozetka-shared-standart
+  script:
+    - dep consumers:indexing:start prod -p -vv
   when: manual
   only:
     - master

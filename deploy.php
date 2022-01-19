@@ -8,6 +8,7 @@ set('ms_consumer_threads', 1);
 set('gs_consumer_threads', 10);
 set('bs_consumer_threads', 5);
 set('ps_consumer_threads', 5);
+set('indexing_threads', 5);
 
 // Project name
 set('application', 'ivv-nimble');
@@ -113,6 +114,17 @@ task('consumers:ps:start', function () {
     }
 })->onRoles('app');
 
+task('consumers:indexing:start', function () {
+    $numprocs = get('indexing_threads');
+    for ($counter = 1; $counter <= $numprocs; $counter++) {
+        run("sudo /usr/bin/systemctl start ss-consumer@" . $counter);
+    }
+})->onRoles('app');
+
+task('consumers:indexing:stop', function () {
+    run("sudo /usr/bin/systemctl stop ss-consumer@*");
+});
+
 task('deploy:migratedb', function () {
     run('{{bin/php}} {{release_path}}/artisan migrate');
 })->onRoles('app')->once();
@@ -136,6 +148,11 @@ task('consumers:ps:restart', [
     'consumers:ps:stop',
     'consumers:ps:start'
 ])->onRoles('app');
+
+task('consumers:indexing:restart', [
+    'consumers:indexing:stop',
+    'consumers:indexing:start',
+]);
 
 task('cachetool:clear:opcache', function () {
     run("/usr/local/bin/cachetool opcache:reset --fcgi=127.0.0.1:9000 2>&1 || true");
@@ -171,11 +188,13 @@ after('deploy:symlink', 'consumers:ms:restart');
 after('deploy:symlink', 'consumers:gs:restart');
 after('deploy:symlink', 'consumers:bs:restart');
 after('deploy:symlink', 'consumers:ps:restart');
+after('deploy:symlink', 'consumers:indexing:restart');
 after('deploy:symlink', 'cachetool:clear:opcache');
 after('rollback', 'consumers:ms:restart');
 after('rollback', 'consumers:gs:restart');
 after('rollback', 'consumers:bs:restart');
 after('rollback', 'consumers:ps:restart');
+after('rollback', 'consumers:indexing:restart');
 after('rollback', 'cachetool:clear:opcache');
 
 // If deploy fails automatically unlock.
