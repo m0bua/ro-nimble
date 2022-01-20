@@ -5,6 +5,8 @@ namespace App\Console;
 use App\Console\Commands\Delete;
 use App\Console\Commands\Dev;
 use App\Console\Commands\FillLostTranslations;
+use App\Console\Commands\IndexGoodsConstructors;
+use App\Console\Commands\IndexGoodsGroupsConstructors;
 use App\Console\Commands\IndexingConsumer;
 use App\Console\Commands\IndexProducers;
 use App\Console\Commands\IndexRefill;
