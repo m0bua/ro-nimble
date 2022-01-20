@@ -106,6 +106,7 @@ class Goods extends Model
         'sell_status',
         'producer_id',
         'seller_id',
+        'merchant_id',
         'group_id',
         'is_group_primary',
         'status_inherited',

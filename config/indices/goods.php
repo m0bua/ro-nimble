@@ -65,6 +65,9 @@ return [
             'seller_id' => [
                 'type' => 'integer'
             ],
+            'merchant_type' => [
+                'type' => 'integer',
+            ],
             'series_id' => [
                 'type' => 'integer'
             ],

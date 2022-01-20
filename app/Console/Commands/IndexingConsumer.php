@@ -170,6 +170,14 @@ class IndexingConsumer extends Command
                 'price',
                 'producer_id',
                 'seller_id',
+                DB::raw("(CASE
+                        WHEN merchant_id = 1 THEN 1
+                        WHEN merchant_id = 2 THEN 1
+                        WHEN merchant_id = 43 THEN 2
+                        WHEN merchant_id = 0 THEN 0
+                        ELSE 3
+                    END) AS merchant_type"
+                ),
                 'series_id',
                 'sell_status',
                 'state',
