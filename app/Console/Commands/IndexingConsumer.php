@@ -83,7 +83,7 @@ class IndexingConsumer extends Command
     /**
      * @return void
      */
-    protected function resetIndexBody()
+    private function resetIndexBody()
     {
         $this->indexBody = ['body' => []];
     }
@@ -91,7 +91,7 @@ class IndexingConsumer extends Command
     /**
      * @return void
      */
-    protected function prepareIndexBody()
+    private function prepareIndexBody()
     {
         $goods = $this->getGoods();
         $optionsChecked = $this->getOptionsChecked()->keyBy('id');
@@ -101,6 +101,7 @@ class IndexingConsumer extends Command
         $groupsPromotions = $this->getGroupsPromotions()->keyBy('id');
         $paymentMethods = $this->getPaymentMethods()->keyBy('id');
         $bonuses = $this->getBonuses()->keyBy('id');
+        $carInfos = $this->getCarsInfo()->keyBy('id');
 
         $goods->map(function ($item) use (
             $optionsChecked,
@@ -109,7 +110,8 @@ class IndexingConsumer extends Command
             $goodsPromotions,
             $groupsPromotions,
             $paymentMethods,
-            $bonuses
+            $bonuses,
+            $carInfos
         ) {
             $ocItem = $optionsChecked->get($item->id);
             $opItem = $optionsPlural->get($item->id);
@@ -118,6 +120,7 @@ class IndexingConsumer extends Command
             $grpItem = $groupsPromotions->get($item->id);
             $pmItem = $paymentMethods->get($item->id);
             $bItem = $bonuses->get($item->id);
+            $ciItem = $carInfos->get($item->id);
 
             $item->group_token = $item->group_id ? "g{$item->group_id}" : "p{$item->id}";
             $item->categories_path = collect(json_decode($item->categories_path))
@@ -130,6 +133,18 @@ class IndexingConsumer extends Command
             $item->payment_method_ids = $pmItem ? json_decode($pmItem->payment_method_ids) : [];
             $item->bonus_charge_pcs = $bItem ? $bItem->bonus_charge_pcs : 0;
             $item->tags = json_decode($item->tags);
+            $item->car_trim_id = [];
+            $item->car_brand_id = [];
+            $item->car_model_id = [];
+            $item->car_year_id = [];
+
+            if (!empty($ciItem) && !empty($ciItem->car_infos)) {
+                $data = collect(json_decode($ciItem->car_infos));
+                $item->car_trim_id = $data->pluck('car_trim_id')->unique();
+                $item->car_brand_id = $data->pluck('car_brand_id')->unique();
+                $item->car_model_id = $data->pluck('car_model_id')->unique();
+                $item->car_year_id = $data->pluck('car_year_id')->unique();
+            }
 
             $this->indexBody['body'][] = [
                 'index' => [
@@ -147,7 +162,7 @@ class IndexingConsumer extends Command
      * @param object|null $groupItem
      * @return array
      */
-    protected function mergePromotionItems(?object $goodsItem, ?object $groupItem): array
+    private function mergePromotionItems(?object $goodsItem, ?object $groupItem): array
     {
         return collect(array_merge(
             $goodsItem ? json_decode($goodsItem->promotion_id) : [],
@@ -159,7 +174,7 @@ class IndexingConsumer extends Command
      * @param array $ids
      * @return \Illuminate\Support\Collection
      */
-    protected function getGoods(): Collection
+    private function getGoods(): Collection
     {
         return DB::table('goods')
             ->select([
@@ -195,7 +210,7 @@ class IndexingConsumer extends Command
      * @param array $goodsIds
      * @return \Illuminate\Support\Collection
      */
-    protected function getOptionsChecked(): Collection
+    private function getOptionsChecked(): Collection
     {
         return DB::table('goods', 'g')
             ->select([
@@ -215,7 +230,7 @@ class IndexingConsumer extends Command
      * @param array $goodsIds
      * @return Collection
      */
-    protected function getOptionsPlural(): Collection
+    private function getOptionsPlural(): Collection
     {
         return DB::table('goods_options_plural', 'gop')
             ->select([
@@ -246,7 +261,7 @@ class IndexingConsumer extends Command
     /**
      * @return Collection
      */
-    protected function getOptionSliders(): Collection
+    private function getOptionSliders(): Collection
     {
         return DB::table('goods', 'g')
             ->select([
@@ -264,7 +279,7 @@ class IndexingConsumer extends Command
     /**
      * @return Collection
      */
-    protected function getGoodsPromotions(): Collection
+    private function getGoodsPromotions(): Collection
     {
         return DB::table('goods', 'g')
             ->select([
@@ -281,7 +296,7 @@ class IndexingConsumer extends Command
     /**
      * @return Collection
      */
-    protected function getGroupsPromotions(): Collection
+    private function getGroupsPromotions(): Collection
     {
         return DB::table('goods', 'g')
             ->select([
@@ -298,7 +313,7 @@ class IndexingConsumer extends Command
     /**
      * @return Collection
      */
-    protected function getPaymentMethods(): Collection
+    private function getPaymentMethods(): Collection
     {
         return DB::table('goods', 'g')
             ->select([
@@ -316,7 +331,7 @@ class IndexingConsumer extends Command
     /**
      * @return Collection
      */
-    protected function getBonuses(): Collection
+    private function getBonuses(): Collection
     {
         return DB::table('goods', 'g')
             ->select([
@@ -325,6 +340,26 @@ class IndexingConsumer extends Command
             ])
             ->join('bonuses as b', 'g.id', '=', 'b.goods_id')
             ->whereIn('g.id', $this->goodsIds)
+            ->get();
+    }
+
+    /**
+     * @return Collection
+     */
+    private function getCarsInfo(): Collection
+    {
+        return Db::table('goods', 'g')
+            ->select([
+                'g.id',
+                DB::raw("coalesce(json_agg(DISTINCT jsonb_build_object(
+                'car_trim_id', gci.car_trim_id,
+                'car_brand_id', gci.car_brand_id,
+                'car_model_id', gci.car_model_id,
+                'car_year_id', gci.car_year_id)), '[]') AS car_infos"),
+            ])
+            ->join('goods_car_infos as gci', 'g.id', '=', 'gci.goods_id')
+            ->whereIn('g.id', $this->goodsIds)
+            ->groupBy('g.id')
             ->get();
     }
 }

@@ -89,6 +89,18 @@ return [
             'payment_method_ids' => [
                 'type' => 'integer'
             ],
+            'car_trim_id' => [
+                'type' => 'integer'
+            ],
+            'car_brand_id' => [
+                'type' => 'integer'
+            ],
+            'car_model_id' => [
+                'type' => 'integer'
+            ],
+            'car_year_id' => [
+                'type' => 'integer'
+            ],
         ]
     ],
 ];
