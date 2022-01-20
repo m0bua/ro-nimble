@@ -3,7 +3,7 @@
 return [
     'settings' => [
         'number_of_replicas' => 1,
-        'number_of_shards' => 2,
+        'number_of_shards' => 6,
         'codec' => 'best_compression',
     ],
     'mappings' => [

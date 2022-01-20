@@ -4,6 +4,7 @@ namespace App\Processors\GoodsService;
 
 use App\Console\Commands\IndexRefill;
 use App\Models\Eloquent\Goods;
+use App\Models\Eloquent\IndexGoods;
 use App\Processors\AbstractProcessor;
 use App\Processors\Traits\WithCreate;
 use Illuminate\Support\Facades\Artisan;
@@ -25,6 +26,6 @@ class CreateGoodsEntityProcessor extends AbstractProcessor
 
     public function afterProcess(): void
     {
-        Artisan::call(IndexRefill::class, ['--goods-ids' => $this->data['id']]);
+        IndexGoods::query()->insertOrIgnore(['id' => $this->data['id']]);
     }
 }

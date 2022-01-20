@@ -2,9 +2,8 @@
 
 namespace App\Processors\MarketEnterprise\ProductsType;
 
-use App\Console\Commands\IndexRefill;
-use App\Console\Kernel;
 use App\Models\Eloquent\GoodsCarInfo;
+use App\Models\Eloquent\IndexGoods;
 use App\Processors\AbstractProcessor;
 use App\Processors\Traits\WithUpsert;
 
@@ -27,20 +26,11 @@ class UpsertEventProcessor extends AbstractProcessor
     protected GoodsCarInfo $model;
 
     /**
-     * Artisan instance
-     *
-     * @var Kernel
-     */
-    protected Kernel $artisan;
-
-    /**
      * @param GoodsCarInfo $model
-     * @param Kernel $artisan
      */
-    public function __construct(GoodsCarInfo $model, Kernel $artisan)
+    public function __construct(GoodsCarInfo $model)
     {
         $this->model = $model;
-        $this->artisan = $artisan;
     }
 
     /**
@@ -48,6 +38,6 @@ class UpsertEventProcessor extends AbstractProcessor
      */
     protected function afterProcess(): void
     {
-        $this->artisan->call(IndexRefill::class, ['--goods-ids' => $this->data['goods_id']]);
+        IndexGoods::query()->insertOrIgnore(['id' => $this->data['goods_id']]);
     }
 }

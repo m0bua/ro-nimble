@@ -4,6 +4,7 @@ namespace App\Processors\MarketingService;
 
 use App\Console\Commands\IndexRefill;
 use App\Models\Eloquent\Goods;
+use App\Models\Eloquent\IndexGoods;
 use App\Models\Eloquent\PromotionGroupConstructor;
 use App\Processors\AbstractProcessor;
 use App\Processors\Traits\WithUpsert;
@@ -72,6 +73,6 @@ class ChangePromotionConstructorGroupProcessor extends AbstractProcessor
             ->where('group_id', '=', $this->data['group_id'])
             ->get();
 
-        Artisan::call(IndexRefill::class, ['--goods-ids' => $goods->pluck('id')->toArray()]);
+        IndexGoods::query()->insertOrIgnore($goods->toArray());
     }
 }

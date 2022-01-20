@@ -10,6 +10,7 @@ use App\Console\Commands\IndexGoodsGroupsConstructors;
 use App\Console\Commands\IndexingConsumer;
 use App\Console\Commands\IndexProducers;
 use App\Console\Commands\IndexRefill;
+use App\Console\Commands\PartialIndexing;
 use App\Console\Commands\StartConsumer;
 use App\Console\Commands\Precount\FillPrecountOptionSettings;
 use App\Console\Commands\Precount\FillPrecountOptionSliders;
@@ -42,6 +43,8 @@ class Kernel extends ConsoleKernel
 
         FillPrecountOptionSettings::class,
         FillPrecountOptionSliders::class,
+
+        PartialIndexing::class,
     ];
 
     /**
@@ -53,9 +56,10 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         $schedule->command(FillLostTranslations::class)->runInBackground()->withoutOverlapping();
+        $schedule->command(PartialIndexing::class)->runInBackground()->withoutOverlapping();
 
         $schedule->command(IndexProducers::class)->dailyAt('00:00');
-        $schedule->command(IndexRefill::class)->dailyAt('01:00');
+        $schedule->command(IndexRefill::class)->dailyAt('22:00');
 
         $schedule->command(Delete\DeleteMarkedGoods::class);
         $schedule->command(Delete\DeleteConstructors::class);

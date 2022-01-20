@@ -33,6 +33,8 @@ abstract class Elastic
      */
     private array $attributes = [];
 
+    private string $tmpOldIndexName = 'goods_index_a';
+
     /**
      * Elastic constructor.
      * @throws Exception
@@ -70,6 +72,9 @@ abstract class Elastic
                     ->cat()
                     ->indices(['index' => $this->indexPrefix() . '_*'])
             )
+                ->filter(function ($info) {
+                    return $this->tmpOldIndexName !== $info['index'];
+                })
                 ->sortByDesc('index')
                 ->pluck('index')
                 ->first() ?? '';

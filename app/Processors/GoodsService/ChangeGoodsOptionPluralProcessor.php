@@ -5,6 +5,7 @@ namespace App\Processors\GoodsService;
 use App\Console\Commands\IndexRefill;
 use App\Models\Eloquent\Goods;
 use App\Models\Eloquent\GoodsOptionPlural;
+use App\Models\Eloquent\IndexGoods;
 use App\Processors\AbstractProcessor;
 use App\Processors\Traits\WithUpdate;
 use Illuminate\Support\Arr;
@@ -62,6 +63,6 @@ class ChangeGoodsOptionPluralProcessor extends AbstractProcessor
      */
     protected function afterProcess(): void
     {
-        Artisan::call(IndexRefill::class, ['--goods-ids' => $this->data['goods_id']]);
+        IndexGoods::query()->insertOrIgnore(['id' => $this->data['goods_id']]);
     }
 }

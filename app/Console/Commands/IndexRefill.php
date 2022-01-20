@@ -8,7 +8,6 @@ use App\Models\Eloquent\Goods;
 use Bschmitt\Amqp\Amqp;
 use Bschmitt\Amqp\Message;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Str;
 use JsonException;
 
 class IndexRefill extends Command
@@ -30,7 +29,7 @@ class IndexRefill extends Command
     /**
      * Maximum count goods for one bulk indexing
      */
-    protected const MAX_BATCH = 100;
+    protected int $maxBatch;
 
     /**
      * Goods model
@@ -56,6 +55,7 @@ class IndexRefill extends Command
         parent::__construct();
         $this->goods = $goods;
         $this->goodsElastic = $goodsElastic;
+        $this->maxBatch = env("MAX_INDEXING_BATCH", 100);
     }
 
     /**
@@ -70,20 +70,20 @@ class IndexRefill extends Command
             $this->createIndex();
         }
 
-        $query = $this->goods->query()->select('id');
-
-        if ($goodsIds->isNotEmpty()) {
-            $query->whereIn('id', $goodsIds->toArray());
-        } else {
-            $query->whereNotIn('sell_status', [
+        $query = $this->goods->query()
+            ->select('id')
+            ->whereNotIn('sell_status', [
                 Goods::SELL_STATUS_ARCHIVE,
                 Goods::SELL_STATUS_HIDDEN,
             ]);
+
+        if ($goodsIds->isNotEmpty()) {
+            $query->whereIn('id', $goodsIds->toArray());
         }
 
         $amqp = new Amqp();
         /** @var Collection $goods */
-        foreach ($query->trueCursor(self::MAX_BATCH) as $goods) {
+        foreach ($query->trueCursor($this->maxBatch) as $goods) {
             $amqp->publish(
                 'indexing.goods.ids',
                 new Message(json_encode($goods->pluck('id'), JSON_THROW_ON_ERROR)),

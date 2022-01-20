@@ -3,6 +3,7 @@
 namespace App\Processors\GoodsService;
 
 use App\Models\Eloquent\GoodsOption;
+use App\Models\Eloquent\IndexGoods;
 use App\Processors\AbstractProcessor;
 use App\Processors\Traits\WithUpsert;
 use Illuminate\Support\Facades\Artisan;
@@ -29,6 +30,6 @@ class SyncGoodsOptionProcessor extends AbstractProcessor
      */
     protected function afterProcess(): void
     {
-        Artisan::call(IndexRefill::class, ['--goods-ids' => $this->data['goods_id']]);
+        IndexGoods::query()->insertOrIgnore(['id' => $this->data['goods_id']]);
     }
 }

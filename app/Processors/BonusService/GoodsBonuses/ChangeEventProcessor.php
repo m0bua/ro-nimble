@@ -3,6 +3,7 @@
 namespace App\Processors\BonusService\GoodsBonuses;
 
 use App\Models\Eloquent\Bonus;
+use App\Models\Eloquent\IndexGoods;
 use App\Processors\AbstractProcessor;
 use App\Processors\Traits\WithUpdate;
 
@@ -46,5 +47,10 @@ class ChangeEventProcessor extends AbstractProcessor
         $this->saveTranslations();
 
         return true;
+    }
+
+    protected function afterProcess(): void
+    {
+        IndexGoods::query()->insertOrIgnore(['id' => $this->data['goods_id']]);
     }
 }

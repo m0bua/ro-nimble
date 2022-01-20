@@ -3,6 +3,7 @@
 namespace App\Processors\MarketingService;
 
 use App\Console\Commands\IndexRefill;
+use App\Models\Eloquent\IndexGoods;
 use App\Models\Eloquent\PromotionGoodsConstructor;
 use App\Processors\AbstractProcessor;
 use App\Processors\Traits\WithUpsert;
@@ -66,6 +67,6 @@ class ChangePromotionConstructorGoodsProcessor extends AbstractProcessor
 
     protected function afterProcess(): void
     {
-        Artisan::call(IndexRefill::class, ['--goods-ids' => $this->data['goods_id']]);
+        IndexGoods::query()->insertOrIgnore(['id' => $this->data['goods_id']]);
     }
 }
