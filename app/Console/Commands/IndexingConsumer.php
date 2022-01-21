@@ -67,7 +67,9 @@ class IndexingConsumer extends Command
         $queue = $this->argument('queue');
 
         (new Amqp())->consume($queue, function (AMQPMessage $message) {
-            $this->goodsIds = collect(json_decode($message->getBody()));
+            $bodyMsg = json_decode($message->getBody(), true);
+            $this->indexName = $bodyMsg['index_name'];
+            $this->goodsIds = collect($bodyMsg['ids']);
             $this->resetIndexBody();
             $this->prepareIndexBody();
             $this->goodsElastic->bulk($this->indexBody);
@@ -130,15 +132,14 @@ class IndexingConsumer extends Command
             $item->tags = json_decode($item->tags);
 
             $this->indexBody['body'][] = [
-                'update' => [
-                    '_index' => $this->goodsElastic->getIndexName(),
+                'index' => [
+                    '_index' => $this->indexName,
                     '_id' => $item->id,
                 ],
             ];
 
             $this->indexBody['body'][] = [
                 'doc' => $item,
-                'doc_as_upsert' => true,
             ];
         });
     }

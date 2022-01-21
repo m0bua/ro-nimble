@@ -69,6 +69,7 @@ class IndexRefill extends Command
         if ($goodsIds->isEmpty() && !$this->option('same')) {
             $this->createIndex();
         }
+        $indexName = $this->goodsElastic->getIndexName();
 
         $query = $this->goods->query()
             ->select('id')
@@ -84,9 +85,14 @@ class IndexRefill extends Command
         $amqp = new Amqp();
         /** @var Collection $goods */
         foreach ($query->trueCursor($this->maxBatch) as $goods) {
+            $data = [
+                'index_name' => $indexName,
+                'ids' => $goods->pluck('id'),
+            ];
+
             $amqp->publish(
                 'indexing.goods.ids',
-                new Message(json_encode($goods->pluck('id'), JSON_THROW_ON_ERROR)),
+                new Message(json_encode($data, JSON_THROW_ON_ERROR)),
                 config('amqp.properties.local')
             );
         }
