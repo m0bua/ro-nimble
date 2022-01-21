@@ -96,7 +96,7 @@ run_autotest:
     - init
     - sleep 30
     - php artisan migrate
-    - vendor/bin/codecept run -c vendor/ivv/nimble-test -g indexing --html
+    - vendor/bin/codecept run -c vendor/ivv/nimble-test -g api --html
   only:
     - branches
   artifacts:
