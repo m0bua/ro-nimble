@@ -59,9 +59,9 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command(FillLostTranslations::class)->runInBackground()->withoutOverlapping();
         $schedule->command(PartialIndexing::class)->runInBackground()->withoutOverlapping();
-        $schedule->command(IndexRefill::class)->dailyAt('22:00')->runInBackground();
 
         $schedule->command(IndexProducers::class)->dailyAt('00:00');
+        $schedule->command(IndexRefill::class)->dailyAt('02:00');
 
         $schedule->command(Delete\DeleteMarkedGoods::class);
         $schedule->command(Delete\DeleteConstructors::class);
