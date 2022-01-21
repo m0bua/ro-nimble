@@ -64,8 +64,5 @@ class Kernel extends ConsoleKernel
         $schedule->command(IndexRefill::class)->dailyAt('02:00');
 
         $schedule->command(Delete\DeleteMarkedGoods::class);
-        $schedule->command(Delete\DeleteConstructors::class);
-        $schedule->command(Delete\DeleteGroupsConstructors::class);
-        $schedule->command(Delete\DeleteGoodsConstructors::class);
     }
 }

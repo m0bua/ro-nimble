@@ -2,10 +2,10 @@
 
 namespace App\Processors\MarketingService;
 
+use App\Models\Eloquent\IndexGoods;
 use App\Models\Eloquent\PromotionGoodsConstructor;
 use App\Processors\AbstractProcessor;
 use App\Processors\Traits\WithDelete;
-use Illuminate\Support\Arr;
 
 class DeletePromotionConstructorGoodsProcessor extends AbstractProcessor
 {
@@ -13,7 +13,7 @@ class DeletePromotionConstructorGoodsProcessor extends AbstractProcessor
 
     const CONSTRUCTOR_ID_KEY = 'constructor_id';
 
-    public static bool $softDelete = true;
+    public static bool $softDelete = false;
 
     public static ?string $dataRoot = 'fields_data';
 
@@ -37,8 +37,8 @@ class DeletePromotionConstructorGoodsProcessor extends AbstractProcessor
         $this->model = $model;
     }
 
-    public static function updatableFields(): array
+    protected function afterProcess(): void
     {
-        return ['is_deleted' => 1, 'needs_index' => 0, 'needs_migrate' => 0];
+        IndexGoods::query()->insertOrIgnore(['id' => $this->data['goods_id']]);
     }
 }
