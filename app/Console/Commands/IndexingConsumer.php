@@ -138,9 +138,7 @@ class IndexingConsumer extends Command
                 ],
             ];
 
-            $this->indexBody['body'][] = [
-                'doc' => $item,
-            ];
+            $this->indexBody['body'][] = $item;
         });
     }
 
@@ -237,14 +235,17 @@ class IndexingConsumer extends Command
      */
     protected function getOptionSliders(): Collection
     {
-        return DB::table('goods_options', 'go')
+        return DB::table('goods', 'g')
             ->select([
-                'go.goods_id',
-                DB::raw("coalesce(json_agg(DISTINCT jsonb_build_object('id', go.option_id, 'value', go.value)) filter (WHERE go.option_id IS NOT NULL AND go.value IS NOT NULL), '[]') AS option_sliders"),
+                'g.id as goods_id',
+                DB::raw("coalesce(json_agg(DISTINCT jsonb_build_object('id', o.id, 'value', go.value)) filter (WHERE go.value IS NOT NULL), '[]') AS option_sliders"),
             ])
-            ->where('go.type', '=', 'number')
-            ->whereIn('go.goods_id', $this->goodsIds)
-            ->groupBy('go.goods_id')
+            ->join('goods_options as go', 'g.id', '=', 'go.goods_id')
+            ->join('options as o', 'go.option_id', '=', 'o.id')
+            ->where('o.type', '=', 'number')
+            ->where('o.state', '=', 'active')
+            ->whereIn('g.id', $this->goodsIds)
+            ->groupBy('g.id')
             ->get();
     }
 

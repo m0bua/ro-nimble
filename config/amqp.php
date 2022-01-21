@@ -117,6 +117,7 @@ return [
             'password'              => env('AMQP_LOCAL_PASSWORD', ''),
             'exchange'              => env('AMQP_LOCAL_EXCHANGE', ''),
             'vhost'                 => env('AMQP_LOCAL_VHOST', '/'),
+            'qos_prefetch_count'    => 100,
         ],
     ],
 
