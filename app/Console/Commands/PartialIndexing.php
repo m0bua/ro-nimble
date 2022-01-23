@@ -49,8 +49,9 @@ class PartialIndexing extends Command
         $query = $this->indexGoods->query()->select('id');
 
         foreach ($query->trueCursor($this->maxBatch) as $goods) {
-            Artisan::call(IndexRefill::class, ['--goods-ids' => $goods->pluck('id')]);
-            $this->indexGoods->query()->whereIn('id', $goods->pluck('id'))->delete();
+            $goodsIds = $goods->pluck('id');
+            Artisan::call(IndexRefill::class, ['--goods-ids' => $goodsIds]);
+            $this->indexGoods->query()->whereIn('id', $goodsIds)->delete();
         }
     }
 }

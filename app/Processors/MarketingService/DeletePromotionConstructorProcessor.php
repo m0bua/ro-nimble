@@ -3,8 +3,6 @@
 namespace App\Processors\MarketingService;
 
 use App\Models\Eloquent\PromotionConstructor;
-use App\Models\Eloquent\PromotionGoodsConstructor;
-use App\Models\Eloquent\PromotionGroupConstructor;
 use App\Processors\AbstractProcessor;
 use App\Processors\Traits\WithDelete;
 
@@ -15,4 +13,11 @@ class DeletePromotionConstructorProcessor extends AbstractProcessor
     public static bool $softDelete = false;
 
     public static ?string $dataRoot = 'fields_data';
+
+    protected PromotionConstructor $model;
+
+    public function __construct(PromotionConstructor $model)
+    {
+        $this->model = $model;
+    }
 }

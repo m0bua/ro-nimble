@@ -7,8 +7,8 @@ namespace App\Models\Elastic;
 use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
 use Exception;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
-use ReflectionException;
 
 /**
  * Class Elastic
@@ -61,23 +61,50 @@ abstract class Elastic
     }
 
     /**
-     * Устанавливает актуальное имя индекса
+     * Возвращает актуальное имя индекса
      *
      * @return string
      */
     public function getIndexName(): string
     {
+        return $this->indexInfo()->pluck('index')->first() ?? '';
+    }
+
+    /**
+     * Возвращает имя индекса у которого есть алиас
+     *
+     * @return string
+     */
+    public function getIndexWithAlias(): string
+    {
         return collect(
-                $this->client
-                    ->cat()
-                    ->indices(['index' => $this->indexPrefix() . '_*'])
-            )
-                ->filter(function ($info) {
-                    return $this->tmpOldIndexName !== $info['index'];
-                })
-                ->sortByDesc('index')
-                ->pluck('index')
-                ->first() ?? '';
+            $this->client
+                ->cat()
+                ->aliases()
+        )->filter(function($item) {
+            return $item['alias'] === $this->indexPrefix();
+        })
+            ->sortByDesc('index')
+            ->pluck('index')
+            ->first() ?? '';
+    }
+
+    /**
+     * Возвращает информацию об актуальном индексе
+     *
+     * @param string|null $index
+     * @return array
+     */
+    public function indexInfo(?string $index = null): Collection
+    {
+        $index = $index ?? $this->indexPrefix() . '_*';
+
+        return collect(
+            $this->client
+                ->cat()
+                ->indices(['index' => $index])
+        )
+            ->sortByDesc('index');
     }
 
     /**

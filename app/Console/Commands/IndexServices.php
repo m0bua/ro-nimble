@@ -42,6 +42,32 @@ class IndexServices extends Command
      */
     public function proceed(): void
     {
-        dd($this->goodsElastic->getClient()->cat()->indices());
+        $activeIndexName = $this->goodsElastic->getIndexWithAlias();
+        $lastIndexInfo = $this->goodsElastic->indexInfo()->first();
+
+        if ($lastIndexInfo && $activeIndexName !== $lastIndexInfo['index']) {
+            $activeIndexInfo = $this->goodsElastic->indexInfo($activeIndexName)->first();
+
+            $activeCount = (int)$activeIndexInfo['docs.count'];
+            $lastCount = (int)$lastIndexInfo['docs.count'];
+            $percentageDiff = ($activeCount !== 0)
+                ? ($activeCount - $lastCount) / $activeCount * 100
+                : 0;
+
+            if (
+                $percentageDiff < 10
+                && $lastIndexInfo['status'] == 'open'
+                && $lastIndexInfo['health'] == 'green'
+            ) {
+                $this->goodsElastic->updateAliases(
+                    [
+                        $this->goodsElastic->addAliasAction($lastIndexInfo['index'], $this->goodsElastic->indexPrefix()),
+                        $this->goodsElastic->removeAliasAction($activeIndexName, $this->goodsElastic->indexPrefix()),
+                    ]
+                );
+
+//                $this->goodsElastic->deleteIndex($activeIndexName);
+            }
+        }
     }
 }

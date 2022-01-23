@@ -10,7 +10,7 @@ class DeleteOptionValueProcessor extends AbstractProcessor
 {
     use WithDelete;
 
-    public static bool $softDelete = true;
+    public static bool $softDelete = false;
 
     public static ?string $dataRoot = null;
 
