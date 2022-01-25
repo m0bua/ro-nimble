@@ -12,7 +12,7 @@ class GoodsDetailsResource extends BaseResource
                 'field' => 'bonuses',
                 'resource' => [
                     'class' => GoodsBonusesResource::class,
-                    'method' => 'collection'
+                    'method' => 'make',
                 ]
             ],
             [

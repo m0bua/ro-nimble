@@ -4,9 +4,9 @@ namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GoodsDetailsRequest;
+use App\Http\Resources\GoodsDetailsResource;
 use App\Models\Eloquent\Goods;
-use Exception;
-use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class GoodsDetailsController extends Controller
 {
@@ -34,28 +34,19 @@ class GoodsDetailsController extends Controller
      *
      * @param GoodsDetailsRequest $request
      * @param Goods $goodsModel
-     * @return array
+     * @return AnonymousResourceCollection
      */
-    public function index(GoodsDetailsRequest $request, Goods $goodsModel): array
+    public function index(GoodsDetailsRequest $request, Goods $goodsModel): AnonymousResourceCollection
     {
-        $goodsIds = $request->get('ids', []);
-        $data =  [];
-        $goodsCollection = $goodsModel->getGoodsDetails($goodsIds);
+        $goodsIds = $request->input('ids', []);
 
-        array_map(function ($goods) use (&$data) {
-            $bonuses = json_decode($goods['bonuses'], true);
-            $data[] = [
-                'id' => $goods['id'],
-                'bonuses' => is_null($bonuses)
-                || (
-                    empty($bonuses['bonus_charge_pcs'])
-                    && empty($bonuses['use_instant_bonus'])
-                    && empty($bonuses['premium_bonus_charge_pcs'])
-                ) ? null : $bonuses,
-                'payment_methods' => json_decode($goods['payment_methods'], true) ?? []
-            ];
-        }, $goodsCollection);
+        $goods = $goodsModel::findManyWithBonusAndPayments($goodsIds)
+            ->transform(static fn(Goods $item) => [
+                'id' => $item->id,
+                'bonuses' => $item->bonus ? $item->bonus->toArray() : [],
+                'payment_methods' => $item->paymentMethods->toArray(),
+            ]);
 
-        return $data;
+        return GoodsDetailsResource::collection($goods);
     }
 }

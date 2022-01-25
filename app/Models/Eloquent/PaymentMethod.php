@@ -71,4 +71,13 @@ class PaymentMethod extends Model
     {
         return $this->hasMany(static::class, 'parent_id');
     }
+
+    /**
+     * @param Builder $builder
+     * @return Builder
+     */
+    public function scopeActive(Builder $builder): Builder
+    {
+        return $builder->where('status', '=', 'active');
+    }
 }

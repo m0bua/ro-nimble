@@ -14,13 +14,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\Eloquent\Goods
  *
  * @property int $id
+ * @property array<string> $title
  * @property string|null $name
  * @property int|null $category_id
  * @property string|null $mpath
@@ -37,9 +38,10 @@ use Illuminate\Support\Facades\DB;
  * @property string|null $state
  * @property int $needs_index
  * @property int $is_deleted
- * @property Carbon $created_at
- * @property Carbon $updated_at
  * @property string|null $country_code
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Bonus|null $bonus
  * @property-read Category|null $category
  * @property-read Collection|GoodsOption[] $goodsOptions
  * @property-read int|null $goods_options_count
@@ -56,10 +58,7 @@ use Illuminate\Support\Facades\DB;
  * @property-read int|null $promotion_group_constructors_count
  * @property-read Collection|GoodsTranslation[] $translations
  * @property-read int|null $translations_count
- * @property array<string> $title title translations
  * @method static GoodsFactory factory(...$parameters)
- * @method static Builder|Goods markedAsDeleted()
- * @method static Builder|Goods needsIndex()
  * @method static Builder|Goods newModelQuery()
  * @method static Builder|Goods newQuery()
  * @method static Builder|Goods query()
@@ -82,6 +81,7 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|Goods whereSeriesId($value)
  * @method static Builder|Goods whereState($value)
  * @method static Builder|Goods whereStatusInherited($value)
+ * @method static Builder|Goods whereTitle($value)
  * @method static Builder|Goods whereUpdatedAt($value)
  * @mixin Eloquent
  */
@@ -134,7 +134,7 @@ class Goods extends Model
 
     public function paymentMethods(): BelongsToMany
     {
-        return $this->belongsToMany(PaymentMethod::class);
+        return $this->belongsToMany(PaymentMethod::class, 'goods_payment_method');
     }
 
     public function goodsOptions(): HasMany
@@ -162,76 +162,25 @@ class Goods extends Model
         return $this->hasMany(PromotionGroupConstructor::class, 'group_id', 'group_id');
     }
 
-    public function scopeMarkedAsDeleted(Builder $builder): Builder
+    public function bonus(): HasOne
     {
-        return $builder->where('is_deleted', 1);
+        return $this->hasOne(Bonus::class, 'goods_id');
     }
 
-    public function scopeNeedsIndex(Builder $builder): Builder
+    /**
+     * Get goods with loaded bonus and payment methods
+     *
+     * @param array $ids
+     * @return Collection
+     */
+    public static function findManyWithBonusAndPayments(array $ids): Collection
     {
-        return $builder->where('needs_index', 1);
-    }
-
-    public function getGoodsDetails(array $goodsIds): array
-    {
-        $goodsIdsStr = implode(',', $goodsIds);
-        return static::query()->select(
-            [
-                'goods.id as id',
-                //TODO: delete this string when will be one bonus for one goods in DB
-                DB::raw("(SELECT jsonb_build_object(
-                                 'comment_bonus_charge', b.comment_bonus_charge,
-                                 'comment_photo_bonus_charge', b.comment_photo_bonus_charge,
-                                 'comment_video_bonus_charge', b.comment_video_bonus_charge,
-                                 'bonus_not_allowed_pcs', b.bonus_not_allowed_pcs,
-                                 'comment_video_child_bonus_charge', b.comment_video_child_bonus_charge,
-                                 'bonus_charge_pcs', b.bonus_charge_pcs,
-                                 'use_instant_bonus', b.use_instant_bonus,
-                                 'premium_bonus_charge_pcs', b.premium_bonus_charge_pcs)
-                          FROM bonuses as b
-                          WHERE b.goods_id in ($goodsIdsStr)
-                          order by b.updated_at DESC
-                          limit 1) as bonuses"
-                ),
-                //TODO: uncomment this string when will be one bonus for one goods in DB
-//                DB::raw("jsonb_agg(
-//                distinct
-//                    jsonb_build_object(
-//                        'comment_bonus_charge', b.comment_bonus_charge,
-//                        'comment_photo_bonus_charge', b.comment_photo_bonus_charge,
-//                        'comment_video_bonus_charge', b.comment_video_bonus_charge,
-//                        'bonus_not_allowed_pcs', b.bonus_not_allowed_pcs,
-//                        'comment_video_child_bonus_charge', b.comment_video_child_bonus_charge,
-//                        'bonus_charge_pcs',         bonuses.bonus_charge_pcs,
-//                        'use_instant_bonus',        bonuses.use_instant_bonus,
-//                        'premium_bonus_charge_pcs', bonuses.premium_bonus_charge_pcs))
-//                filter (where bonuses.goods_id is not null)
-//                AS bonuses"),
-                DB::raw("jsonb_agg(distinct
-                    jsonb_build_object(
-                        'id',        pm.id,
-                        'parent_id', pm.parent_id,
-                        'name',      pm.name,
-                        'order',     pm.order,
-                        'status',    pm.status
-                    ))
-                filter (where gpm.goods_id is not null and pm.id is not null)
-                AS payment_methods"
-                )
-            ]
-        )
-            ->from('goods')
-            //TODO: uncomment this string when will be one bonus for one goods in DB
-//            ->leftJoin('bonuses', 'bonuses.goods_id', '=', 'goods.id')
-            ->leftJoin('goods_payment_method as gpm', 'gpm.goods_id', '=', 'goods.id')
-            ->leftJoin('payment_methods as pm',  function($join) {
-                $join->on('gpm.payment_method_id', '=', 'pm.id')
-                    ->where('pm.status', '=', 'active');
-            })
-            ->whereIn('goods.id', $goodsIds)
-            ->groupBy('goods.id')
-            ->get()
-            ->toArray()
-        ;
+        return static::query()
+            ->whereIn('id', $ids)
+            ->with([
+                'bonus',
+                'paymentMethods' => fn($q) => $q->active(),
+            ])
+            ->get();
     }
 }
