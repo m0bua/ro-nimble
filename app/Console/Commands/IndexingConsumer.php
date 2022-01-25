@@ -194,9 +194,8 @@ class IndexingConsumer extends Command
                 'g.id',
                 DB::raw("coalesce(json_agg(DISTINCT o.id) filter (WHERE o.id IS NOT NULL), '[]') as option_checked")
             ])
-            ->join('goods_options AS go', 'g.id', '=', 'go.goods_id')
-            ->join('options AS o', 'go.option_id', '=', 'o.id')
-            ->where('o.type', '=', 'bool')
+            ->join('goods_option_booleans AS gob', 'g.id', '=', 'gob.goods_id')
+            ->join('options AS o', 'gob.option_id', '=', 'o.id')
             ->where('o.state', '=', 'active')
             ->whereIn('o.option_record_comparable', ['main', 'bottom'])
             ->whereIn('g.id', $this->goodsIds)
@@ -224,7 +223,13 @@ class IndexingConsumer extends Command
                 'main',
                 'bottom'
             ])
-            ->where('o.type', '=', 'value')
+            ->whereIn('o.type', [
+                'List',
+                'ComboBox',
+                'ListValues',
+                'CheckBoxGroup',
+                'CheckBoxGroupValues',
+            ])
             ->whereIn('gop.goods_id', $this->goodsIds)
             ->groupBy('gop.goods_id')
             ->get();
@@ -238,11 +243,10 @@ class IndexingConsumer extends Command
         return DB::table('goods', 'g')
             ->select([
                 'g.id as goods_id',
-                DB::raw("coalesce(json_agg(DISTINCT jsonb_build_object('id', o.id, 'value', go.value)) filter (WHERE go.value IS NOT NULL), '[]') AS option_sliders"),
+                DB::raw("coalesce(json_agg(DISTINCT jsonb_build_object('id', o.id, 'value', gon.value)) filter (WHERE gon.value IS NOT NULL), '[]') AS option_sliders"),
             ])
-            ->join('goods_options as go', 'g.id', '=', 'go.goods_id')
-            ->join('options as o', 'go.option_id', '=', 'o.id')
-            ->where('o.type', '=', 'number')
+            ->join('goods_option_numbers as gon', 'g.id', '=', 'gon.goods_id')
+            ->join('options as o', 'gon.option_id', '=', 'o.id')
             ->where('o.state', '=', 'active')
             ->whereIn('g.id', $this->goodsIds)
             ->groupBy('g.id')

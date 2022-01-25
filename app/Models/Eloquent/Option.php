@@ -3,7 +3,6 @@
 namespace App\Models\Eloquent;
 
 use App\Casts\Translatable;
-use App\Enums\Filters;
 use App\Traits\Eloquent\HasFillable;
 use App\Traits\Eloquent\HasTranslations;
 use App\ValueObjects\Options;
@@ -41,7 +40,6 @@ use Illuminate\Support\Facades\DB;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property-read Category|null $category
- * @property-read Collection|GoodsOption[] $goodsOptions
  * @property-read int|null $goods_options_count
  * @property-read Collection|OptionTranslation[] $translations
  * @property-read int|null $translations_count
@@ -109,11 +107,6 @@ class Option extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class)->withDefault();
-    }
-
-    public function goodsOptions(): HasMany
-    {
-        return $this->hasMany(GoodsOption::class);
     }
 
     public function getSpecificOptions(): array

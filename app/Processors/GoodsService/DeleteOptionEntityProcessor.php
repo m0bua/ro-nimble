@@ -2,7 +2,8 @@
 
 namespace App\Processors\GoodsService;
 
-use App\Models\Eloquent\GoodsOption;
+use App\Models\Eloquent\GoodsOptionBoolean;
+use App\Models\Eloquent\GoodsOptionNumber;
 use App\Models\Eloquent\GoodsOptionPlural;
 use App\Models\Eloquent\IndexGoods;
 use App\Models\Eloquent\Option;
@@ -18,35 +19,44 @@ class DeleteOptionEntityProcessor extends AbstractProcessor
 
     public static ?string $dataRoot = null;
 
-    protected Option $model;
-
-    protected GoodsOption $goodsOption;
-
-    protected GoodsOptionPlural $goodsOptionPlural;
-
-    protected OptionValue $optionValue;
+    private Option $model;
+    private GoodsOptionPlural $goodsOptionPlural;
+    private OptionValue $optionValue;
+    private IndexGoods $indexGoods;
+    private GoodsOptionBoolean $boolean;
+    private GoodsOptionNumber $number;
 
     /**
      * DeleteOptionEntityProcessor constructor.
+     *
      * @param Option $model
-     * @param GoodsOption $goodsOption
+     * @param GoodsOptionBoolean $boolean
+     * @param GoodsOptionNumber $number
+     * @param GoodsOptionPlural $goodsOptionPlural
+     * @param OptionValue $optionValue
      */
     public function __construct(
         Option $model,
-        GoodsOption $goodsOption,
+        GoodsOptionBoolean $boolean,
+        GoodsOptionNumber $number,
         GoodsOptionPlural $goodsOptionPlural,
         OptionValue $optionValue
     )
     {
         $this->model = $model;
-        $this->goodsOption = $goodsOption;
+        $this->boolean = $boolean;
+        $this->number = $number;
         $this->goodsOptionPlural = $goodsOptionPlural;
         $this->optionValue = $optionValue;
     }
 
     protected function afterProcess(): void
     {
-        $goQuery = $this->goodsOption
+        $boolQuery = $this->boolean
+            ->query()
+            ->where('option_id', '=', $this->data['id']);
+
+        $numQuery = $this->number
             ->query()
             ->where('option_id', '=', $this->data['id']);
 
@@ -54,7 +64,12 @@ class DeleteOptionEntityProcessor extends AbstractProcessor
             ->query()
             ->where('option_id', '=', $this->data['id']);
 
-        $goGoods = $goQuery
+        $boolGoods = $boolQuery
+            ->select('goods_id as id')
+            ->distinct()
+            ->get();
+
+        $numGoods = $numQuery
             ->select('goods_id as id')
             ->distinct()
             ->get();
@@ -64,11 +79,16 @@ class DeleteOptionEntityProcessor extends AbstractProcessor
             ->distinct()
             ->get();
 
-        $goods = $goGoods->merge($gopGoods)->unique('id')->toArray();
+        $goods = $boolGoods
+            ->merge($numGoods)
+            ->merge($gopGoods)
+            ->unique('id')
+            ->toArray();
 
         IndexGoods::query()->insertOrIgnore($goods);
 
-        $goQuery->delete();
+        $boolQuery->delete();
+        $numQuery->delete();
         $gopQuery->delete();
         $this->optionValue->query()
             ->where('option_id', '=', $this->data['id'])

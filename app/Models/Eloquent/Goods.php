@@ -43,7 +43,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Bonus|null $bonus
  * @property-read Category|null $category
- * @property-read Collection|GoodsOption[] $goodsOptions
  * @property-read int|null $goods_options_count
  * @property-read Collection|OptionValue[] $optionValues
  * @property-read int|null $option_values_count
@@ -135,11 +134,6 @@ class Goods extends Model
     public function paymentMethods(): BelongsToMany
     {
         return $this->belongsToMany(PaymentMethod::class, 'goods_payment_method');
-    }
-
-    public function goodsOptions(): HasMany
-    {
-        return $this->hasMany(GoodsOption::class);
     }
 
     public function options(): BelongsToMany

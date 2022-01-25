@@ -17,7 +17,6 @@ class DatabaseSeeder extends Seeder
             GoodsSeeder::class,
             ProducerSeeder::class,
             OptionSeeder::class,
-            GoodsOptionSeeder::class,
             OptionValueSeeder::class,
             PromotionConstructorSeeder::class,
             PromotionGoodsConstructorSeeder::class,
