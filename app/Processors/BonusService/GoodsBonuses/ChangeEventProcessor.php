@@ -43,7 +43,7 @@ class ChangeEventProcessor extends AbstractProcessor
     protected function updateModel(): bool
     {
         $data = $this->prepareData();
-        $this->model->whereGoodsId($data['goods_id'])->update($data);
+        $this->model->query()->upsert($data, 'goods_id');
         $this->saveTranslations();
 
         return true;
