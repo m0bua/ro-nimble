@@ -167,6 +167,11 @@ class Goods extends Model
         return $this->hasOne(Bonus::class, 'goods_id');
     }
 
+    public function scopeMarkedAsDeleted(Builder $builder): Builder
+    {
+        return $builder->where('is_deleted', 1);
+    }
+
     /**
      * Get goods with loaded bonus and payment methods
      *
