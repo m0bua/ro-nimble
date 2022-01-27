@@ -4,6 +4,7 @@
 /storage/*.key
 /vendor
 /.idea
+/tests/coverage
 .env
 .env.lumen
 .env.backup
