@@ -10,7 +10,9 @@ class ProcessorClassnameResolver
     public const PROCESSOR_NAMESPACE = 'BonusService';
     public const SUFFIXES = [
         '.CTL',
+        '.CTL.ua',
         '.ALL',
+        '.ALL.ua',
     ];
 
     /**
