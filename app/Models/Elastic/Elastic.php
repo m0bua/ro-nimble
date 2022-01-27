@@ -104,7 +104,9 @@ abstract class Elastic
                 ->cat()
                 ->indices(['index' => $index])
         )
-            ->sortByDesc('index');
+            ->sortByDesc(function ($data) {
+                return (int)Str::afterLast($data['index'], '_');
+            });
     }
 
     /**
