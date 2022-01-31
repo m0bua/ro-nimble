@@ -4,12 +4,6 @@ namespace Deployer;
 
 require 'recipe/common.php';
 
-set('ms_consumer_threads', 1);
-set('gs_consumer_threads', 10);
-set('bs_consumer_threads', 5);
-set('ps_consumer_threads', 5);
-set('indexing_threads', 20);
-
 // Project name
 set('application', 'ivv-nimble');
 set('keep_releases', 5);
@@ -70,89 +64,17 @@ task('build', function () {
     run('composer-v1 install');
 })->local();
 
-task('consumers:ms:stop', function () {
-    run("sudo /usr/bin/systemctl stop ms-consumer@*");
+task('supervisor:update', function () {
+    run("/usr/bin/supervisorctl update");
 })->onRoles('app');
 
-task('consumers:ms:start', function () {
-    $numprocs = get('ms_consumer_threads');
-    for ($counter = 1; $counter <= $numprocs; $counter++) {
-        run("sudo /usr/bin/systemctl start ms-consumer@" . $counter);
-    }
-})->onRoles('app');
-
-task('consumers:gs:stop', function () {
-    run("sudo /usr/bin/systemctl stop gs-consumer@*");
-})->onRoles('app');
-
-task('consumers:gs:start', function () {
-    $numprocs = get('gs_consumer_threads');
-    for ($counter = 1; $counter <= $numprocs; $counter++) {
-        run("sudo /usr/bin/systemctl start gs-consumer@" . $counter);
-    }
-})->onRoles('app');
-
-task('consumers:bs:stop', function () {
-    run("sudo /usr/bin/systemctl stop bs-consumer@*");
-})->onRoles('app');
-
-task('consumers:bs:start', function () {
-    $numprocs = get('bs_consumer_threads');
-    for ($counter = 1; $counter <= $numprocs; $counter++) {
-        run("sudo /usr/bin/systemctl start bs-consumer@" . $counter);
-    }
-})->onRoles('app');
-
-task('consumers:ps:stop', function () {
-    run("sudo /usr/bin/systemctl stop ps-consumer@*");
-})->onRoles('app');
-
-task('consumers:ps:start', function () {
-    $numprocs = get('ps_consumer_threads');
-    for ($counter = 1; $counter <= $numprocs; $counter++) {
-        run("sudo /usr/bin/systemctl start ps-consumer@" . $counter);
-    }
-})->onRoles('app');
-
-task('consumers:indexing:start', function () {
-    $numprocs = get('indexing_threads');
-    for ($counter = 1; $counter <= $numprocs; $counter++) {
-        run("sudo /usr/bin/systemctl start ss-consumer@" . $counter);
-    }
-})->onRoles('app');
-
-task('consumers:indexing:stop', function () {
-    run("sudo /usr/bin/systemctl stop ss-consumer@*");
+task('supervisor:restart', function () {
+    run("/usr/bin/supervisorctl restart all");
 })->onRoles('app');
 
 task('deploy:migratedb', function () {
     run('{{bin/php}} {{release_path}}/artisan migrate');
 })->onRoles('app')->once();
-
-task('consumers:ms:restart', [
-    'consumers:ms:stop',
-    'consumers:ms:start'
-])->onRoles('app');
-
-task('consumers:gs:restart', [
-    'consumers:gs:stop',
-    'consumers:gs:start'
-])->onRoles('app');
-
-task('consumers:bs:restart', [
-    'consumers:bs:stop',
-    'consumers:bs:start'
-])->onRoles('app');
-
-task('consumers:ps:restart', [
-    'consumers:ps:stop',
-    'consumers:ps:start'
-])->onRoles('app');
-
-task('consumers:indexing:restart', [
-    'consumers:indexing:stop',
-    'consumers:indexing:start',
-])->onRoles('app');
 
 task('cachetool:clear:opcache', function () {
     run("/usr/local/bin/cachetool opcache:reset --fcgi=127.0.0.1:9000 2>&1 || true");
@@ -184,17 +106,9 @@ task('deploy', [
 ]);
 
 ######## DEPLOY AFTER ###########
-after('deploy:symlink', 'consumers:ms:restart');
-after('deploy:symlink', 'consumers:gs:restart');
-after('deploy:symlink', 'consumers:bs:restart');
-after('deploy:symlink', 'consumers:ps:restart');
-after('deploy:symlink', 'consumers:indexing:restart');
+after('deploy:symlink', 'supervisor:update');
 after('deploy:symlink', 'cachetool:clear:opcache');
-after('rollback', 'consumers:ms:restart');
-after('rollback', 'consumers:gs:restart');
-after('rollback', 'consumers:bs:restart');
-after('rollback', 'consumers:ps:restart');
-after('rollback', 'consumers:indexing:restart');
+after('rollback', 'supervisor:update');
 after('rollback', 'cachetool:clear:opcache');
 
 // If deploy fails automatically unlock.

@@ -29,7 +29,6 @@ stages:
   - deploy
   - rollback
   - stop-restart
-  - start
 
 build:
   image: registry.gitlab.rozetka.company/common/ci-docker-images/ci-php74:latest
@@ -198,49 +197,12 @@ deploy-dev:
     - master
 
 
-stop-dev-ms:
+restart-dev-supervisor:
   stage: stop-restart
   tags:
     - rozetka-shared-standart
   script:
-    - dep consumers:ms:stop dev -p -vv
-  when: manual
-  only:
-    - branches
-  except:
-    - master
-
-
-stop-dev-gs:
-  stage: stop-restart
-  tags:
-    - rozetka-shared-standart
-  script:
-    - dep consumers:gs:stop dev -p -vv
-  when: manual
-  only:
-    - branches
-  except:
-    - master
-
-stop-dev-ps:
-  stage: stop-restart
-  tags:
-    - rozetka-shared-standart
-  script:
-    - dep consumers:ps:stop dev -p -vv
-  when: manual
-  only:
-    - branches
-  except:
-    - master
-
-stop-dev-bs:
-  stage: stop-restart
-  tags:
-    - rozetka-shared-standart
-  script:
-    - dep consumers:bs:stop dev -p -vv
+    - dep supervisor:restart dev -p -vv
   when: manual
   only:
     - branches
@@ -272,68 +234,12 @@ rollback-preprod:
   except:
     - master
 
-stop-preprod-ms:
+restart-preprod-supervisor:
   stage: stop-restart
   tags:
     - rozetka-shared-standart
   script:
-    - dep consumers:ms:stop preprod -p -vv
-  when: manual
-
-stop-preprod-gs:
-  stage: stop-restart
-  tags:
-    - rozetka-shared-standart
-  script:
-    - dep consumers:gs:stop preprod -p -vv
-  when: manual
-
-stop-preprod-bs:
-  stage: stop-restart
-  tags:
-    - rozetka-shared-standart
-  script:
-    - dep consumers:bs:stop preprod -p -vv
-  when: manual
-
-stop-preprod-ps:
-  stage: stop-restart
-  tags:
-    - rozetka-shared-standart
-  script:
-    - dep consumers:ps:stop preprod -p -vv
-  when: manual
-
-start-preprod-ms:
-  stage: start
-  tags:
-    - rozetka-shared-standart
-  script:
-    - dep consumers:ms:start preprod -p -vv
-  when: manual
-
-start-preprod-gs:
-  stage: start
-  tags:
-    - rozetka-shared-standart
-  script:
-    - dep consumers:gs:start preprod -p -vv
-  when: manual
-
-start-preprod-ps:
-  stage: start
-  tags:
-    - rozetka-shared-standart
-  script:
-    - dep consumers:ps:start preprod -p -vv
-  when: manual
-
-start-preprod-bs:
-  stage: start
-  tags:
-    - rozetka-shared-standart
-  script:
-    - dep consumers:bs:start preprod -p -vv
+    - dep supervisor:restart preprod -p -vv
   when: manual
 
 deploy-prod:
@@ -361,102 +267,12 @@ rollback-prod:
   only:
     - master
 
-stop-indexing:
+restart-prod-supervisor:
   stage: stop-restart
   tags:
     - rozetka-shared-standart
   script:
-    - dep consumers:indexing:stop prod -p -vv
-  when: manual
-  only:
-    - master
-
-stop-ms:
-  stage: stop-restart
-  tags:
-    - rozetka-shared-standart
-  script:
-    - dep consumers:ms:stop prod -p -vv
-  when: manual
-  only:
-    - master
-
-stop-gs:
-  stage: stop-restart
-  tags:
-    - rozetka-shared-standart
-  script:
-    - dep consumers:gs:stop prod -p -vv
-  when: manual
-  only:
-    - master
-
-stop-bs:
-  stage: stop-restart
-  tags:
-    - rozetka-shared-standart
-  script:
-    - dep consumers:bs:stop prod -p -vv
-  when: manual
-  only:
-    - master
-
-stop-ps:
-  stage: stop-restart
-  tags:
-    - rozetka-shared-standart
-  script:
-    - dep consumers:ps:stop prod -p -vv
-  when: manual
-  only:
-    - master
-
-start-indexing:
-  stage: start
-  tags:
-    - rozetka-shared-standart
-  script:
-    - dep consumers:indexing:start prod -p -vv
-  when: manual
-  only:
-    - master
-
-start-ms:
-  stage: start
-  tags:
-    - rozetka-shared-standart
-  script:
-    - dep consumers:ms:start prod -p -vv
-  when: manual
-  only:
-    - master
-
-start-gs:
-  stage: start
-  tags:
-    - rozetka-shared-standart
-  script:
-    - dep consumers:gs:start prod -p -vv
-  when: manual
-  only:
-    - master
-
-start-ps:
-  stage: start
-  tags:
-    - rozetka-shared-standart
-  script:
-    - dep consumers:ps:start prod -p -vv
-  when: manual
-  only:
-    - master
-
-start-bs:
-  stage: start
-  tags:
-    - rozetka-shared-standart
-  script:
-    - dep consumers:bs:start prod -p -vv
+    - dep supervisor:restart prod -p -vv
   when: manual
   only:
     - master
