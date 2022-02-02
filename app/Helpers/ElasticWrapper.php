@@ -71,6 +71,11 @@ class ElasticWrapper
         return ['must_not' => array_values(array_filter($params))];
     }
 
+    public function mustNotSingle($params): array
+    {
+        return ['must_not' => array_filter($params)];
+    }
+
     /**
      * @param array $params
      * @return array

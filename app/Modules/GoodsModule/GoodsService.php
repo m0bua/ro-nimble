@@ -109,10 +109,15 @@ class GoodsService
                 $this->sourceComponent->setFields($this->selectFields)->getValue(),
                 $this->elasticWrapper->query(
                     $this->elasticWrapper->bool(
-                        $this->elasticWrapper->filter(array_merge(
-                            $this->elasticService->getDefaultFiltersConditions(),
-                            [$this->getSingleGoodsConditions()]
-                        ))
+                        [
+                            $this->elasticWrapper->filter(
+                                array_merge(
+                                    $this->elasticService->getDefaultFiltersConditions(),
+                                    [$this->getSingleGoodsConditions()]
+                                )
+                            ),
+                            $this->elasticWrapper->mustNotSingle($this->elasticService->getExcludedCategories())
+                        ]
                     )
                 ),
                 $this->collapseComponent->getValue()
@@ -172,10 +177,15 @@ class GoodsService
                 $this->sourceComponent->setFields([Elastic::FIELD_GROUP_ID])->getValue(),
                 $this->elasticWrapper->query(
                     $this->elasticWrapper->bool(
-                        $this->elasticWrapper->filter(array_merge(
-                            $this->elasticService->getDefaultFiltersConditions(), [
-                            $this->singleGoodsComponent->getPrimaryGroupConditions()
-                        ]))
+                        [
+                            $this->elasticWrapper->filter(
+                                array_merge(
+                                    $this->elasticService->getDefaultFiltersConditions(),
+                                    [$this->singleGoodsComponent->getPrimaryGroupConditions()]
+                                )
+                            ),
+                            $this->elasticWrapper->mustNotSingle($this->elasticService->getExcludedCategories())
+                        ]
                     )
                 )
             ])

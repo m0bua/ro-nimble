@@ -25,6 +25,7 @@ use App\Components\ElasticSearchComponents\SeriesComponent;
 use App\Components\ElasticSearchComponents\SingleGoodsComponent;
 use App\Components\ElasticSearchComponents\StateComponent;
 use App\Components\ElasticSearchComponents\StatusInheritedComponent;
+use App\Helpers\ElasticWrapper;
 
 class ElasticService
 {
@@ -100,6 +101,9 @@ class ElasticService
      * @var GoodsWithPromotionsComponent
      */
     private GoodsWithPromotionsComponent $goodsWithPromotionsComponent;
+
+    private ElasticWrapper $elasticWrapper;
+
     /**
      * @var SingleGoodsComponent
      */
@@ -122,7 +126,8 @@ class ElasticService
         CategoryComponent $categoryComponent,
         CategoriesComponent $categoriesComponent,
         CountryComponent $countryComponent,
-        GoodsWithPromotionsComponent $goodsWithPromotionsComponent
+        GoodsWithPromotionsComponent $goodsWithPromotionsComponent,
+        ElasticWrapper $elasticWrapper
     ) {
         $this->statusInheritedComponent = $statusInheritedComponent;
         $this->sellStatusComponent = $sellStatusComponent;
@@ -142,6 +147,7 @@ class ElasticService
         $this->categoriesComponent = $categoriesComponent;
         $this->countryComponent = $countryComponent;
         $this->goodsWithPromotionsComponent = $goodsWithPromotionsComponent;
+        $this->elasticWrapper = $elasticWrapper;
     }
 
     /**
@@ -171,5 +177,12 @@ class ElasticService
             $this->optionSlidersComponent->getValue(),
             $this->goodsWithPromotionsComponent->getValue()
         );
+    }
+
+    public function getExcludedCategories(): array {
+        return $this->categoryComponent->isExcludedCategoryExists()
+            ? $this->categoryComponent->getExcludedValue()
+            : [];
+
     }
 }

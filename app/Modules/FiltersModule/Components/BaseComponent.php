@@ -180,10 +180,15 @@ abstract class BaseComponent
                 $this->getFilterQuery(),
                 $this->elasticWrapper->query(
                     $this->elasticWrapper->bool(
-                        $this->elasticWrapper->filter(array_merge(
-                            [$this->getCustomFiltersConditions()],
-                            $this->elasticService->getDefaultFiltersConditions()
-                        ))
+                        [
+                            $this->elasticWrapper->filter(
+                                array_merge(
+                                    [$this->getCustomFiltersConditions()],
+                                    $this->elasticService->getDefaultFiltersConditions()
+                                )
+                            ),
+                            $this->elasticWrapper->mustNotSingle($this->elasticService->getExcludedCategories())
+                        ]
                     )
                 )
             ])
