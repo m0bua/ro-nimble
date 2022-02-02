@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5ae71a0c48ceacec17418bde52fec571",
+    "content-hash": "90d590bcc3f3e83f8944e334b1f0c867",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -8827,11 +8827,11 @@
         },
         {
             "name": "ivv/nimble-test",
-            "version": "1.0.14",
+            "version": "1.0.15",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.rozetka.company:ivv/nimble-test.git",
-                "reference": "eccde9b0dd5f4c409eb9ff8c38c2c0fe2886b168"
+                "reference": "4af0e2e8bab0c5819a9d8b524752e76c51cf0beb"
             },
             "require": {
                 "automation-testing-tools/allure-codeception": "*",
@@ -8845,7 +8845,7 @@
                 "Open Source"
             ],
             "description": "API tests for nimble",
-            "time": "2022-02-02T10:07:05+00:00"
+            "time": "2022-02-02T13:04:48+00:00"
         },
         {
             "name": "jms/metadata",
