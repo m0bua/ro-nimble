@@ -11,6 +11,7 @@ use App\Enums\Config;
 use App\Enums\Filters;
 use App\Models\Eloquent\Producer;
 use Illuminate\Support\Collection;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class ProducerService extends BaseComponent
 {
@@ -20,6 +21,23 @@ class ProducerService extends BaseComponent
     public function getFilterQuery(): array
     {
         return $this->producerFilterComponent->getValue();
+    }
+
+    /**
+     * Возвращает продюсеры с учетом поиска
+     * @return array
+     */
+    public function searchBrands(): array
+    {
+        $producers = $this->getValue();
+
+        if (!$producers || !isset($producers[Filters::PARAM_PRODUCER])) {
+            return [];
+        }
+
+        $producers = $producers[Filters::PARAM_PRODUCER];
+
+        return array_merge($producers['short_list'], $producers['option_values']);
     }
 
     /**
@@ -142,7 +160,10 @@ class ProducerService extends BaseComponent
         foreach ($rankedValues as $value) {
             if ($totalFound < Config::SHORT_LIST_ELEMENTS_COUNT
                 && (!$this->filters->category->isAutorankingCategory()
-                    || ($this->filters->category->isAutorankingCategory() && $totalFound < $shortListCount)
+                    || (
+                        $this->filters->category->isAutorankingCategory()
+                        && $totalFound < $shortListCount
+                    )
                 )
             ) {
                 $shortList[] = $value;
@@ -185,5 +206,4 @@ class ProducerService extends BaseComponent
 
         return $mergedList;
     }
-
 }

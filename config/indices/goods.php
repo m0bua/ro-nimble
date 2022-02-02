@@ -5,6 +5,27 @@ return [
         'number_of_replicas' => 1,
         'number_of_shards' => 6,
         'codec' => 'best_compression',
+        'max_ngram_diff' => 15,
+        'analysis' =>  [
+            'analyzer' =>  [
+                'ngram_analyzer' => [
+                    'type' => 'custom',
+                    'tokenizer' => 'ngram_tokenizer',
+                    'filter' => ['lowercase']
+                ],
+                'rebuilt_keyword' => [
+                    'tokenizer' => 'keyword',
+                    'filter' => ['lowercase']
+                ]
+            ],
+            'tokenizer' =>  [
+                'ngram_tokenizer' => [
+                    'type' => 'ngram',
+                    'min_gram' => 1,
+                    'max_gram' => 15
+                ]
+            ]
+        ]
     ],
     'mappings' => [
         '_source' => ['enabled' => true],
@@ -55,6 +76,19 @@ return [
             ],
             'producer_id' => [
                 'type' => 'integer',
+            ],
+            'producer_title' =>  [
+                'type' => 'text',
+                'fields' =>  [
+                    'text' =>  [
+                        'type' => 'text',
+                        'analyzer' => 'ngram_analyzer',
+                    ],
+                    'keyword' =>  [
+                        'type' => 'text',
+                        'analyzer' => 'rebuilt_keyword',
+                    ]
+                ]
             ],
             'rank' => [
                 'type' => 'float'

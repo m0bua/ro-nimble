@@ -205,4 +205,23 @@ class FiltersService
                 $this->sellStatusService->getChosen()
             ) + $this->optionsService->getChosen();
     }
+
+    /**
+     * Возвращает найденные бренды для фильтра "Продюсер"
+     * @return array
+     */
+    public function searchBrands(): array
+    {
+        if ($this->filters->category->getValues()->isEmpty()
+            || $this->filters->query->getValues()->isEmpty()
+        ) {
+            throw new BadRequestHttpException('Missing required parameters');
+        }
+
+        $this->filters->category->disableAutoranking();
+
+        return [
+            Resources::OPTIONS => $this->producerService->searchBrands()
+        ];
+    }
 }

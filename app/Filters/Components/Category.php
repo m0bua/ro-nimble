@@ -29,6 +29,11 @@ class Category extends AbstractFilter
     protected array $values = Filters::DEFAULT_FILTER_VALUE;
 
     /**
+     * @var bool
+     */
+    protected bool $ignoreAutoranking = false;
+
+    /**
      * Category constructor.
      * @param array $values
      */
@@ -111,6 +116,18 @@ class Category extends AbstractFilter
      */
     public function isAutorankingCategory(): bool
     {
+        if ($this->ignoreAutoranking) {
+            return false;
+        }
+
         return !!array_intersect($this->getAutorankingCategoriesList(), $this->getParentsCategories());
+    }
+
+    /**
+     * @return void
+     */
+    public function disableAutoranking(): void
+    {
+        $this->ignoreAutoranking = true;
     }
 }

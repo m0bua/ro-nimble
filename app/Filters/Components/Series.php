@@ -45,7 +45,7 @@ class Series extends AbstractFilter
 
         if (!is_array($series)) {
             throw new BadRequestHttpException(
-                sprintf('"%s" parameter must be an array'), Filters::PARAM_SERIES
+                sprintf('"%s" parameter must be an array', Filters::PARAM_SERIES)
             );
         }
 

@@ -6,6 +6,7 @@ use App\Models\Elastic\Elastic;
 use App\Models\Elastic\GoodsModel;
 use Bschmitt\Amqp\Amqp;
 use Illuminate\Console\Command;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use PhpAmqpLib\Message\AMQPMessage;
@@ -102,6 +103,7 @@ class IndexingConsumer extends Command
         $paymentMethods = $this->getPaymentMethods()->keyBy('id');
         $bonuses = $this->getBonuses()->keyBy('id');
         $carInfos = $this->getCarsInfo()->keyBy('id');
+        $producerTitles = $this->getProducerTitles()->keyBy('id');
 
         $goods->map(function ($item) use (
             $optionsChecked,
@@ -111,7 +113,8 @@ class IndexingConsumer extends Command
             $groupsPromotions,
             $paymentMethods,
             $bonuses,
-            $carInfos
+            $carInfos,
+            $producerTitles
         ) {
             $ocItem = $optionsChecked->get($item->id);
             $opItem = $optionsPlural->get($item->id);
@@ -121,6 +124,7 @@ class IndexingConsumer extends Command
             $pmItem = $paymentMethods->get($item->id);
             $bItem = $bonuses->get($item->id);
             $ciItem = $carInfos->get($item->id);
+            $ptItem = $producerTitles->get($item->id);
 
             $item->group_token = $item->group_id ? "g{$item->group_id}" : "p{$item->id}";
             $item->categories_path = collect(json_decode($item->categories_path))
@@ -137,6 +141,7 @@ class IndexingConsumer extends Command
             $item->car_brand_id = [];
             $item->car_model_id = [];
             $item->car_year_id = [];
+            $item->producer_title = $ptItem ? $ptItem->producer_title : '';
 
             if (!empty($ciItem) && !empty($ciItem->car_infos)) {
                 $data = collect(json_decode($ciItem->car_infos));
@@ -203,6 +208,23 @@ class IndexingConsumer extends Command
                 DB::raw("'[]'::JSON as tags"),
             ])
             ->whereIn('id', $this->goodsIds)
+            ->get();
+    }
+
+    /**
+     * @param array $ids
+     * @return \Illuminate\Support\Collection
+     */
+    private function getProducerTitles(): Collection
+    {
+        return DB::table('goods', 'g')
+            ->select([
+                'g.id',
+                DB::raw("coalesce(pt.value, '') as producer_title"),
+            ])
+            ->join('producer_translations as pt', 'g.producer_id', '=','pt.producer_id')
+            ->whereIn('g.id', $this->goodsIds)
+            ->where('pt.lang', '=','ru')
             ->get();
     }
 

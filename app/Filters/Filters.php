@@ -4,105 +4,129 @@ namespace App\Filters;
 
 use App\Filters\Contracts\FiltersInterface;
 use App\Http\Requests\FilterRequest;
-use App\Filters\Components;
+use App\Filters\Components\Page;
+use App\Filters\Components\PerPage;
+use App\Filters\Components\Category;
+use App\Filters\Components\Categories;
+use App\Filters\Components\Promotion;
+use App\Filters\Components\Sort;
+use App\Filters\Components\Section;
+use App\Filters\Components\Producers;
+use App\Filters\Components\Price;
+use App\Filters\Components\Sellers;
+use App\Filters\Components\Bonus;
+use App\Filters\Components\States;
+use App\Filters\Components\Series;
+use App\Filters\Components\SingleGoods;
+use App\Filters\Components\GoodsWithPromotions;
+use App\Filters\Components\Country;
+use App\Filters\Components\SellStatuses;
+use App\Filters\Components\Lang;
+use App\Filters\Components\Options;
+use App\Filters\Components\Query;
 use Exception;
 
 class Filters implements FiltersInterface
 {
     /**
-     * @var Components\Page
+     * @var Page
      */
-    public Components\Page $page;
+    public Page $page;
 
     /**
-     * @var Components\PerPage
+     * @var PerPage
      */
-    public Components\PerPage $perPage;
+    public PerPage $perPage;
 
     /**
-     * @var Components\Category
+     * @var Category
      */
-    public Components\Category $category;
+    public Category $category;
 
     /**
-     * @var Components\Categories
+     * @var Categories
      */
-    public Components\Categories $categories;
+    public Categories $categories;
 
     /**
-     * @var Components\Promotion
+     * @var Promotion
      */
-    public Components\Promotion $promotion;
+    public Promotion $promotion;
 
     /**
-     * @var Components\Sort
+     * @var Sort
      */
-    public Components\Sort $sort;
+    public Sort $sort;
 
     /**
-     * @var Components\Section
+     * @var Section
      */
-    public Components\Section $section;
+    public Section $section;
 
     /**
-     * @var Components\Producers
+     * @var Producers
      */
-    public Components\Producers $producers;
+    public Producers $producers;
 
     /**
-     * @var Components\Price
+     * @var Price
      */
-    public Components\Price $price;
+    public Price $price;
 
     /**
-     * @var Components\Sellers
+     * @var Sellers
      */
-    public Components\Sellers $sellers;
+    public Sellers $sellers;
 
     /**
-     * @var Components\Bonus
+     * @var Bonus
      */
-    public Components\Bonus $bonus;
+    public Bonus $bonus;
 
     /**
-     * @var Components\States
+     * @var States
      */
-    public Components\States $states;
+    public States $states;
 
     /**
-     * @var Components\Series
+     * @var Series
      */
-    public Components\Series $series;
+    public Series $series;
 
     /**
-     * @var Components\SingleGoods
+     * @var SingleGoods
      */
-    public Components\SingleGoods $singleGoods;
+    public SingleGoods $singleGoods;
 
     /**
-     * @var Components\GoodsWithPromotions
+     * @var GoodsWithPromotions
      */
-    public Components\GoodsWithPromotions $goodsWithPromotions;
+    public GoodsWithPromotions $goodsWithPromotions;
 
     /**
-     * @var Components\Country
+     * @var Country
      */
-    public Components\Country $country;
+    public Country $country;
 
     /**
-     * @var Components\SellStatuses
+     * @var SellStatuses
      */
-    public Components\SellStatuses $sellStatuses;
+    public SellStatuses $sellStatuses;
 
     /**
-     * @var Components\Lang
+     * @var Lang
      */
-    public Components\Lang $lang;
+    public Lang $lang;
 
     /**
-     * @var Components\Options
+     * @var Options
      */
-    public Components\Options $options;
+    public Options $options;
+
+    /**
+     * @var Query
+     */
+    public Query $query;
 
     /**
      * Filter constructor.

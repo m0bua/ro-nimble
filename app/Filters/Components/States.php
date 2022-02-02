@@ -51,7 +51,7 @@ class States extends AbstractFilter
 
         if (!is_array($states)) {
             throw new BadRequestHttpException(
-                sprintf('"%s" parameter must be an array'), Filters::PARAM_STATES
+                sprintf('"%s" parameter must be an array', Filters::PARAM_STATES)
             );
         }
 

@@ -36,4 +36,6 @@ class Elastic
     public const FIELD_COUNTRY_CODE = 'country_code';
     public const FIELD_GROUP_TOKEN = 'group_token';
     public const FIELD_BONUS = 'bonus_charge_pcs';
+    public const FIELD_PRODUCER_TITLE_KEYWORD = 'producer_title.keyword';
+    public const FIELD_PRODUCER_TITLE_TEXT = 'producer_title.text';
 }

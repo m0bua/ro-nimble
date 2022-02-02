@@ -54,7 +54,7 @@ class SellStatuses extends AbstractFilter
 
         if (!is_array($sellStatuses)) {
             throw new BadRequestHttpException(
-                sprintf('"%s" parameter must be an array'), Filters::PARAM_SELL_STATUSES
+                sprintf('"%s" parameter must be an array', Filters::PARAM_SELL_STATUSES)
             );
         }
 

@@ -19,10 +19,10 @@ use App\Components\ElasticSearchComponents\OptionValuesComponent;
 use App\Components\ElasticSearchComponents\PriceComponent;
 use App\Components\ElasticSearchComponents\ProducerComponent;
 use App\Components\ElasticSearchComponents\PromotionComponent;
+use App\Components\ElasticSearchComponents\QueryComponent;
 use App\Components\ElasticSearchComponents\SectionComponent;
 use App\Components\ElasticSearchComponents\SellStatusComponent;
 use App\Components\ElasticSearchComponents\SeriesComponent;
-use App\Components\ElasticSearchComponents\SingleGoodsComponent;
 use App\Components\ElasticSearchComponents\StateComponent;
 use App\Components\ElasticSearchComponents\StatusInheritedComponent;
 use App\Helpers\ElasticWrapper;
@@ -101,12 +101,15 @@ class ElasticService
      * @var GoodsWithPromotionsComponent
      */
     private GoodsWithPromotionsComponent $goodsWithPromotionsComponent;
-
-    private ElasticWrapper $elasticWrapper;
+    /**
+     * @var QueryComponent
+     */
+    private QueryComponent $queryComponent;
 
     /**
-     * @var SingleGoodsComponent
+     * @var ElasticWrapper
      */
+    private ElasticWrapper $elasticWrapper;
 
     public function __construct(
         StatusInheritedComponent $statusInheritedComponent,
@@ -127,6 +130,8 @@ class ElasticService
         CategoriesComponent $categoriesComponent,
         CountryComponent $countryComponent,
         GoodsWithPromotionsComponent $goodsWithPromotionsComponent,
+        QueryComponent $queryComponent,
+
         ElasticWrapper $elasticWrapper
     ) {
         $this->statusInheritedComponent = $statusInheritedComponent;
@@ -147,6 +152,8 @@ class ElasticService
         $this->categoriesComponent = $categoriesComponent;
         $this->countryComponent = $countryComponent;
         $this->goodsWithPromotionsComponent = $goodsWithPromotionsComponent;
+        $this->queryComponent = $queryComponent;
+
         $this->elasticWrapper = $elasticWrapper;
     }
 
@@ -171,6 +178,7 @@ class ElasticService
             $this->categoryComponent->getValue(),
             $this->categoriesComponent->getValue(),
             $this->countryComponent->getValue(),
+            $this->queryComponent->getValue(),
         ],
             $this->optionsComponent->getValue(),
             $this->optionValuesComponent->getValue(),
@@ -183,6 +191,5 @@ class ElasticService
         return $this->categoryComponent->isExcludedCategoryExists()
             ? $this->categoryComponent->getExcludedValue()
             : [];
-
     }
 }

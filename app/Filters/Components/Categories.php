@@ -45,7 +45,7 @@ class Categories extends AbstractFilter
 
         if (!is_array($categoriesNames)) {
             throw new BadRequestHttpException(
-                sprintf('"%s" parameter must be an array'), Filters::PARAM_CATEGORIES
+                sprintf('"%s" parameter must be an array', Filters::PARAM_CATEGORIES)
             );
         }
 

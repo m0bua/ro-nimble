@@ -45,7 +45,7 @@ class Producers extends AbstractFilter
 
         if (!is_array($producersNames)) {
             throw new BadRequestHttpException(
-                sprintf('"%s" parameter must be an array'), Filters::PARAM_PRODUCER
+                sprintf('"%s" parameter must be an array', Filters::PARAM_PRODUCER)
             );
         }
 

@@ -43,6 +43,8 @@ class Filters
     public const SELL_STATUSES = 'sellStatuses';
     // "Язык"
     public const LANG = 'lang';
+    // "Строка запроса"
+    public const QUERY = 'query';
 
     // Динамические опции фильтров
     public const OPTIONS = 'options';
@@ -71,6 +73,7 @@ class Filters
     public const PARAM_COUNTRY = 'country';
     public const PARAM_SELL_STATUSES = 'sell_statuses';
     public const PARAM_LANG = 'lang';
+    public const PARAM_QUERY = 'query';
 
     /**
      * Дополнительные параметры динамических фильтров
@@ -109,6 +112,7 @@ class Filters
         self::SELL_STATUSES,
         self::PARAM_LANG,
         self::OPTIONS,
+        self::QUERY,
     ];
 
     /**

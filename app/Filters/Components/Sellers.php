@@ -63,7 +63,7 @@ class Sellers extends AbstractFilter
 
         if (!is_array($sellers)) {
             throw new BadRequestHttpException(
-                sprintf('"%s" parameter must be an array'), Filters::PARAM_SELLERS
+                sprintf('"%s" parameter must be an array', Filters::PARAM_SELLERS)
             );
         }
 

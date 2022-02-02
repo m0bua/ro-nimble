@@ -49,7 +49,7 @@ class GoodsWithPromotions extends AbstractFilter
 
         if (!is_array($params)) {
             throw new BadRequestHttpException(
-                sprintf('"%s" parameter must be an array'), Filters::PARAM_PROMOTION_GOODS
+                sprintf('"%s" parameter must be an array', Filters::PARAM_PROMOTION_GOODS)
             );
         }
 
