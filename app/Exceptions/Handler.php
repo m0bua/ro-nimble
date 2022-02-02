@@ -57,16 +57,21 @@ class Handler extends ExceptionHandler
      *
      * @param Request $request
      * @param Throwable $e
-     * @return JsonResponse
-     * @noinspection PhpUnusedParameterInspection
+     * @return JsonResponse|\Illuminate\Http\Response|Response
+     * @throws Throwable
      */
-    private function renderApiException(Request $request, Throwable $e): JsonResponse
+    private function renderApiException(Request $request, Throwable $e)
     {
         $e = $this->prepareException($e);
 
         if ($e instanceof ValidationException) {
             $e = new ApiValidationException($e->validator);
         } elseif (!$e instanceof HttpExceptionInterface) {
+            $isDebug = config('app.debug') && !app()->environment('production');
+            if ($isDebug) {
+                return parent::render($request, $e);
+            }
+
             $e = new ApiException(Response::HTTP_INTERNAL_SERVER_ERROR, $e->getMessage());
         }
 

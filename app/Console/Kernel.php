@@ -4,16 +4,16 @@ namespace App\Console;
 
 use App\Console\Commands\Delete;
 use App\Console\Commands\Dev;
+use App\Console\Commands\FetchFiltersAutoranking;
 use App\Console\Commands\FillLostTranslations;
 use App\Console\Commands\IndexingConsumer;
 use App\Console\Commands\IndexProducers;
 use App\Console\Commands\IndexRefill;
 use App\Console\Commands\IndexServices;
 use App\Console\Commands\PartialIndexing;
-use App\Console\Commands\StartConsumer;
 use App\Console\Commands\Precount\FillPrecountOptionSettings;
 use App\Console\Commands\Precount\FillPrecountOptionSliders;
-
+use App\Console\Commands\StartConsumer;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -45,6 +45,8 @@ class Kernel extends ConsoleKernel
 
         PartialIndexing::class,
         IndexServices::class,
+
+        FetchFiltersAutoranking::class,
     ];
 
     /**
@@ -65,7 +67,7 @@ class Kernel extends ConsoleKernel
         $schedule->command(PartialIndexing::class)->runInBackground()->withoutOverlapping();
 
         $schedule->command(Delete\DeleteMarkedGoods::class);
+
+        $schedule->command(FetchFiltersAutoranking::class)->dailyAt('10:30');
     }
-
-
 }

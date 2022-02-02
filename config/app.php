@@ -175,6 +175,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\FilterServiceProvider::class,
+        App\Providers\GoogleCloudStorageServiceProvider::class,
     ],
 
     /*
