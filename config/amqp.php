@@ -110,7 +110,7 @@ return [
             'processor_name'        => [App\Processors\MarketEnterprise\Support\ProcessorClassnameResolver::class, 'resolve'],
         ]),
 
-        // market enterprise
+        // marketing service labels
         'msl' => array_merge($default, [
             'host'                  => env('AMQP_MSL_HOST', 'localhost'),
             'port'                  => env('AMQP_MSL_PORT', 5672),
