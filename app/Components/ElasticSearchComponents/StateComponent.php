@@ -16,7 +16,7 @@ class StateComponent extends BaseComponent
      */
     public function getValue(): array
     {
-        $params = $this->filters->state->getValues();
+        $params = $this->filters->states->getValues();
 
         if ($params->count() > 1) {
             return $this->elasticWrapper->terms(Elastic::FIELD_STATE, $params->toArray());

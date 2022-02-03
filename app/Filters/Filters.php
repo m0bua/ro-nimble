@@ -55,9 +55,9 @@ class Filters implements FiltersInterface
     public Components\Price $price;
 
     /**
-     * @var Components\Seller
+     * @var Components\Sellers
      */
-    public Components\Seller $seller;
+    public Components\Sellers $sellers;
 
     /**
      * @var Components\Bonus
@@ -65,9 +65,9 @@ class Filters implements FiltersInterface
     public Components\Bonus $bonus;
 
     /**
-     * @var Components\State
+     * @var Components\States
      */
-    public Components\State $state;
+    public Components\States $states;
 
     /**
      * @var Components\Series
@@ -90,9 +90,9 @@ class Filters implements FiltersInterface
     public Components\Country $country;
 
     /**
-     * @var Components\SellStatus
+     * @var Components\SellStatuses
      */
-    public Components\SellStatus $sellStatus;
+    public Components\SellStatuses $sellStatuses;
 
     /**
      * @var Components\Lang

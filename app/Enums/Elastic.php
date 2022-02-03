@@ -16,8 +16,7 @@ class Elastic
 
     public const FIELD_PRICE = 'price';
     public const FIELD_PRODUCER = 'producer_id';
-    public const FIELD_MERCHANT = 'seller_id'; // @TODO delete comment
-//    public const FIELD_MERCHANT = 'merchant_type';
+    public const FIELD_MERCHANT = 'merchant_type';
     public const FIELD_STATUS_INHERITED = 'status_inherited';
     public const FIELD_STATE = 'state';
     public const FIELD_GROUP_ID = 'group_id';

@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Filters;
 
-use App\Filters\Components\State;
+use App\Filters\Components\States;
 use Illuminate\Foundation\Http\FormRequest;
 use PHPUnit\Framework\TestCase;
 
@@ -14,7 +14,7 @@ class StateTest extends TestCase
     public function testFromRequest()
     {
         $request = new FormRequest();
-        $result = State::fromRequest($request);
-        $this->assertEquals(get_class($result), State::class);
+        $result = States::fromRequest($request);
+        $this->assertEquals(get_class($result), States::class);
     }
 }

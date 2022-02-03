@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Filters;
 
-use App\Filters\Components\SellStatus;
+use App\Filters\Components\SellStatuses;
 use Illuminate\Foundation\Http\FormRequest;
 use PHPUnit\Framework\TestCase;
 
@@ -14,7 +14,7 @@ class SellStatusTest extends TestCase
     public function testFromRequest()
     {
         $request = new FormRequest();
-        $result = SellStatus::fromRequest($request);
-        $this->assertEquals(get_class($result), SellStatus::class);
+        $result = SellStatuses::fromRequest($request);
+        $this->assertEquals(get_class($result), SellStatuses::class);
     }
 }

@@ -73,7 +73,7 @@ task('supervisor:restart', function () {
 })->onRoles('app');
 
 task('deploy:migratedb', function () {
-    run('{{bin/php}} {{release_path}}/artisan migrate');
+    run('{{bin/php}} {{release_path}}/artisan migrate --force');
 })->onRoles('app')->once();
 
 task('cachetool:clear:opcache', function () {

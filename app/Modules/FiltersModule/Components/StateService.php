@@ -24,9 +24,9 @@ class StateService extends BaseComponent
      */
     public function getValue(): array
     {
-        $this->filters->state->hideValues();
+        $this->filters->states->hideValues();
         $data = $this->elasticWrapper->prepareAggrData($this->getData(), $this->stateFilterComponent::AGGR_STATE);
-        $this->filters->state->showValues();
+        $this->filters->states->showValues();
 
         if (!$data) {
             return [];
@@ -41,13 +41,13 @@ class StateService extends BaseComponent
             $state['products_quantity'] = $count;
 
             // установка выбранных фильтров
-            if ($this->filters->state->getValues()->contains($status)) {
+            if ($this->filters->states->getValues()->contains($status)) {
                 $state['is_chosen'] = true;
 
-                $this->chosen[Filters::PARAM_STATE][$state['option_value_name']] = [
+                $this->chosen[Filters::PARAM_STATES][$state['option_value_name']] = [
                     'id' => $state['option_value_id'],
                     'name' => $state['option_value_name'],
-                    'option_title' => __('filters.' . Filters::PARAM_STATE),
+                    'option_title' => __('filters.' . Filters::PARAM_STATES),
                     'option_value_title' => $state['option_value_title'],
                     'comparable' => Filters::COMPARABLE_MAIN,
                 ];
@@ -57,14 +57,14 @@ class StateService extends BaseComponent
         }
 
         return [
-            Filters::PARAM_STATE => [
-                'option_id' => Filters::PARAM_STATE,
-                'option_name' => Filters::PARAM_STATE,
-                'option_title' => __('filters.' . Filters::PARAM_STATE),
+            Filters::PARAM_STATES => [
+                'option_id' => Filters::PARAM_STATES,
+                'option_name' => Filters::PARAM_STATES,
+                'option_title' => __('filters.' . Filters::PARAM_STATES),
                 'option_type' => Filters::OPTION_TYPE_COMBOBOX,
-                'title_genetive' => __('filters.' . Filters::PARAM_STATE),
-                'title_accusative' => __('filters.' . Filters::PARAM_STATE),
-                'title_prepositional' => __('filters.' . Filters::PARAM_STATE),
+                'title_genetive' => __('filters.' . Filters::PARAM_STATES),
+                'title_accusative' => __('filters.' . Filters::PARAM_STATES),
+                'title_prepositional' => __('filters.' . Filters::PARAM_STATES),
                 'special_combobox_view' => Filters::SPECIAL_COMBOBOX_VIEW_LIST,
                 'comparable' => Filters::COMPARABLE_MAIN,
                 'hide_block' => false,

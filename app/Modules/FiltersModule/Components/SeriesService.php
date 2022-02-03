@@ -79,7 +79,7 @@ class SeriesService extends BaseComponent
                 $this->chosen[Filters::PARAM_SERIES][$optionValues[$seriesId]['option_value_name']] = [
                     'id' => $seriesId,
                     'name' => $optionValues[$seriesId]['option_value_name'],
-                    'option_title' => __('filters.producer'),
+                    'option_title' => __('filters.' . Filters::PARAM_SERIES),
                     'option_value_title' => $optionValues[$seriesId]['option_value_title'],
                     'comparable' => Filters::COMPARABLE_MAIN,
                 ];

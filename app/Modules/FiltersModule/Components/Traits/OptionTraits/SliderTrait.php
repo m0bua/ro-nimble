@@ -78,6 +78,7 @@ trait SliderTrait
             'option_title' => $option['option_title'],
             'option_type' => $option['option_type'],
             'special_combobox_view' => Filters::SPECIAL_COMBOBOX_VIEW_SLIDER,
+            'comparable' => Filters::COMPARABLE_MAIN,
             'config' => [
                 'unit' => $option['unit'] ?? '',
                 'values_pattern' => $valuesPattern

@@ -8,6 +8,7 @@ use App\Enums\Filters;
 use App\Http\Requests\FilterRequest;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Eloquent\Series as SeriesModel;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class Series extends AbstractFilter
 {
@@ -40,6 +41,12 @@ class Series extends AbstractFilter
 
         if (!$series) {
             return new static(Filters::DEFAULT_FILTER_VALUE);
+        }
+
+        if (!is_array($series)) {
+            throw new BadRequestHttpException(
+                sprintf('"%s" parameter must be an array'), Filters::PARAM_SERIES
+            );
         }
 
         return new static(SeriesModel::getIdsByNames($series));

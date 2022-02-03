@@ -21,7 +21,7 @@ class OrderService
         Filters::PARAM_SECTION,
         Filters::PARAM_RASPRODAGA,
         Filters::PARAM_CATEGORY,
-        Filters::PARAM_SELLER,
+        Filters::PARAM_SELLERS,
         Filters::PARAM_GOTOVO_K_OTPRAVKE,
         Filters::PARAM_PRODUCERS,
         Filters::PARAM_SERIES,
@@ -34,8 +34,8 @@ class OrderService
     public array $lastsFiltersOrder = [
         Filters::PARAM_PROMOTION_GOODS,
         Filters::PARAM_BONUS,
-        Filters::PARAM_STATE,
-        Filters::PARAM_SELL_STATUS,
+        Filters::PARAM_STATES,
+        Filters::PARAM_SELL_STATUSES,
     ];
 
     /**

@@ -59,7 +59,7 @@ class PriceService extends BaseComponent
             $this->chosen[Filters::PARAM_PRICE]['range'] = [
                 'id' => Filters::PARAM_PRICE,
                 'name' => $stringRange,
-                'option_title' => __('filters.price'),
+                'option_title' => __('filters.' . Filters::PARAM_PRICE),
                 'option_value_title' => $stringRange,
                 'comparable' => Filters::COMPARABLE_MAIN,
                 'unit' => CountryHelper::isUaCountry() ? 'грн' : 'сум'
@@ -72,7 +72,7 @@ class PriceService extends BaseComponent
             Filters::PARAM_PRICE => [
                 'option_id' => Filters::PARAM_PRICE,
                 'option_name' => Filters::PARAM_PRICE,
-                'option_title' => __('filters.price'),
+                'option_title' => __('filters.' . Filters::PARAM_PRICE),
                 'option_type' => Filters::OPTION_TYPE_SLIDER,
                 'special_combobox_view' => Filters::SPECIAL_COMBOBOX_VIEW_SLIDER,
                 'comparable' => Filters::COMPARABLE_MAIN,

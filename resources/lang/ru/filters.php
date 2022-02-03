@@ -2,13 +2,13 @@
 
 return [
     'price' => 'Цена',
-    'producer' => 'Бренд',
+    'producers' => 'Бренд',
 
-    'seller' => 'Продавец',
+    'sellers' => 'Продавец',
     'seller_other' => 'Другие продавцы',
     'seller_fulfillment' => 'Другие продавцы (товар на складе Розетки)',
 
-    'sell_status' => 'Статус товара',
+    'sell_statuses' => 'Статус товара',
     'waiting_for_supply' => 'Ожидается',
     'limited' => 'Заканчивается',
     'available' => 'Есть в наличии',
@@ -17,7 +17,7 @@ return [
     'archive' => 'Архивный',
     'hidden' => 'Скрытый',
 
-    'state' => 'Новый - б/у',
+    'states' => 'Новый - б/у',
     'new' => 'Новый',
     'used' => 'Б/у',
     'refurbished' => 'Восстановленный',

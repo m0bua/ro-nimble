@@ -24,9 +24,9 @@ class SellerService extends BaseComponent
      */
     public function getValue(): array
     {
-        $this->filters->seller->hideValues();
+        $this->filters->sellers->hideValues();
         $data = $this->elasticWrapper->prepareAggrData($this->getData(), $this->sellerFilterComponent::AGGR_SELLERS);
-        $this->filters->seller->showValues();
+        $this->filters->sellers->showValues();
 
         if (!$data) {
             return [];
@@ -43,13 +43,13 @@ class SellerService extends BaseComponent
             $seller['products_quantity'] = $data[$merchantType];
 
             // установка выбранных фильтров
-            if ($this->filters->seller->getValues()->contains($merchantType)) {
+            if ($this->filters->sellers->getValues()->contains($merchantType)) {
                 $seller['is_chosen'] = true;
 
-                $this->chosen[Filters::PARAM_SELLER][$seller['option_value_name']] = [
+                $this->chosen[Filters::PARAM_SELLERS][$seller['option_value_name']] = [
                     'id' => $seller['option_value_id'],
                     'name' => $seller['option_value_name'],
-                    'option_title' => __('filters.seller'),
+                    'option_title' => __('filters.' . Filters::PARAM_SELLERS),
                     'option_value_title' => $seller['option_value_title'],
                     'comparable' => Filters::COMPARABLE_MAIN,
                 ];
@@ -59,14 +59,14 @@ class SellerService extends BaseComponent
         }
 
         return [
-            Filters::PARAM_SELLER => [
-                'option_id' => Filters::PARAM_SELLER,
-                'option_name' => Filters::PARAM_SELLER,
-                'option_title' => __('filters.seller'),
+            Filters::PARAM_SELLERS => [
+                'option_id' => Filters::PARAM_SELLERS,
+                'option_name' => Filters::PARAM_SELLERS,
+                'option_title' => __('filters.' . Filters::PARAM_SELLERS),
                 'option_type' => Filters::OPTION_TYPE_COMBOBOX,
-                'title_genetive' => __('filters.seller'),
-                'title_accusative' => __('filters.seller'),
-                'title_prepositional' => __('filters.seller'),
+                'title_genetive' => __('filters.' . Filters::PARAM_SELLERS),
+                'title_accusative' => __('filters.' . Filters::PARAM_SELLERS),
+                'title_prepositional' => __('filters.' . Filters::PARAM_SELLERS),
                 'special_combobox_view' => Filters::SPECIAL_COMBOBOX_VIEW_LIST,
                 'comparable' => Filters::COMPARABLE_MAIN,
                 'hide_block' => false,
@@ -82,7 +82,7 @@ class SellerService extends BaseComponent
     protected function getValuesTemplates(): array
     {
         return [
-            $this->filters->seller::MERCHANT_TYPE_ROZETKA => [
+            $this->filters->sellers::MERCHANT_TYPE_ROZETKA => [
                 'option_value_id' => Filters::SELLER_ROZETKA,
                 'option_value_name' => Filters::SELLER_ROZETKA,
                 'option_value_title' => 'Rozetka',
@@ -93,7 +93,7 @@ class SellerService extends BaseComponent
                 'products_quantity' => 0,
                 'order' => 0,
             ],
-            $this->filters->seller::MERCHANT_TYPE_OTHER => [
+            $this->filters->sellers::MERCHANT_TYPE_OTHER => [
                 'option_value_id' => Filters::SELLER_OTHER,
                 'option_value_name' => Filters::SELLER_OTHER,
                 'option_value_title' => __('filters.seller_other'),
@@ -104,7 +104,7 @@ class SellerService extends BaseComponent
                 'products_quantity' => 0,
                 'order' => 1,
             ],
-            $this->filters->seller::MERCHANT_TYPE_FULFILLMENT => [
+            $this->filters->sellers::MERCHANT_TYPE_FULFILLMENT => [
                 'option_value_id' => Filters::SELLER_FULFILLMENT,
                 'option_value_name' => Filters::SELLER_FULFILLMENT,
                 'option_value_title' => __('filters.seller_fulfillment'),

@@ -24,12 +24,12 @@ class SellStatusService extends BaseComponent
      */
     public function getValue(): array
     {
-        $this->filters->sellStatus->hideValues();
+        $this->filters->sellStatuses->hideValues();
         $data = $this->elasticWrapper->prepareAggrData(
             $this->getData(),
             $this->sellStatusFilterComponent::AGGR_SELL_STATUS
         );
-        $this->filters->sellStatus->showValues();
+        $this->filters->sellStatuses->showValues();
 
         if (!$data) {
             return [];
@@ -54,13 +54,13 @@ class SellStatusService extends BaseComponent
             $order++;
 
             // установка выбранных фильтров
-            if ($this->filters->sellStatus->getValues()->contains($status)) {
+            if ($this->filters->sellStatuses->getValues()->contains($status)) {
                 $sellStatus['is_chosen'] = true;
 
-                $this->chosen[Filters::PARAM_SELL_STATUS][$sellStatus['option_value_name']] = [
+                $this->chosen[Filters::PARAM_SELL_STATUSES][$sellStatus['option_value_name']] = [
                     'id' => $sellStatus['option_value_id'],
                     'name' => $sellStatus['option_value_name'],
-                    'option_title' => __('filters.' . Filters::PARAM_SELL_STATUS),
+                    'option_title' => __('filters.' . Filters::PARAM_SELL_STATUSES),
                     'option_value_title' => $sellStatus['option_value_title'],
                     'comparable' => Filters::COMPARABLE_MAIN,
                 ];
@@ -70,14 +70,14 @@ class SellStatusService extends BaseComponent
         }
 
         return [
-            Filters::PARAM_SELL_STATUS => [
-                'option_id' => Filters::PARAM_SELL_STATUS,
-                'option_name' => Filters::PARAM_SELL_STATUS,
-                'option_title' => __('filters.' . Filters::PARAM_SELL_STATUS),
+            Filters::PARAM_SELL_STATUSES => [
+                'option_id' => Filters::PARAM_SELL_STATUSES,
+                'option_name' => Filters::PARAM_SELL_STATUSES,
+                'option_title' => __('filters.' . Filters::PARAM_SELL_STATUSES),
                 'option_type' => Filters::OPTION_TYPE_COMBOBOX,
-                'title_genetive' => __('filters.' . Filters::PARAM_SELL_STATUS),
-                'title_accusative' => __('filters.' . Filters::PARAM_SELL_STATUS),
-                'title_prepositional' => __('filters.' . Filters::PARAM_SELL_STATUS),
+                'title_genetive' => __('filters.' . Filters::PARAM_SELL_STATUSES),
+                'title_accusative' => __('filters.' . Filters::PARAM_SELL_STATUSES),
+                'title_prepositional' => __('filters.' . Filters::PARAM_SELL_STATUSES),
                 'special_combobox_view' => Filters::SPECIAL_COMBOBOX_VIEW_LIST,
                 'comparable' => Filters::COMPARABLE_MAIN,
                 'hide_block' => false,

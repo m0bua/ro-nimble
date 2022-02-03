@@ -17,7 +17,7 @@ class SpecificOptionResource extends BaseResource
                 ]
             ],
             [
-                'field' => 'seller',
+                'field' => 'sellers',
                 'resource' => [
                     'class' => CustomOptionResource::class,
                     'method' => 'make'
@@ -38,14 +38,14 @@ class SpecificOptionResource extends BaseResource
                 ]
             ],
             [
-                'field' => 'producer',
+                'field' => 'producers',
                 'resource' => [
                     'class' => ProducerResource::class,
                     'method' => 'make'
                 ]
             ],
             [
-                'field' => 'state',
+                'field' => 'states',
                 'resource' => [
                     'class' => CustomOptionResource::class,
                     'method' => 'make'
@@ -59,7 +59,7 @@ class SpecificOptionResource extends BaseResource
                 ]
             ],
             [
-                'field' => 'sell_status',
+                'field' => 'sell_statuses',
                 'resource' => [
                     'class' => CustomOptionResource::class,
                     'method' => 'make'

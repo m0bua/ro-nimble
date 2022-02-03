@@ -72,7 +72,7 @@ class FilterController extends Controller
      *          )
      *     ),
      *     @OA\Parameter (
-     *          name="producer",
+     *          name="producers",
      *          in="query",
      *          required=false,
      *          description="Список производителей",
@@ -105,7 +105,7 @@ class FilterController extends Controller
      *          )
      *     ),
      *     @OA\Parameter (
-     *          name="seller",
+     *          name="sellers",
      *          in="query",
      *          required=false,
      *          description="Список продавцов",
@@ -159,7 +159,7 @@ class FilterController extends Controller
      *          )
      *     ),
      *     @OA\Parameter (
-     *          name="sell_status",
+     *          name="sell_statuses",
      *          in="query",
      *          required=false,
      *          description="Статусы товаров",

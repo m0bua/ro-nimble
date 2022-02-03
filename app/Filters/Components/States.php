@@ -8,8 +8,9 @@ use App\Enums\Filters;
 use App\Filters\Traits\PrepareParamsTrait;
 use App\Http\Requests\FilterRequest;
 use Illuminate\Foundation\Http\FormRequest;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-class State extends AbstractFilter
+class States extends AbstractFilter
 {
     public static $availableParams = [
         Filters::STATE_NEW,
@@ -20,7 +21,7 @@ class State extends AbstractFilter
     /**
      * @var string
      */
-    protected string $name = Filters::STATE;
+    protected string $name = Filters::STATES;
 
     /**
      * @var array
@@ -28,7 +29,7 @@ class State extends AbstractFilter
     protected array $values = Filters::DEFAULT_FILTER_VALUE;
 
     /**
-     * State constructor.
+     * States constructor.
      * @param array $values
      */
     public function __construct(array $values)
@@ -38,14 +39,20 @@ class State extends AbstractFilter
 
     /**
      * @param FilterRequest $request
-     * @return State
+     * @return States
      */
-    public static function fromRequest(FormRequest $request): State
+    public static function fromRequest(FormRequest $request): States
     {
-        $states = $request->input(Filters::PARAM_STATE);
+        $states = $request->input(Filters::PARAM_STATES);
 
         if (!$states) {
             return new static(Filters::DEFAULT_FILTER_VALUE);
+        }
+
+        if (!is_array($states)) {
+            throw new BadRequestHttpException(
+                sprintf('"%s" parameter must be an array'), Filters::PARAM_STATES
+            );
         }
 
         return new static(array_intersect($states, self::$availableParams));

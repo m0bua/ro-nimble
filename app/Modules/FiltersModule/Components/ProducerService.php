@@ -81,7 +81,7 @@ class ProducerService extends BaseComponent
                 $this->chosen[Filters::PARAM_PRODUCERS][$producers[$producerId]['option_value_name']] = [
                     'id' => $producerId,
                     'name' => $producers[$producerId]['option_value_name'],
-                    'option_title' => __('filters.producer'),
+                    'option_title' => __('filters.' . Filters::PARAM_PRODUCERS),
                     'option_value_title' => $producers[$producerId]['option_value_title'],
                     'comparable' => Filters::COMPARABLE_MAIN,
                 ];
@@ -92,7 +92,7 @@ class ProducerService extends BaseComponent
             Filters::PARAM_PRODUCERS => $this->prepareFilter([
                 'option_id' => Filters::PARAM_PRODUCERS,
                 'option_name' => Filters::PARAM_PRODUCERS,
-                'option_title' => __('filters.producer'),
+                'option_title' => __('filters.' . Filters::PARAM_PRODUCERS),
                 'option_type' => Filters::OPTION_TYPE_LIST,
                 'special_combobox_view' => Filters::SPECIAL_COMBOBOX_VIEW_SECTION_LIST_AUTOCOMPLETE,
                 'comparable' => Filters::COMPARABLE_MAIN,

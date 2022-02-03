@@ -7,8 +7,9 @@ namespace App\Filters\Components;
 use App\Enums\Filters;
 use App\Http\Requests\FilterRequest;
 use Illuminate\Foundation\Http\FormRequest;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-class Seller extends AbstractFilter
+class Sellers extends AbstractFilter
 {
     /**
      * merchant_type = 1, если merchant_id равен 1 или 2
@@ -17,7 +18,7 @@ class Seller extends AbstractFilter
      */
 
     /**
-     * Seller merchant types
+     * Sellers merchant types
      */
     public const MERCHANT_TYPE_ROZETKA = 1;
     public const MERCHANT_TYPE_FULFILLMENT = 2;
@@ -32,7 +33,7 @@ class Seller extends AbstractFilter
     /**
      * @var string
      */
-    protected string $name = Filters::SELLER;
+    protected string $name = Filters::SELLERS;
 
     /**
      * @var array
@@ -40,7 +41,7 @@ class Seller extends AbstractFilter
     protected array $values = Filters::DEFAULT_FILTER_VALUE;
 
     /**
-     * Seller constructor.
+     * Sellers constructor.
      * @param array $values
      */
     public function __construct(array $values)
@@ -50,14 +51,20 @@ class Seller extends AbstractFilter
 
     /**
      * @param FilterRequest $request
-     * @return Seller
+     * @return Sellers
      */
-    public static function fromRequest(FormRequest $request): Seller
+    public static function fromRequest(FormRequest $request): Sellers
     {
-        $sellers = $request->input(Filters::PARAM_SELLER);
+        $sellers = $request->input(Filters::PARAM_SELLERS);
 
         if (!$sellers) {
             return new static(Filters::DEFAULT_FILTER_VALUE);
+        }
+
+        if (!is_array($sellers)) {
+            throw new BadRequestHttpException(
+                sprintf('"%s" parameter must be an array'), Filters::PARAM_SELLERS
+            );
         }
 
         return new static(array_values(array_intersect_key(self::$seller_params, array_flip($sellers))));

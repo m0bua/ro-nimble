@@ -16,6 +16,6 @@ class MerchantComponent extends BaseComponent
      */
     public function getValue(): array
     {
-        return $this->elasticWrapper->terms(Elastic::FIELD_MERCHANT, $this->filters->seller->getValues()->toArray());
+        return $this->elasticWrapper->terms(Elastic::FIELD_MERCHANT, $this->filters->sellers->getValues()->toArray());
     }
 }

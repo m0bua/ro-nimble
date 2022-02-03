@@ -26,11 +26,11 @@ class Filters
     // "Цена"
     public const PRICE = 'price';
     // "Продавец"
-    public const SELLER = 'seller';
+    public const SELLERS = 'sellers';
     // "Программа лояльности" (опция "С бонусами")
     public const BONUS = 'bonus';
     // "Новый - б/у"
-    public const STATE = 'state';
+    public const STATES = 'states';
     // "Серия"
     public const SERIES = 'series';
     // Сгруппированные товары
@@ -40,7 +40,7 @@ class Filters
     // Код страны
     public const COUNTRY = 'country';
     // "Статус товара"
-    public const SELL_STATUS = 'sellStatus';
+    public const SELL_STATUSES = 'sellStatuses';
     // "Язык"
     public const LANG = 'lang';
 
@@ -60,16 +60,16 @@ class Filters
     public const PARAM_PROMOTION = 'promotion_id';
     public const PARAM_SORT = 'sort';
     public const PARAM_SECTION = 'section_id';
-    public const PARAM_PRODUCERS = 'producer';
+    public const PARAM_PRODUCERS = 'producers';
     public const PARAM_PRICE = 'price';
-    public const PARAM_SELLER = 'seller';
+    public const PARAM_SELLERS = 'sellers';
     public const PARAM_BONUS = 'with_bonus';
-    public const PARAM_STATE = 'state';
+    public const PARAM_STATES = 'states';
     public const PARAM_SERIES = 'series';
     public const PARAM_SINGLE_GOODS = 'single_goods';
     public const PARAM_PROMOTION_GOODS = 'goods_with_promotions';
     public const PARAM_COUNTRY = 'country';
-    public const PARAM_SELL_STATUS = 'sell_status';
+    public const PARAM_SELL_STATUSES = 'sell_statuses';
     public const PARAM_LANG = 'lang';
 
     /**
@@ -99,14 +99,14 @@ class Filters
         self::SECTION,
         self::PRODUCERS,
         self::PRICE,
-        self::SELLER,
+        self::SELLERS,
         self::BONUS,
-        self::STATE,
+        self::STATES,
         self::SERIES,
         self::SINGLE_GOODS,
         self::PROMOTION_GOODS,
         self::COUNTRY,
-        self::SELL_STATUS,
+        self::SELL_STATUSES,
         self::PARAM_LANG,
         self::OPTIONS,
     ];
@@ -125,11 +125,11 @@ class Filters
         self::PARAM_SECTION,
         self::PARAM_PRODUCERS,
         self::PARAM_PRICE,
-        self::PARAM_SELLER,
+        self::PARAM_SELLERS,
         self::PARAM_BONUS,
-        self::PARAM_STATE,
+        self::PARAM_STATES,
         self::PARAM_SERIES,
-        self::PARAM_SELL_STATUS,
+        self::PARAM_SELL_STATUSES,
         self::PARAM_SINGLE_GOODS,
         self::PARAM_PROMOTION_GOODS,
         self::PARAM_COUNTRY,
@@ -146,13 +146,13 @@ class Filters
         self::SECTION,
         self::PRODUCERS,
         self::PRICE,
-        self::SELLER,
+        self::SELLERS,
         self::BONUS,
-        self::STATE,
+        self::STATES,
         self::SERIES,
         self::SINGLE_GOODS,
         self::PROMOTION_GOODS,
-        self::SELL_STATUS,
+        self::SELL_STATUSES,
         self::OPTIONS,
     ];
 
@@ -193,7 +193,7 @@ class Filters
     public const SELLER_FULFILLMENT = 'fulfillment';
 
     /**
-     * Параметры фильтра "Б/у - Новый" (State)
+     * Параметры фильтра "Б/у - Новый" (States)
      */
     public const STATE_NEW = 'new';
     public const STATE_USED = 'used';

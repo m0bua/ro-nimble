@@ -7,6 +7,7 @@ namespace App\Filters\Components;
 use App\Enums\Filters;
 use App\Http\Requests\FilterRequest;
 use Illuminate\Foundation\Http\FormRequest;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class GoodsWithPromotions extends AbstractFilter
 {
@@ -40,12 +41,18 @@ class GoodsWithPromotions extends AbstractFilter
      */
     public static function fromRequest(FormRequest $request): GoodsWithPromotions
     {
-        $states = $request->input(Filters::PARAM_PROMOTION_GOODS);
+        $params = $request->input(Filters::PARAM_PROMOTION_GOODS);
 
-        if (!$states) {
+        if (!$params) {
             return new static(Filters::DEFAULT_FILTER_VALUE);
         }
 
-        return new static(array_values(array_intersect($states, self::$availableParams)));
+        if (!is_array($params)) {
+            throw new BadRequestHttpException(
+                sprintf('"%s" parameter must be an array'), Filters::PARAM_PROMOTION_GOODS
+            );
+        }
+
+        return new static(array_values(array_intersect($params, self::$availableParams)));
     }
 }

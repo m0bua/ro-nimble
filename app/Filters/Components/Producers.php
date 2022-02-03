@@ -8,6 +8,7 @@ use App\Enums\Filters;
 use App\Http\Requests\FilterRequest;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Eloquent\Producer as ProducerModel;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class Producers extends AbstractFilter
 {
@@ -40,6 +41,12 @@ class Producers extends AbstractFilter
 
         if (!$producersNames) {
             return new static(Filters::DEFAULT_FILTER_VALUE);
+        }
+
+        if (!is_array($producersNames)) {
+            throw new BadRequestHttpException(
+                sprintf('"%s" parameter must be an array'), Filters::PARAM_PRODUCERS
+            );
         }
 
         //если значение продюсера 'v1234', проверяем по id, активен ли он

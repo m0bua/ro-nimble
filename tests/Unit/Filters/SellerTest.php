@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Filters;
 
-use App\Filters\Components\Seller;
+use App\Filters\Components\Sellers;
 use Illuminate\Foundation\Http\FormRequest;
 use PHPUnit\Framework\TestCase;
 
@@ -14,7 +14,7 @@ class SellerTest extends TestCase
     public function testFromRequest()
     {
         $request = new FormRequest();
-        $result = Seller::fromRequest($request);
-        $this->assertEquals(get_class($result), Seller::class);
+        $result = Sellers::fromRequest($request);
+        $this->assertEquals(get_class($result), Sellers::class);
     }
 }

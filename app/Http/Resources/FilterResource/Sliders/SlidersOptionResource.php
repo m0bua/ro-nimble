@@ -18,6 +18,7 @@ class SlidersOptionResource extends BaseResource
             'option_title',
             'option_type',
             'special_combobox_view',
+            'comparable',
             'config',
             [
                 'field' => 'config',
