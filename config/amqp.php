@@ -119,6 +119,15 @@ return [
             'processor_name'        => [App\Processors\MarketingService\Support\LabelProcessorClassnameResolver::class, 'resolve'],
         ]),
 
+        // comment service
+        'cs' => array_merge($default, [
+            'host'                  => env('AMQP_CS_HOST', 'localhost'),
+            'port'                  => env('AMQP_CS_PORT', 5672),
+            'username'              => env('AMQP_CS_USERNAME', ''),
+            'password'              => env('AMQP_CS_PASSWORD', ''),
+            'processor_name'        => [App\Processors\CommentService\Support\ProcessorClassnameResolver::class, 'resolve'],
+        ]),
+
         'local' => [
             'host'                  => env('AMQP_LOCAL_HOST', 'localhost'),
             'port'                  => env('AMQP_LOCAL_PORT', 5672),
