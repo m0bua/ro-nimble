@@ -7,6 +7,7 @@ use App\Cores\Shared\Codes;
 use App\Models\Eloquent\IndexGoods;
 use App\Models\Eloquent\Label;
 use App\Processors\Processor;
+use Illuminate\Support\Facades\DB;
 
 class UpsertEventProcessor extends Processor
 {
@@ -18,9 +19,8 @@ class UpsertEventProcessor extends Processor
      * @param Label $model
      * @param IndexGoods $indexGoods
      */
-    public function __construct(Label $model, IndexGoods $indexGoods)
+    public function __construct(IndexGoods $indexGoods)
     {
-        $this->model = $model;
         $this->indexGoods = $indexGoods;
     }
 
@@ -32,13 +32,7 @@ class UpsertEventProcessor extends Processor
         $this->beforeProcess();
         $this->setDataFromMessage($message);
 
-        $this->model->newInstance(['id' => $this->data['label_id']])
-            ->goods()
-            ->syncWithPivotValues(
-                [$this->data['goods_id']],
-                ['country_code' => $this->data['country_code']],
-                false
-            );
+        DB::table('goods_label')->insertOrIgnore($this->data);
 
         $this->afterProcess();
 
