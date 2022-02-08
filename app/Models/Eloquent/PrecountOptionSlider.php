@@ -97,7 +97,7 @@ class PrecountOptionSlider extends Model
                 is_deleted=EXCLUDED.is_deleted;
         ";
 
-        DB::select($upsertQuery);
+        DB::insert($upsertQuery);
         DB::table($precountOptionSlidersTable)->where(['is_deleted' => 1])->delete();
     }
 }

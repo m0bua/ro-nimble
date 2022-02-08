@@ -102,7 +102,7 @@ class PrecountOptionSetting extends Model
             WHERE pos.options_settings_id != EXCLUDED.options_settings_id OR pos.is_deleted != EXCLUDED.is_deleted;
         UPSERT_QUERY;
 
-        DB::select($upsertQuery);
+        DB::insert($upsertQuery);
         DB::table($precountOptionSettingsTable)->where(['is_deleted' => 1])->delete();
     }
 }
