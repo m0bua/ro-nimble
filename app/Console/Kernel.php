@@ -56,12 +56,14 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         $schedule->command(FillLostTranslations::class)->runInBackground()->withoutOverlapping();
-        $schedule->command(PartialIndexing::class)->runInBackground()->withoutOverlapping();
+//        $schedule->command(FillPrecountOptionSettings::class)->runInBackground()->hourly();
+        $schedule->command(FillPrecountOptionSliders::class)->runInBackground()->hourly();
 
         $schedule->command(IndexProducers::class)->dailyAt('00:00');
         $schedule->command(IndexRefill::class)->dailyAt('02:00');
-
         $schedule->command(IndexServices::class);
+        $schedule->command(PartialIndexing::class)->runInBackground()->withoutOverlapping();
+
         $schedule->command(Delete\DeleteMarkedGoods::class);
     }
 

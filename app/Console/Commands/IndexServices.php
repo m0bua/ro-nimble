@@ -66,7 +66,7 @@ class IndexServices extends Command
                     ]
                 );
 
-//                $this->goodsElastic->deleteIndex($activeIndexName);
+                $this->goodsElastic->deleteIndex($activeIndexName);
             }
         }
     }

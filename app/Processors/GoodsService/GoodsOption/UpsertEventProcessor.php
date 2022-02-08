@@ -6,6 +6,7 @@ use App\Models\Eloquent\GoodsOptionBoolean;
 use App\Models\Eloquent\GoodsOptionNumber;
 use App\Models\Eloquent\IndexGoods;
 use App\Processors\UpsertProcessor;
+use Illuminate\Support\Str;
 
 class UpsertEventProcessor extends UpsertProcessor
 {
@@ -49,7 +50,7 @@ class UpsertEventProcessor extends UpsertProcessor
                 );
                 break;
             case 'number':
-                if ('' === $data['value']) {
+                if (trim($data['value']) == "") {
                     $this->number->query()
                         ->where([
                             'goods_id' => $data['goods_id'],
