@@ -49,15 +49,24 @@ class UpsertEventProcessor extends UpsertProcessor
                 );
                 break;
             case 'number':
-                $this->number->upsert(
-                    [
-                        'goods_id' => $data['goods_id'],
-                        'option_id' => $data['option_id'],
-                        'value' => $data['value']
-                    ],
-                    $uniqueBy,
-                    $update
-                );
+                if ('' === $data['value']) {
+                    $this->number->query()
+                        ->where([
+                            'goods_id' => $data['goods_id'],
+                            'option_id' => $data['option_id'],
+                        ])
+                        ->delete();
+                } else {
+                    $this->number->upsert(
+                        [
+                            'goods_id' => $data['goods_id'],
+                            'option_id' => $data['option_id'],
+                            'value' => $data['value']
+                        ],
+                        $uniqueBy,
+                        $update
+                    );
+                }
                 break;
         }
 
