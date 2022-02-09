@@ -2,7 +2,7 @@
 
 return [
     'price' => 'Цена',
-    'producers' => 'Бренд',
+    'producer' => 'Бренд',
 
     'sellers' => 'Продавец',
     'seller_other' => 'Другие продавцы',

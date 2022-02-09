@@ -38,7 +38,7 @@ class SpecificOptionResource extends BaseResource
                 ]
             ],
             [
-                'field' => 'producers',
+                'field' => 'producer',
                 'resource' => [
                     'class' => ProducerResource::class,
                     'method' => 'make'

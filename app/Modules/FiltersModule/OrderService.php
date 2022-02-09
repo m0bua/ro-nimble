@@ -23,7 +23,7 @@ class OrderService
         Filters::PARAM_CATEGORY,
         Filters::PARAM_SELLERS,
         Filters::PARAM_GOTOVO_K_OTPRAVKE,
-        Filters::PARAM_PRODUCERS,
+        Filters::PARAM_PRODUCER,
         Filters::PARAM_SERIES,
         Filters::PARAM_PRICE,
     ];

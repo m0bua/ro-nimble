@@ -37,7 +37,7 @@ class Producers extends AbstractFilter
      */
     public static function fromRequest(FormRequest $request): Producers
     {
-        $producersNames = $request->input(Filters::PARAM_PRODUCERS);
+        $producersNames = $request->input(Filters::PARAM_PRODUCER);
 
         if (!$producersNames) {
             return new static(Filters::DEFAULT_FILTER_VALUE);
@@ -45,7 +45,7 @@ class Producers extends AbstractFilter
 
         if (!is_array($producersNames)) {
             throw new BadRequestHttpException(
-                sprintf('"%s" parameter must be an array'), Filters::PARAM_PRODUCERS
+                sprintf('"%s" parameter must be an array'), Filters::PARAM_PRODUCER
             );
         }
 

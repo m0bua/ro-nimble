@@ -78,10 +78,10 @@ class ProducerService extends BaseComponent
             if (!empty($producers[$producerId])) {
                 $producers[$producerId]['is_chosen'] = true;
 
-                $this->chosen[Filters::PARAM_PRODUCERS][$producers[$producerId]['option_value_name']] = [
+                $this->chosen[Filters::PARAM_PRODUCER][$producers[$producerId]['option_value_name']] = [
                     'id' => $producerId,
                     'name' => $producers[$producerId]['option_value_name'],
-                    'option_title' => __('filters.' . Filters::PARAM_PRODUCERS),
+                    'option_title' => __('filters.' . Filters::PARAM_PRODUCER),
                     'option_value_title' => $producers[$producerId]['option_value_title'],
                     'comparable' => Filters::COMPARABLE_MAIN,
                 ];
@@ -89,10 +89,10 @@ class ProducerService extends BaseComponent
         }
 
         return [
-            Filters::PARAM_PRODUCERS => $this->prepareFilter([
-                'option_id' => Filters::PARAM_PRODUCERS,
-                'option_name' => Filters::PARAM_PRODUCERS,
-                'option_title' => __('filters.' . Filters::PARAM_PRODUCERS),
+            Filters::PARAM_PRODUCER => $this->prepareFilter([
+                'option_id' => Filters::PARAM_PRODUCER,
+                'option_name' => Filters::PARAM_PRODUCER,
+                'option_title' => __('filters.' . Filters::PARAM_PRODUCER),
                 'option_type' => Filters::OPTION_TYPE_LIST,
                 'special_combobox_view' => Filters::SPECIAL_COMBOBOX_VIEW_SECTION_LIST_AUTOCOMPLETE,
                 'comparable' => Filters::COMPARABLE_MAIN,

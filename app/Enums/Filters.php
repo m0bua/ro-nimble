@@ -60,7 +60,7 @@ class Filters
     public const PARAM_PROMOTION = 'promotion_id';
     public const PARAM_SORT = 'sort';
     public const PARAM_SECTION = 'section_id';
-    public const PARAM_PRODUCERS = 'producers';
+    public const PARAM_PRODUCER = 'producer';
     public const PARAM_PRICE = 'price';
     public const PARAM_SELLERS = 'sellers';
     public const PARAM_BONUS = 'with_bonus';
@@ -123,7 +123,7 @@ class Filters
         self::PARAM_PROMOTION,
         self::PARAM_SORT,
         self::PARAM_SECTION,
-        self::PARAM_PRODUCERS,
+        self::PARAM_PRODUCER,
         self::PARAM_PRICE,
         self::PARAM_SELLERS,
         self::PARAM_BONUS,
