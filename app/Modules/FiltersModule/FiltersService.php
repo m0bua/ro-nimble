@@ -234,7 +234,7 @@ class FiltersService
         $this->filters->category->disableAutoranking();
 
         return [
-            Resources::OPTIONS => $this->producerService->searchBrands()
+            Resources::OPTIONS => $this->orderService->orderOptions($this->producerService->searchBrands())->toArray()
         ];
     }
 }

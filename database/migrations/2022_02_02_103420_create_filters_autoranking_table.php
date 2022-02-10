@@ -27,8 +27,8 @@ class CreateFiltersAutorankingTable extends Migration
 
         Schema::create($this->table, static function (Blueprint $table) {
             $table->id();
-            $table->string('parent_id');
-            $table->string('filter_name');
+            $table->bigInteger('parent_id')->index();
+            $table->string('filter_name')->index();
             $table->string('filter_value');
             $table->integer('filter_rank');
             $table->tinyInteger('is_value_show');

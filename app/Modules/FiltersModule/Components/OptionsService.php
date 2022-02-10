@@ -11,20 +11,21 @@ use App\Enums\Elastic;
 use App\Enums\Filters;
 use App\Filters\Components\Options\OptionValues;
 use App\Helpers\CountryHelper;
+use App\Helpers\TranslateHelper;
 use App\Models\Eloquent\Option;
 use App\Models\Eloquent\OptionSettingTranslation;
 use App\Models\Eloquent\OptionTranslation;
 use App\Models\Eloquent\OptionValueTranslation;
 use App\Modules\FiltersModule\Components\Traits\OptionTraits\SliderTrait;
 use App\Modules\FiltersModule\Components\Traits\OptionTraits\ValuesAndCheckedTrait;
+use App\Modules\FiltersModule\Components\Traits\SortTrait;
 use Illuminate\Support\Collection;
-use Illuminate\Database\Eloquent\Collection as EloquentCollection;
-use Illuminate\Support\Facades\App;
 
 class OptionsService extends BaseComponent
 {
     use ValuesAndCheckedTrait;
     use SliderTrait;
+    use SortTrait;
 
     /**
      * @var Collection
@@ -94,6 +95,8 @@ class OptionsService extends BaseComponent
     public function getValue(): array
     {
         $this->aggrAllFiltersCount();
+
+        $this->isFilterAutoranking = $this->filters->category->isFilterAutoranking();
 
         $valuesAndChecked = $this->getValuesAndChecked();
         $sliders = $this->getSliders();
@@ -348,35 +351,19 @@ class OptionsService extends BaseComponent
      */
     public function initTranslations(Collection $options): void
     {
-        $this->optionTranslations = $this->getTranslationFields(
+        $this->optionTranslations = TranslateHelper::getTranslationFields(
             OptionTranslation::getByOptionIds($options->pluck('option_id')->toArray()),
             'option_id'
         );
-        $this->optionValueTranslations = $this->getTranslationFields(
+        $this->optionValueTranslations = TranslateHelper::getTranslationFields(
             OptionValueTranslation::getByOptionValueIds($options->pluck('option_value_id')->filter()->toArray()),
             'option_value_id'
         );
-        $this->optionSettingTranslations = $this->getTranslationFields(
+        $this->optionSettingTranslations = TranslateHelper::getTranslationFields(
             OptionSettingTranslation::getByOptionSettingIds($options->pluck('option_setting_id')->toArray()),
             'option_setting_id'
         );
     }
 
-    /**
-     * Создаем список переводов для фильтров
-     * @param EloquentCollection $translations
-     * @return void|string
-     */
-    public function getTranslationFields(EloquentCollection $translations, string $translationField): Collection
-    {
-        return $translations->groupBy([$translationField, 'column', 'lang'])->map(function (Collection $column) {
-            return $column->map(function (Collection $langs) {
-                if ($lang = $langs->get(App::getLocale())) {
-                    return $lang->first()->value;
-                } elseif ($lang = $langs->get(config('translatable.default_language'))) {
-                    return $lang->first()->value;
-                }
-            });
-        });
-    }
+
 }

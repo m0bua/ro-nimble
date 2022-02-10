@@ -24,7 +24,8 @@ trait ValuesAndCheckedTrait
 
         return $this->option->getOptionsByCategory(
             $this->optionsCount->keys()->merge($this->optionCheckedCount->keys())->toArray(),
-            $this->getFiltersCategories()
+            $this->getFiltersCategories(),
+            $this->isFilterAutoranking
         )
             ->filter(function(Collection $option) {
                 if (is_null($option['option_value_id'])) {
@@ -56,7 +57,7 @@ trait ValuesAndCheckedTrait
             'title_prepositional' => $this->optionSettingTranslations[$optionSettingId]['title_prepositional'] ?? null,
             'special_combobox_view' => $option['special_combobox_view'],
             'comparable' => $option['comparable'],
-            'hide_block' => $option['hide_block'],
+            'hide_block' => !!$option['hide_block'],
             'option_values' => collect([])
         ]);
     }
@@ -79,7 +80,7 @@ trait ValuesAndCheckedTrait
             'color_hash' => $option['option_value_color'],
             'is_chosen' => false,
             'products_quantity' => $this->optionValuesCount->get($optionValueId, 0),
-            'is_value_show' => false
+            'is_value_show' => !!$option['is_value_show']
         ]);
     }
 
@@ -104,7 +105,7 @@ trait ValuesAndCheckedTrait
             'color_hash' => null,
             'is_chosen' => false,
             'products_quantity' => $this->optionCheckedCount->get($optionId, 0),
-            'is_value_show' => false
+            'is_value_show' => !!$option['is_value_show']
         ]);
     }
 
@@ -120,8 +121,10 @@ trait ValuesAndCheckedTrait
             return $option;
         }
 
-        $option->put('total_found', $option->get('option_values')->count());
-        $option->put('option_values', $option->get('option_values')->splice(0, Config::SHORT_LIST_ELEMENTS_COUNT));
+        $sortedValues = $this->getSortedValues($option['option_values']->toArray());
+
+        $option->put('total_found', $sortedValues['total_found']);
+        $option->put('option_values', array_merge($sortedValues['short_list'], $sortedValues['option_values']));
 
         return $option;
     }

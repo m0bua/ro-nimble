@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection as SupportCollection;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\Eloquent\Option
@@ -152,10 +153,29 @@ class Option extends Model
     }
 
     /**
+     * @param Category $category
+     * @return int
+     */
+    public static function getOptionAutorankingCount(Category $category): int
+    {
+        $optionSettingTable = OptionSetting::make()->getTable();
+        $filterAutorankingOptionsQuery = FilterAutoranking::getOptionsQuery($category->id);
+
+        return static::query()
+            ->from(self::getModel()->getTable(), 'o')
+            ->whereIn('o.category_id', Category::getParentsQuery($category))
+            ->where('os.comparable', 'main')
+            ->whereIn('os.status', ['facet', 'active'])
+            ->join("{$optionSettingTable} as os", 'os.option_id', 'o.id')
+            ->joinSub($filterAutorankingOptionsQuery, 'fao', 'fao.filter_name', 'o.name')
+            ->count();
+    }
+
+    /**
      * @param array $categoryIds
      * @return SupportCollection
      */
-    public function getOptionsByCategory(array $optionsIds, array $categoryIds): SupportCollection
+    public function getOptionsByCategory(array $optionsIds, array $categoryIds, bool $isFilterAutoranking): SupportCollection
     {
         $optionTable = $this->getTable();
         $optionValueTable = OptionValue::make()->getTable();
@@ -174,8 +194,6 @@ class Option extends Model
                 'os.order',
                 'os.special_combobox_view as special_combobox_view',
                 'os.comparable',
-                'os.hide_block_in_filter as hide_block',
-                'os.disallow_import_filters_orders',
             ])
             ->from($optionTable, 'o')
             ->join("{$precountOptionSettingTable} as pos", 'pos.option_id', 'o.id')
@@ -189,9 +207,40 @@ class Option extends Model
             ->whereIn('os.comparable', [Filters::COMPARABLE_MAIN, Filters::COMPARABLE_BOTTOM])
             ->where('o.state', self::STATE_ACTIVE)
             ->whereIn('os.status', OptionSetting::$availableStatuses)
-            ->whereNotIn('o.type', self::$sliderTypes)
-            ->orderBy('os.order')
-            ->orderBy('ov.order');
+            ->whereNotIn('o.type', self::$sliderTypes);
+
+        if ($isFilterAutoranking) {
+            $filterAutorankingOptionsQuery = FilterAutoranking::getOptionsQuery($categoryIds[0]);
+            $filterAutorankingOptionValuesQuery = FilterAutoranking::getOptionValuesQuery($categoryIds[0]);
+
+            $query
+                ->addSelect([
+                    DB::raw('COALESCE(faov.is_value_show, 0) as is_value_show'),
+                    DB::raw('(CASE
+                        WHEN COALESCE(faov.is_value_show, 0) = 0 THEN 1 ELSE 0
+                    END) as hide_block')
+                ])
+                ->joinSub($filterAutorankingOptionsQuery, 'fao', 'fao.filter_name', 'o.name')
+                ->joinSub($filterAutorankingOptionValuesQuery, 'faov', function(JoinClause $join) {
+                    $join->on('faov.filter_name', 'o.name')
+                        ->whereRaw('(faov.filter_value = ov.name or faov.filter_value = ov.id::text)');
+                })
+                ->orderBy('fao.filter_rank')
+                ->orderByRaw('(CASE
+                        WHEN os.disallow_import_filters_orders = false
+                        THEN COALESCE(faov.is_value_show, 0)
+                        ELSE 1
+                    END) desc')
+                ->orderBy('ov.order');
+        } else {
+            $query
+                ->addSelect([
+                    'os.hide_block_in_filter as hide_block',
+                    DB::raw('0 as is_value_show')
+                ])
+                ->orderBy('os.order')
+                ->orderBy('ov.order');
+        }
 
         return $query->get()->recursive();
     }

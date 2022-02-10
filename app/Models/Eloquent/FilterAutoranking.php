@@ -55,4 +55,50 @@ class FilterAutoranking extends Model
         'is_value_show',
         'is_filter_show',
     ];
+
+    /**
+     * @param int $categoryId
+     * @return Builder
+     */
+    public static function getOptionsQuery(int $categoryId): Builder
+    {
+        return static::query()
+            ->select([
+                'parent_id',
+                'filter_name',
+                'filter_rank',
+                'is_filter_show'
+            ])
+            ->from(self::getModel()->getTable(), 'sfao')
+            ->where('filter_name', '!=', 'producer')
+            ->where('filter_name', '!=', 'price')
+            ->where('filter_name', '!=', 'series')
+            ->whereRaw("parent_id::int = {$categoryId}")
+            ->groupBy(
+                'filter_name',
+                'parent_id',
+                'filter_rank',
+                'is_filter_show'
+            );
+    }
+
+    /**
+     * @param int $categoryId
+     * @return Builder
+     */
+    public static function getOptionValuesQuery(int $categoryId): Builder
+    {
+        return static::query()
+            ->select([
+                'parent_id',
+                'filter_name',
+                'filter_value',
+                'is_value_show'
+            ])
+            ->from(self::getModel()->getTable(), 'sfaov')
+            ->where('filter_name', '!=', 'producer')
+            ->where('filter_name', '!=', 'price')
+            ->where('filter_name', '!=', 'series')
+            ->whereRaw("parent_id::int = {$categoryId}");
+    }
 }

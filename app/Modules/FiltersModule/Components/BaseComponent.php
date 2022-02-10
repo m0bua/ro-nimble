@@ -27,6 +27,7 @@ use App\Filters\Filters;
 use App\Helpers\ElasticWrapper;
 use App\Models\Elastic\GoodsModel;
 use App\Models\Eloquent\Option;
+use App\Models\Eloquent\Producer;
 use App\Modules\ElasticModule\ElasticService;
 
 abstract class BaseComponent
@@ -56,6 +57,10 @@ abstract class BaseComponent
      * @var Option
      */
     protected Option $option;
+    /**
+     * @var Producer
+     */
+    protected Producer $producer;
 
     /**
      * @var SizeFilterComponent
@@ -129,6 +134,7 @@ abstract class BaseComponent
         Filters $filters,
         ElasticWrapper $elasticWrapper,
         Option $option,
+        Producer $producer,
 
         SizeFilterComponent $sizeFilterComponent,
         TotalHitsFilterComponent $totalHitsFilterComponent,
@@ -153,6 +159,7 @@ abstract class BaseComponent
         $this->filters = $filters;
         $this->elasticWrapper = $elasticWrapper;
         $this->option = $option;
+        $this->producer = $producer;
 
         $this->sizeFilterComponent = $sizeFilterComponent;
         $this->totalHitsFilterComponent = $totalHitsFilterComponent;

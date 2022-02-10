@@ -6,12 +6,19 @@ namespace App\Filters\Components;
 
 use App\Enums\Filters;
 use App\Http\Requests\FilterRequest;
+use App\Models\Eloquent\CategoryOption;
+use App\Models\Eloquent\Option;
 use Illuminate\Foundation\Http\FormRequest;
 use \App\Models\Eloquent\Category as CategoryModel;
 
 class Category extends AbstractFilter
 {
     public const FASHION_CATEGORY_ID = 1162030;
+
+    /**
+     * Id опции для авторанжирования
+     */
+    public const AUTO_RANKING_OPTION_ID = 100475;
 
     /**
      * @var CategoryModel|null
@@ -102,9 +109,19 @@ class Category extends AbstractFilter
     }
 
     /**
+     * @return bool
+     */
+    public function isFilterAutoranking(): bool
+    {
+        return $this->getCategory()
+            && CategoryOption::getCategoryOption($this->currentCategory->id, self::AUTO_RANKING_OPTION_ID)
+            && Option::getOptionAutorankingCount($this->currentCategory) >= 3;
+    }
+
+    /**
      * @return int[]
      */
-    public function getAutorankingCategoriesList(): array
+    public function getAutorankingCategories(): array
     {
         return [
             self::FASHION_CATEGORY_ID
@@ -120,7 +137,7 @@ class Category extends AbstractFilter
             return false;
         }
 
-        return !!array_intersect($this->getAutorankingCategoriesList(), $this->getParentsCategories());
+        return !!array_intersect($this->getAutorankingCategories(), $this->getParentsCategories());
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Models\Eloquent;
 
+use apimodule\models\store\CategoriesModel;
 use App\Casts\Translatable;
 use App\Traits\Eloquent\HasFillable;
 use App\Traits\Eloquent\HasTranslations;
@@ -194,9 +195,10 @@ class Category extends Model
      */
     public static function getChildCategories(Category $category): Collection
     {
-        return static::where('left_key', '>', $category->left_key)
+        return static::select(['*'])
+            ->where('left_key', '>', $category->left_key)
             ->where('right_key', '<', $category->right_key)
-            ->with('translations')
+            ->selectTranslation('title')
             ->orderByDesc('level')
             ->orderByDesc('order')
             ->orderByDesc('id')
@@ -222,5 +224,19 @@ class Category extends Model
             ->where('right_key', '!=' , 0)
             ->pluck('id')
             ->toArray();
+    }
+
+    /**
+     * @param Category $category
+     * @return Builder|\Illuminate\Database\Query\Builder
+     */
+    public static function getParentsQuery(Category $category): Builder
+    {
+        return static::query()
+            ->select(['id'])
+            ->from(self::getModel()->getTable(), 'c')
+            ->where('left_key', '<=', $category->left_key)
+            ->where('right_key', '>=', $category->right_key)
+            ->where('id', '>', 0);
     }
 }

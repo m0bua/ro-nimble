@@ -66,4 +66,16 @@ class CategoryOption extends Model
     {
         return $this->belongsTo(Option::class)->withDefault();
     }
+
+    /**
+     * @param int $categoryId
+     * @param int $optionId
+     * @return mixed
+     */
+    public static function getCategoryOption(int $categoryId, int $optionId): ?CategoryOption
+    {
+        return static::where('category_id', $categoryId)
+            ->where('option_id', $optionId)
+            ->first();
+    }
 }

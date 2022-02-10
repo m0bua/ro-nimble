@@ -20,7 +20,7 @@ class OrderService
     public array $firstsFiltersOrder = [
         Filters::PARAM_SECTION,
         Filters::PARAM_RASPRODAGA,
-        Filters::PARAM_CATEGORY,
+        Filters::PARAM_CATEGORIES,
         Filters::PARAM_SELLERS,
         Filters::PARAM_GOTOVO_K_OTPRAVKE,
         Filters::PARAM_PRODUCER,
@@ -47,6 +47,11 @@ class OrderService
      * @var int
      */
     private int $currentOptionValueOrder = 0;
+
+    /**
+     * @var int
+     */
+    private int $currentShortListOrder = 0;
 
     /**
      * @var Collection
@@ -108,6 +113,14 @@ class OrderService
 
                     $option['option_values']->each(function ($optionValue) {
                         $optionValue->put('order', $this->currentOptionValueOrder++);
+                    });
+                }
+
+                if ($option->has('short_list')) {
+                    $this->currentShortListOrder = 0;
+
+                    $option['short_list']->each(function ($optionValue) {
+                        $optionValue->put('order', $this->currentShortListOrder++);
                     });
                 }
             });

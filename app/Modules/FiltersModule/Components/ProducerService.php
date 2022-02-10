@@ -8,13 +8,25 @@
 namespace App\Modules\FiltersModule\Components;
 
 use App\Enums\Config;
+use App\Enums\Elastic;
 use App\Enums\Filters;
+use App\Helpers\TranslateHelper;
+use App\Models\Eloquent\OptionTranslation;
 use App\Models\Eloquent\Producer;
+use App\Models\Eloquent\ProducerTranslation;
+use App\Modules\FiltersModule\Components\Traits\SortTrait;
 use Illuminate\Support\Collection;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class ProducerService extends BaseComponent
 {
+    use SortTrait;
+
+    /**
+     * @var Collection
+     */
+    private Collection $producersTranslations;
+
     /**
      * @return array
      */
@@ -24,10 +36,18 @@ class ProducerService extends BaseComponent
     }
 
     /**
+     * @return array
+     */
+    public function getCustomFiltersConditions(): array
+    {
+        return $this->elasticWrapper->range(Elastic::FIELD_PRODUCER, [$this->elasticWrapper::RANGE_GT => 0]);
+    }
+
+    /**
      * Возвращает продюсеры с учетом поиска
      * @return array
      */
-    public function searchBrands(): array
+    public function searchBrands(): Collection
     {
         $producers = $this->getValue();
 
@@ -37,7 +57,7 @@ class ProducerService extends BaseComponent
 
         $producers = $producers[Filters::PARAM_PRODUCER];
 
-        return array_merge($producers['short_list'], $producers['option_values']);
+        return collect(array_merge($producers['short_list'], $producers['option_values']))->recursive();
     }
 
     /**
@@ -59,36 +79,52 @@ class ProducerService extends BaseComponent
         $foundProducersWithChosen = $this->addChosenToFound($foundProducers);
 
         /** @var Collection $producersData */
-        $producersData = Producer::getProducersForFilters(array_keys($foundProducersWithChosen));
+        $producersData = $this->producer->getProducersForFilters(
+            array_keys($foundProducersWithChosen),
+            $this->filters->category->getValues()
+        );
 
         if (!$producersData->count()) {
             return [];
         }
 
+        $this->isAutorankingCategory = $this->filters->category->isAutorankingCategory();
+        $this->isFilterAutoranking = $this->filters->category->isFilterAutoranking();
+
+        if ($this->isAutorankingCategory) {
+            // В авторанжированнных категориях только продюсеры с авторанкингом или выбранные
+            $producersData = $producersData->filter(function(Collection $producer) {
+                return $producer['is_autoranking']
+                    || $this->filters->producers->getValues()->contains($producer['id']);
+            });
+        }
+
+        if (!$producersData->count()) {
+            return [];
+        }
+
+        $this->producersTranslations = TranslateHelper::getTranslationFields(
+            ProducerTranslation::getByProducerIds($producersData->pluck('id')->toArray()),
+            'producer_id'
+        );
+
         $producers = [];
-        $order = 0;
 
         /** @var Producer $producer */
         foreach ($producersData as $producer) {
-            // В авторанжированнных категориях только продюсеры с авторанкингом или выбранные
-//            if ($this->filters->category->isAutorankingCategory()
-//                && !$producer->is_autoranking
-//                && !in_array($producer->id, $this->filters->producers->getValues())
-//            ) {
-//                continue;
-//            }
+            $id = $producer['id'];
+            $optionValueTitle = $this->producersTranslations[$id]['title'] ?? '';
 
-            $producers[$producer->id] = [
-                'option_value_id' => $producer->id,
-                'option_value_name' => $producer->name,
-                'option_value_title' => $producer->title,
-                'is_chosen' => false,
-                'products_quantity' => $foundProducersWithChosen[$producer->id] ?? 0,
-                'order' => $order,
-                'is_value_show' => false,
-            ];
-
-            $order++;
+            if ($optionValueTitle) {
+                $producers[$id] = [
+                    'option_value_id' => $id,
+                    'option_value_name' => $producer['name'],
+                    'option_value_title' => $optionValueTitle,
+                    'is_chosen' => false,
+                    'products_quantity' => $foundProducersWithChosen[$id] ?? 0,
+                    'is_value_show' => !!$producer['is_value_show'],
+                ];
+            }
         }
 
         // установка выбранных фильтров
@@ -140,70 +176,12 @@ class ProducerService extends BaseComponent
     }
 
     /**
+     * Дополняем фильтр недостающими данными и отсортированными значениями
      * @param array $filter
      * @return array
      */
-    protected function prepareFilter(array $filter): array
+    private function prepareFilter(array $filter): array
     {
-        $rankedValues = $this->sortValuesByRank($filter['option_values']);
-        $rankedCount = $rankedValues['rank_count'];
-        unset($rankedValues['rank_count']);
-
-        $shortListCount = $rankedCount <= 0 || !$this->filters->category->isAutorankingCategory()
-            ? Config::SHORT_LIST_ELEMENTS_COUNT
-            : $rankedCount;
-
-        $totalFound = 0;
-        $shortList = [];
-        $restList = [];
-
-        foreach ($rankedValues as $value) {
-            if ($totalFound < Config::SHORT_LIST_ELEMENTS_COUNT
-                && (!$this->filters->category->isAutorankingCategory()
-                    || (
-                        $this->filters->category->isAutorankingCategory()
-                        && $totalFound < $shortListCount
-                    )
-                )
-            ) {
-                $shortList[] = $value;
-            } else {
-                $restList[] = $value;
-            }
-
-            $totalFound++;
-        }
-
-        $filter['short_list'] = $shortList;
-        $filter['option_values'] = $restList;
-        $filter['total_found'] = $totalFound;
-
-        return $filter;
-    }
-
-    /**
-     * @param array $values
-     * @return array
-     */
-    public static function sortValuesByRank(array $values): array
-    {
-        $rankedList = [];
-        $notRankedList = [];
-
-        foreach ($values as $value) {
-            if ($value['is_value_show']) {
-                $rankedList[] = $value;
-            } else {
-                $notRankedList[] = $value;
-            }
-        }
-
-        $rankedList = collect($rankedList)->sortBy('option_value_title')->values()->all();
-        $notRankedList = collect($notRankedList)->sortBy('option_value_title')->values()->all();
-
-        $mergedList = array_merge($rankedList, $notRankedList);
-        $mergedList['rank_count'] = count($rankedList);
-
-        return $mergedList;
+        return array_merge($filter, $this->getSortedValues($filter['option_values']));
     }
 }

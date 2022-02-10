@@ -9,10 +9,13 @@ use Database\Factories\Eloquent\ProducerFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\Eloquent\Producer
@@ -145,13 +148,44 @@ class Producer extends Model
 
     /**
      * @param array $ids
-     * @return mixed
+     * @param SupportCollection $category
+     * @return Collection
      */
-    public static function getProducersForFilters(array $ids)
+    public function getProducersForFilters(array $ids, SupportCollection $category): SupportCollection
     {
-        return static::whereIn('id', $ids)
-            ->with('translations')
-            ->active()
-            ->get();
+        $producerTable = $this->getTable();
+        $filterAutorankingTable = FilterAutoranking::make()->getTable();
+
+        $query = static::query()
+            ->select([
+                'p.id as id',
+                'p.name',
+            ])
+            ->from($producerTable, 'p')
+            ->whereIn('p.id', $ids)
+            ->active();
+
+        // на акциях категория отсутствует
+        if ($category->isNotEmpty()) {
+            $query
+                ->addSelect([
+                    DB::raw('coalesce(fa.is_value_show::int, 0) as is_value_show'),
+                    DB::raw('coalesce(fa.parent_id::int, 0) as is_autoranking'),
+                ])
+                ->leftJoin("{$filterAutorankingTable} as fa", function(JoinClause $join) use ($category) {
+                    $join->on('p.name', 'fa.filter_value')
+                        ->where('fa.parent_id', "{$category->first()}")
+                        ->where('fa.filter_name', 'producer');
+                    })
+                ->orderByDesc('is_value_show');
+        } else {
+            $query
+                ->addSelect([
+                    DB::raw('0 as is_value_show'),
+                    DB::raw('0 as is_autoranking')
+                ]);
+        }
+
+        return $query->get()->recursive();
     }
 }
