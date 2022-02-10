@@ -29,12 +29,12 @@ class DeleteEventProcessor extends DeleteProcessor
      * @param IndexGoods $indexGoods
      */
     public function __construct(
-        Option $model,
+        Option             $model,
         GoodsOptionBoolean $boolean,
-        GoodsOptionNumber $number,
-        GoodsOptionPlural $goodsOptionPlural,
-        OptionValue $optionValue,
-        IndexGoods $indexGoods
+        GoodsOptionNumber  $number,
+        GoodsOptionPlural  $goodsOptionPlural,
+        OptionValue        $optionValue,
+        IndexGoods         $indexGoods
     )
     {
         $this->model = $model;
@@ -63,19 +63,16 @@ class DeleteEventProcessor extends DeleteProcessor
             ->where('option_id', '=', $this->data['id']);
 
         $boolGoods = $boolQuery
-            ->query()
             ->select('goods_id as id')
             ->distinct()
             ->get();
 
         $numGoods = $numQuery
-            ->query()
             ->select('goods_id as id')
             ->distinct()
             ->get();
 
         $gopGoods = $gopQuery
-            ->query()
             ->select('goods_id as id')
             ->distinct()
             ->get();
