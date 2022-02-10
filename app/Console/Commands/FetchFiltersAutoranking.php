@@ -177,7 +177,7 @@ class FetchFiltersAutoranking extends Command
     private function switchTables(): void
     {
         DB::transaction(function () {
-            $table = $this->model->getTable();
+            $table = FilterAutoranking::make()->getTable();
             Schema::dropIfExists($table);
             Schema::rename($this->tempTable, $table);
         });
