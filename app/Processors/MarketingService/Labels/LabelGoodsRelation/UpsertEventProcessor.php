@@ -4,24 +4,20 @@ namespace App\Processors\MarketingService\Labels\LabelGoodsRelation;
 
 use App\Cores\ConsumerCore\Interfaces\MessageInterface;
 use App\Cores\Shared\Codes;
-use App\Models\Eloquent\IndexGoods;
-use App\Models\Eloquent\Label;
 use App\Processors\Processor;
+use App\Services\Buffers\RedisGoodsBufferService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 
 class UpsertEventProcessor extends Processor
 {
     protected string $dataRoot = 'fields_data';
 
-    private IndexGoods $indexGoods;
+    private RedisGoodsBufferService $goodsBuffer;
 
-    /**
-     * @param Label $model
-     * @param IndexGoods $indexGoods
-     */
-    public function __construct(IndexGoods $indexGoods)
+    public function __construct(RedisGoodsBufferService $goodsBuffer)
     {
-        $this->indexGoods = $indexGoods;
+        $this->goodsBuffer = $goodsBuffer;
     }
 
     /**
@@ -44,6 +40,6 @@ class UpsertEventProcessor extends Processor
      */
     protected function afterProcess(): void
     {
-        $this->indexGoods->query()->insertOrIgnore(['id' => $this->data['goods_id']]);
+        $this->goodsBuffer->add($this->data['goods_id']);
     }
 }

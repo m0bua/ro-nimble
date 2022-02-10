@@ -4,24 +4,20 @@ namespace App\Processors\MarketingService\Labels\LabelGoodsRelation;
 
 use App\Cores\ConsumerCore\Interfaces\MessageInterface;
 use App\Cores\Shared\Codes;
-use App\Models\Eloquent\IndexGoods;
-use App\Models\Eloquent\Label;
 use App\Processors\Processor;
+use App\Services\Buffers\RedisGoodsBufferService;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 
 class DeleteEventProcessor extends Processor
 {
     protected string $dataRoot = 'fields_data';
 
-    private IndexGoods $indexGoods;
+    private RedisGoodsBufferService $goodsBuffer;
 
-    /**
-     * @param Label $model
-     * @param IndexGoods $indexGoods
-     */
-    public function __construct(Label $model, IndexGoods $indexGoods)
+    public function __construct(RedisGoodsBufferService $goodsBuffer)
     {
-        $this->model = $model;
-        $this->indexGoods = $indexGoods;
+        $this->goodsBuffer = $goodsBuffer;
     }
 
     /**
@@ -32,10 +28,12 @@ class DeleteEventProcessor extends Processor
         $this->beforeProcess();
         $this->setDataFromMessage($message);
 
-        $this->model
-            ->newInstance(['id' => $this->data['label_id']])
-            ->goods()
-            ->detach([$this->data['goods_id']], false);
+        DB::table('goods_label')
+            ->where([
+                'label_id' => $this->data['label_id'],
+                'goods_id' => $this->data['goods_id']
+            ])
+            ->delete();
 
         $this->afterProcess();
 
@@ -47,6 +45,6 @@ class DeleteEventProcessor extends Processor
      */
     protected function afterProcess(): void
     {
-        $this->indexGoods->query()->insertOrIgnore(['id' => $this->data['goods_id']]);
+        $this->goodsBuffer->add($this->data['goods_id']);
     }
 }

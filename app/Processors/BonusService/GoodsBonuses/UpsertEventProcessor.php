@@ -3,8 +3,8 @@
 namespace App\Processors\BonusService\GoodsBonuses;
 
 use App\Models\Eloquent\Bonus;
-use App\Models\Eloquent\IndexGoods;
 use App\Processors\UpsertProcessor;
+use App\Services\Buffers\RedisGoodsBufferService;
 
 class UpsertEventProcessor extends UpsertProcessor
 {
@@ -25,20 +25,20 @@ class UpsertEventProcessor extends UpsertProcessor
         'goods_id',
     ];
 
-    private IndexGoods $indexGoods;
+    private RedisGoodsBufferService $goodsBuffer;
 
     /**
      * @param Bonus $model
-     * @param IndexGoods $indexGoods
+     * @param RedisGoodsBufferService $goodsBuffer
      */
-    public function __construct(Bonus $model, IndexGoods $indexGoods)
+    public function __construct(Bonus $model, RedisGoodsBufferService $goodsBuffer)
     {
         $this->model = $model;
-        $this->indexGoods = $indexGoods;
+        $this->goodsBuffer = $goodsBuffer;
     }
 
     protected function afterProcess(): void
     {
-        $this->indexGoods->query()->insertOrIgnore(['id' => $this->data['goods_id']]);
+        $this->goodsBuffer->add($this->data['goods_id']);
     }
 }

@@ -2,9 +2,10 @@
 
 namespace App\Processors\MarketingService\PromotionConstructorGoods;
 
-use App\Models\Eloquent\IndexGoods;
 use App\Models\Eloquent\PromotionGoodsConstructor;
 use App\Processors\UpsertProcessor;
+use App\Services\Buffers\RedisGoodsBufferService;
+use Illuminate\Support\Facades\Redis;
 
 class UpsertEventProcessor extends UpsertProcessor
 {
@@ -22,16 +23,16 @@ class UpsertEventProcessor extends UpsertProcessor
         'promotion_constructor_id' => self::CONSTRUCTOR_ID_KEY,
     ];
 
-    private IndexGoods $indexGoods;
+    private RedisGoodsBufferService $goodsBuffer;
 
     /**
      * @param PromotionGoodsConstructor $model
-     * @param IndexGoods $indexGoods
+     * @param RedisGoodsBufferService $goodsBuffer
      */
-    public function __construct(PromotionGoodsConstructor $model, IndexGoods $indexGoods)
+    public function __construct(PromotionGoodsConstructor $model, RedisGoodsBufferService $goodsBuffer)
     {
         $this->model = $model;
-        $this->indexGoods = $indexGoods;
+        $this->goodsBuffer = $goodsBuffer;
     }
 
     /**
@@ -58,6 +59,6 @@ class UpsertEventProcessor extends UpsertProcessor
 
     protected function afterProcess(): void
     {
-        $this->indexGoods->query()->insertOrIgnore(['id' => $this->data['goods_id']]);
+        $this->goodsBuffer->add($this->data['goods_id']);
     }
 }

@@ -3,8 +3,9 @@
 namespace App\Processors\GoodsService\GoodsOptionPlural;
 
 use App\Models\Eloquent\GoodsOptionPlural;
-use App\Models\Eloquent\IndexGoods;
 use App\Processors\UpsertProcessor;
+use App\Services\Buffers\RedisGoodsBufferService;
+use Illuminate\Support\Facades\Redis;
 
 class UpsertEventProcessor extends UpsertProcessor
 {
@@ -14,16 +15,19 @@ class UpsertEventProcessor extends UpsertProcessor
         'value_id',
     ];
 
-    private IndexGoods $indexGoods;
+    /**
+     * @var RedisGoodsBufferService $goodsBuffer
+     */
+    private RedisGoodsBufferService $goodsBuffer;
 
     /**
      * @param GoodsOptionPlural $model
-     * @param IndexGoods $indexGoods
+     * @param RedisGoodsBufferService $goodsBuffer
      */
-    public function __construct(GoodsOptionPlural $model, IndexGoods $indexGoods)
+    public function __construct(GoodsOptionPlural $model, RedisGoodsBufferService $goodsBuffer)
     {
         $this->model = $model;
-        $this->indexGoods = $indexGoods;
+        $this->goodsBuffer = $goodsBuffer;
     }
 
     /**
@@ -42,6 +46,6 @@ class UpsertEventProcessor extends UpsertProcessor
      */
     protected function afterProcess(): void
     {
-        $this->indexGoods->query()->insertOrIgnore(['id' => $this->data['goods_id']]);
+        $this->goodsBuffer->add($this->data['goods_id']);
     }
 }

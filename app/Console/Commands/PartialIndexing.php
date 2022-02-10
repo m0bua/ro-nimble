@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Eloquent\IndexGoods;
+use App\Services\Buffers\RedisGoodsBufferService;
 use Illuminate\Support\Facades\Artisan;
 
 class PartialIndexing extends Command
@@ -26,18 +27,21 @@ class PartialIndexing extends Command
      */
     protected IndexGoods $indexGoods;
 
-    protected int $maxBatch;
+    /**
+     * @var RedisGoodsBufferService
+     */
+    private RedisGoodsBufferService $goodsBuffer;
 
     /**
      * Create a new command instance.
      *
      * @return void
      */
-    public function __construct(IndexGoods $indexGoods)
+    public function __construct(IndexGoods $indexGoods, RedisGoodsBufferService $goodsBuffer)
     {
         parent::__construct();
         $this->indexGoods = $indexGoods;
-        $this->maxBatch = env("MAX_INDEXING_BATCH", 100);
+        $this->goodsBuffer = $goodsBuffer;
     }
 
     /**
@@ -46,12 +50,8 @@ class PartialIndexing extends Command
      */
     public function proceed(): void
     {
-        $query = $this->indexGoods->query()->select('id');
-
-        foreach ($query->trueCursor($this->maxBatch) as $goods) {
-            $goodsIds = $goods->pluck('id');
+        foreach ($this->goodsBuffer->scan() as $goodsIds) {
             Artisan::call(IndexRefill::class, ['--goods-ids' => $goodsIds]);
-            $this->indexGoods->query()->whereIn('id', $goodsIds)->delete();
         }
     }
 }

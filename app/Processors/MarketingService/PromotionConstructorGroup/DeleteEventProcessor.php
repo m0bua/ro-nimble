@@ -3,9 +3,10 @@
 namespace App\Processors\MarketingService\PromotionConstructorGroup;
 
 use App\Models\Eloquent\Goods;
-use App\Models\Eloquent\IndexGoods;
 use App\Models\Eloquent\PromotionGroupConstructor;
 use App\Processors\DeleteProcessor;
+use App\Services\Buffers\RedisGoodsBufferService;
+use Illuminate\Support\Facades\Redis;
 
 class DeleteEventProcessor extends DeleteProcessor
 {
@@ -24,23 +25,22 @@ class DeleteEventProcessor extends DeleteProcessor
     ];
 
     private Goods $goods;
-
-    private IndexGoods $indexGoods;
+    private RedisGoodsBufferService $goodsBuffer;
 
     /**
      * @param PromotionGroupConstructor $model
      * @param Goods $goods
-     * @param IndexGoods $indexGoods
+     * @param RedisGoodsBufferService $goodsBuffer
      */
     public function __construct(
         PromotionGroupConstructor $model,
         Goods                     $goods,
-        IndexGoods                $indexGoods
+        RedisGoodsBufferService   $goodsBuffer
     )
     {
         $this->model = $model;
         $this->goods = $goods;
-        $this->indexGoods = $indexGoods;
+        $this->goodsBuffer = $goodsBuffer;
     }
 
     protected function afterProcess(): void
@@ -50,6 +50,6 @@ class DeleteEventProcessor extends DeleteProcessor
             ->where('group_id', '=', $this->data['group_id'])
             ->get();
 
-        $this->indexGoods->query()->insertOrIgnore($goods->toArray());
+        $this->goodsBuffer->radd($goods->toArray());
     }
 }

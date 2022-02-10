@@ -3,8 +3,9 @@
 namespace App\Processors\MarketEnterprise\ProductsType;
 
 use App\Models\Eloquent\GoodsCarInfo;
-use App\Models\Eloquent\IndexGoods;
 use App\Processors\DeleteProcessor;
+use App\Services\Buffers\RedisGoodsBufferService;
+use Illuminate\Support\Facades\Redis;
 
 class DeleteEventProcessor extends DeleteProcessor
 {
@@ -15,16 +16,16 @@ class DeleteEventProcessor extends DeleteProcessor
         'car_trim_id',
     ];
 
-    private IndexGoods $indexGoods;
+    private RedisGoodsBufferService $goodsBuffer;
 
     /**
      * @param GoodsCarInfo $model
-     * @param IndexGoods $indexGoods
+     * @param RedisGoodsBufferService $goodsBuffer
      */
-    public function __construct(GoodsCarInfo $model, IndexGoods $indexGoods)
+    public function __construct(GoodsCarInfo $model, RedisGoodsBufferService $goodsBuffer)
     {
         $this->model = $model;
-        $this->indexGoods = $indexGoods;
+        $this->goodsBuffer = $goodsBuffer;
     }
 
     /**
@@ -32,6 +33,6 @@ class DeleteEventProcessor extends DeleteProcessor
      */
     protected function afterProcess(): void
     {
-        $this->indexGoods->query()->insertOrIgnore(['id' => $this->data['goods_id']]);
+        $this->goodsBuffer->add($this->data['goods_id']);
     }
 }

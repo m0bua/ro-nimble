@@ -4,9 +4,8 @@ namespace App\Processors\GoodsService\GoodsOption;
 
 use App\Models\Eloquent\GoodsOptionBoolean;
 use App\Models\Eloquent\GoodsOptionNumber;
-use App\Models\Eloquent\IndexGoods;
 use App\Processors\UpsertProcessor;
-use Illuminate\Support\Str;
+use App\Services\Buffers\RedisGoodsBufferService;
 
 class UpsertEventProcessor extends UpsertProcessor
 {
@@ -17,18 +16,22 @@ class UpsertEventProcessor extends UpsertProcessor
 
     private GoodsOptionBoolean $boolean;
     private GoodsOptionNumber $number;
-    private IndexGoods $indexGoods;
+    private RedisGoodsBufferService $goodsBuffer;
 
     /**
      * @param GoodsOptionBoolean $boolean
      * @param GoodsOptionNumber $number
-     * @param IndexGoods $indexGoods
+     * @param RedisGoodsBufferService $goodsBuffer
      */
-    public function __construct(GoodsOptionBoolean $boolean, GoodsOptionNumber $number, IndexGoods $indexGoods)
+    public function __construct(
+        GoodsOptionBoolean $boolean,
+        GoodsOptionNumber $number,
+        RedisGoodsBufferService $goodsBuffer
+    )
     {
         $this->boolean = $boolean;
         $this->number = $number;
-        $this->indexGoods = $indexGoods;
+        $this->goodsBuffer = $goodsBuffer;
     }
 
     /**
@@ -79,6 +82,6 @@ class UpsertEventProcessor extends UpsertProcessor
      */
     protected function afterProcess(): void
     {
-        $this->indexGoods->query()->insertOrIgnore(['id' => $this->data['goods_id']]);
+        $this->goodsBuffer->add($this->data['goods_id']);
     }
 }

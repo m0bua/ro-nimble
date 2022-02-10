@@ -6,16 +6,20 @@ use App\Cores\ConsumerCore\Interfaces\MessageInterface;
 use App\Cores\Shared\Codes;
 use App\Models\Eloquent\Goods;
 use App\Processors\Processor;
+use App\Services\Buffers\RedisGoodsBufferService;
 
 class DeleteEventProcessor extends Processor
 {
+    private RedisGoodsBufferService $goodsBuffer;
+
     /**
-     * DeleteEventProcessor constructor.
      * @param Goods $model
+     * @param RedisGoodsBufferService $goodsBuffer
      */
-    public function __construct(Goods $model)
+    public function __construct(Goods $model, RedisGoodsBufferService $goodsBuffer)
     {
         $this->model = $model;
+        $this->goodsBuffer = $goodsBuffer;
     }
 
     /**
@@ -33,6 +37,8 @@ class DeleteEventProcessor extends Processor
         }
 
         $goods->paymentMethods()->detach($paymentMethodIds);
+
+        $this->goodsBuffer->add($goodsId);
 
         return Codes::SUCCESS;
     }
