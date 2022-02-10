@@ -4,18 +4,20 @@ namespace App\Processors\MarketingService\Labels\LabelGoodsRelation;
 
 use App\Cores\ConsumerCore\Interfaces\MessageInterface;
 use App\Cores\Shared\Codes;
+use App\Interfaces\GoodsBuffer;
 use App\Processors\Processor;
-use App\Services\Buffers\RedisGoodsBufferService;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Redis;
 
 class DeleteEventProcessor extends Processor
 {
     protected string $dataRoot = 'fields_data';
 
-    private RedisGoodsBufferService $goodsBuffer;
+    private GoodsBuffer $goodsBuffer;
 
-    public function __construct(RedisGoodsBufferService $goodsBuffer)
+    /**
+     * @param GoodsBuffer $goodsBuffer
+     */
+    public function __construct(GoodsBuffer $goodsBuffer)
     {
         $this->goodsBuffer = $goodsBuffer;
     }

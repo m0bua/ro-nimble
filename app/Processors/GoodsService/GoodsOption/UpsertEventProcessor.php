@@ -2,10 +2,10 @@
 
 namespace App\Processors\GoodsService\GoodsOption;
 
+use App\Interfaces\GoodsBuffer;
 use App\Models\Eloquent\GoodsOptionBoolean;
 use App\Models\Eloquent\GoodsOptionNumber;
 use App\Processors\UpsertProcessor;
-use App\Services\Buffers\RedisGoodsBufferService;
 
 class UpsertEventProcessor extends UpsertProcessor
 {
@@ -16,17 +16,17 @@ class UpsertEventProcessor extends UpsertProcessor
 
     private GoodsOptionBoolean $boolean;
     private GoodsOptionNumber $number;
-    private RedisGoodsBufferService $goodsBuffer;
+    private GoodsBuffer $goodsBuffer;
 
     /**
      * @param GoodsOptionBoolean $boolean
      * @param GoodsOptionNumber $number
-     * @param RedisGoodsBufferService $goodsBuffer
+     * @param GoodsBuffer $goodsBuffer
      */
     public function __construct(
-        GoodsOptionBoolean $boolean,
-        GoodsOptionNumber $number,
-        RedisGoodsBufferService $goodsBuffer
+        GoodsOptionBoolean   $boolean,
+        GoodsOptionNumber    $number,
+        GoodsBuffer $goodsBuffer
     )
     {
         $this->boolean = $boolean;
@@ -53,7 +53,7 @@ class UpsertEventProcessor extends UpsertProcessor
                 );
                 break;
             case 'number':
-                if (trim($data['value']) == "") {
+                if (trim($data['value']) === "") {
                     $this->number->query()
                         ->where([
                             'goods_id' => $data['goods_id'],

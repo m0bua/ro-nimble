@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Interfaces\GoodsBuffer;
 use App\Models\Eloquent\IndexGoods;
-use App\Services\Buffers\RedisGoodsBufferService;
 use Illuminate\Support\Facades\Artisan;
 
 class PartialIndexing extends Command
@@ -28,16 +28,16 @@ class PartialIndexing extends Command
     protected IndexGoods $indexGoods;
 
     /**
-     * @var RedisGoodsBufferService
+     * @var GoodsBuffer
      */
-    private RedisGoodsBufferService $goodsBuffer;
+    private GoodsBuffer $goodsBuffer;
 
     /**
      * Create a new command instance.
      *
      * @return void
      */
-    public function __construct(IndexGoods $indexGoods, RedisGoodsBufferService $goodsBuffer)
+    public function __construct(IndexGoods $indexGoods, GoodsBuffer $goodsBuffer)
     {
         parent::__construct();
         $this->indexGoods = $indexGoods;

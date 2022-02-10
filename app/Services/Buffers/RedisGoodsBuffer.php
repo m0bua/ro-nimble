@@ -2,11 +2,11 @@
 
 namespace App\Services\Buffers;
 
-use App\Interfaces\GoodsBufferInterface;
-use Illuminate\Support\Facades\Redis;
+use App\Interfaces\GoodsBuffer;
 use Generator;
+use Illuminate\Support\Facades\Redis;
 
-class RedisGoodsBufferService implements GoodsBufferInterface
+class RedisGoodsBuffer implements GoodsBuffer
 {
     /**
      * Name of redis set
@@ -14,27 +14,30 @@ class RedisGoodsBufferService implements GoodsBufferInterface
     private const SET_NAME = 'index:goods';
 
     /**
-     * @var int|mixed
+     * @var int
      */
     private int $maxBatch;
 
+    /**
+     * @noinspection LaravelFunctionsInspection
+     */
     public function __construct()
     {
-        $this->maxBatch = env("MAX_INDEXING_BATCH", 100);
+        $this->maxBatch = (int)env("MAX_INDEXING_BATCH", 100);
     }
 
     /**
-     * @param int $productId
-     * @return void
+     * @inheritDoc
+     * @noinspection PhpUndefinedMethodInspection
      */
-    public function add(int $productId): void
+    public function add(int $goodsId): void
     {
-        Redis::sadd(self::SET_NAME, $productId);
+        Redis::sadd(self::SET_NAME, $goodsId);
     }
 
     /**
-     * @param array $goodsIds
-     * @return void
+     * @inheritDoc
+     * @noinspection PhpUndefinedMethodInspection
      */
     public function radd(array $goodsIds): void
     {
@@ -42,7 +45,8 @@ class RedisGoodsBufferService implements GoodsBufferInterface
     }
 
     /**
-     * @return Generator
+     * @inheritDoc
+     * @noinspection PhpUndefinedMethodInspection
      */
     public function scan(): Generator
     {
@@ -52,6 +56,6 @@ class RedisGoodsBufferService implements GoodsBufferInterface
             yield $goodsIds;
             Redis::srem('index:goods', $goodsIds);
             [$cursor, $goodsIds] = Redis::sscan('index:goods', $iterator, ['count' => $this->maxBatch]);
-        } while ($iterator != 0);
+        } while ($iterator !== 0);
     }
 }

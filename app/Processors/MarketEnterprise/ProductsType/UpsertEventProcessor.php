@@ -2,10 +2,9 @@
 
 namespace App\Processors\MarketEnterprise\ProductsType;
 
+use App\Interfaces\GoodsBuffer;
 use App\Models\Eloquent\GoodsCarInfo;
 use App\Processors\UpsertProcessor;
-use App\Services\Buffers\RedisGoodsBufferService;
-use Illuminate\Support\Facades\Redis;
 
 class UpsertEventProcessor extends UpsertProcessor
 {
@@ -16,13 +15,13 @@ class UpsertEventProcessor extends UpsertProcessor
         'car_trim_id',
     ];
 
-    private RedisGoodsBufferService $goodsBuffer;
+    private GoodsBuffer $goodsBuffer;
 
     /**
      * @param GoodsCarInfo $model
-     * @param RedisGoodsBufferService $goodsBuffer
+     * @param GoodsBuffer $goodsBuffer
      */
-    public function __construct(GoodsCarInfo $model, RedisGoodsBufferService $goodsBuffer)
+    public function __construct(GoodsCarInfo $model, GoodsBuffer $goodsBuffer)
     {
         $this->model = $model;
         $this->goodsBuffer = $goodsBuffer;

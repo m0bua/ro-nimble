@@ -4,19 +4,19 @@ namespace App\Processors\PaymentService\CreditsGoods;
 
 use App\Cores\ConsumerCore\Interfaces\MessageInterface;
 use App\Cores\Shared\Codes;
+use App\Interfaces\GoodsBuffer;
 use App\Models\Eloquent\Goods;
 use App\Processors\Processor;
-use App\Services\Buffers\RedisGoodsBufferService;
 
 class ChangedEventProcessor extends Processor
 {
-    private RedisGoodsBufferService $goodsBuffer;
+    private GoodsBuffer $goodsBuffer;
 
     /**
      * @param Goods $model
-     * @param RedisGoodsBufferService $goodsBuffer
+     * @param GoodsBuffer $goodsBuffer
      */
-    public function __construct(Goods $model, RedisGoodsBufferService $goodsBuffer)
+    public function __construct(Goods $model, GoodsBuffer $goodsBuffer)
     {
         $this->model = $model;
         $this->goodsBuffer = $goodsBuffer;

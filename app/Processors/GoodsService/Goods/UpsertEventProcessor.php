@@ -2,19 +2,19 @@
 
 namespace App\Processors\GoodsService\Goods;
 
+use App\Interfaces\GoodsBuffer;
 use App\Models\Eloquent\Goods;
 use App\Processors\UpsertProcessor;
-use App\Services\Buffers\RedisGoodsBufferService;
 
 class UpsertEventProcessor extends UpsertProcessor
 {
-    private RedisGoodsBufferService $goodsBuffer;
+    private GoodsBuffer $goodsBuffer;
 
     /**
      * @param Goods $model
-     * @param RedisGoodsBufferService $goodsBuffer
+     * @param GoodsBuffer $goodsBuffer
      */
-    public function __construct(Goods $model, RedisGoodsBufferService $goodsBuffer)
+    public function __construct(Goods $model, GoodsBuffer $goodsBuffer)
     {
         $this->model = $model;
         $this->goodsBuffer = $goodsBuffer;

@@ -2,10 +2,9 @@
 
 namespace App\Processors\GoodsService\GoodsOptionPlural;
 
+use App\Interfaces\GoodsBuffer;
 use App\Models\Eloquent\GoodsOptionPlural;
 use App\Processors\UpsertProcessor;
-use App\Services\Buffers\RedisGoodsBufferService;
-use Illuminate\Support\Facades\Redis;
 
 class UpsertEventProcessor extends UpsertProcessor
 {
@@ -16,15 +15,15 @@ class UpsertEventProcessor extends UpsertProcessor
     ];
 
     /**
-     * @var RedisGoodsBufferService $goodsBuffer
+     * @var GoodsBuffer $goodsBuffer
      */
-    private RedisGoodsBufferService $goodsBuffer;
+    private GoodsBuffer $goodsBuffer;
 
     /**
      * @param GoodsOptionPlural $model
-     * @param RedisGoodsBufferService $goodsBuffer
+     * @param GoodsBuffer $goodsBuffer
      */
-    public function __construct(GoodsOptionPlural $model, RedisGoodsBufferService $goodsBuffer)
+    public function __construct(GoodsOptionPlural $model, GoodsBuffer $goodsBuffer)
     {
         $this->model = $model;
         $this->goodsBuffer = $goodsBuffer;

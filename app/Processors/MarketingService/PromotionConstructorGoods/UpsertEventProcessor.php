@@ -2,6 +2,7 @@
 
 namespace App\Processors\MarketingService\PromotionConstructorGoods;
 
+use App\Interfaces\GoodsBuffer;
 use App\Models\Eloquent\PromotionGoodsConstructor;
 use App\Processors\UpsertProcessor;
 use App\Services\Buffers\RedisGoodsBufferService;
@@ -23,13 +24,13 @@ class UpsertEventProcessor extends UpsertProcessor
         'promotion_constructor_id' => self::CONSTRUCTOR_ID_KEY,
     ];
 
-    private RedisGoodsBufferService $goodsBuffer;
+    private GoodsBuffer $goodsBuffer;
 
     /**
      * @param PromotionGoodsConstructor $model
-     * @param RedisGoodsBufferService $goodsBuffer
+     * @param GoodsBuffer $goodsBuffer
      */
-    public function __construct(PromotionGoodsConstructor $model, RedisGoodsBufferService $goodsBuffer)
+    public function __construct(PromotionGoodsConstructor $model, GoodsBuffer $goodsBuffer)
     {
         $this->model = $model;
         $this->goodsBuffer = $goodsBuffer;
