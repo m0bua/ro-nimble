@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\Precount;
 
+use App\Models\Eloquent\Category;
 use App\Models\Eloquent\PrecountOptionSetting;
 use App\Console\Commands\Command;
 
@@ -20,27 +21,30 @@ class FillPrecountOptionSettings extends Command
      * @var string
      */
     protected $description = 'Fill precount_option_settings table';
-
     private PrecountOptionSetting $precountOptionSettings;
+    private Category $category;
 
     /**
      * Create a new command instance.
      *
      * @return void
      */
-    public function __construct(PrecountOptionSetting $precountOptionSettings)
+    public function __construct(PrecountOptionSetting $precountOptionSettings, Category $category)
     {
         parent::__construct();
         $this->precountOptionSettings = $precountOptionSettings;
+        $this->category = $category;
     }
 
     /**
      * Execute the console command.
      *
-     * @return int
+     * @return void
      */
     public function proceed(): void
     {
-        $this->precountOptionSettings->fillTable();
+        foreach ($this->category->getMainCategoriesIds() as $categoryId) {
+            $this->precountOptionSettings->fillTable($categoryId);
+        }
     }
 }

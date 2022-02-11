@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\Eloquent\Category
@@ -201,5 +202,25 @@ class Category extends Model
             ->orderByDesc('id')
             ->active()
             ->get();
+    }
+
+    public function getNestedCategoriesIds(int $categoryId): array
+    {
+        return DB::table($this->getTable() . ' as c')
+            ->join($this->getTable() . ' as childs', function ($join) {
+                $join->on('c.left_key', '<=', 'childs.left_key')
+                    ->on('c.right_key', '>=', 'childs.right_key');
+            })->select('childs.id')->where(['c.id' => $categoryId])->pluck('id')->toArray();
+    }
+
+
+    public function getMainCategoriesIds(): array
+    {
+        return static::where('parent_id', '=' , 0)
+            ->where('level', '=' , 1)
+            ->where('left_key', '!=' , 0)
+            ->where('right_key', '!=' , 0)
+            ->pluck('id')
+            ->toArray();
     }
 }

@@ -53,7 +53,7 @@ class PrecountOptionSetting extends Model
         $this->option = app()->make(Option::class);
     }
 
-    public function fillTable(): void
+    public function fillTable(int $categoryId): void
     {
         $optionSettingsTable = $this->optionSettings->getTable();
         $precountOptionSettingsTable = $this->getTable();
@@ -62,6 +62,10 @@ class PrecountOptionSetting extends Model
         $specificOptions = array_merge($this->option->getSpecificOptions(), [26294, 218618]);
         $specificOptions = implode(',', $specificOptions);
         static::query()->update(['is_deleted' => 1]);
+
+        $childCategories = $this->category->getNestedCategoriesIds($categoryId);
+        $childCategories = join(',', $childCategories);
+        $whereClause = "childs.id IN($childCategories)";
 
         $upsertQuery = <<<UPSERT_QUERY
             WITH inherited_settings AS(
@@ -78,7 +82,7 @@ class PrecountOptionSetting extends Model
                       (os.category_id IS NOT NULL AND os.category_id = os_category.id)
                   JOIN "$categoryTable" childs ON
                       os_category.left_key <= childs.left_key AND childs.right_key <= os_category.right_key AND childs.level > 0
-              WHERE (o.category_id != 0 OR o.id IN($specificOptions))
+              WHERE {$whereClause} AND (o.category_id != 0 OR o.id IN({$specificOptions}))
               ORDER BY
                   o.id DESC,
                   childs.id DESC,
