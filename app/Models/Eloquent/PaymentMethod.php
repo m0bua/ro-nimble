@@ -2,7 +2,9 @@
 
 namespace App\Models\Eloquent;
 
+use App\Casts\Translatable;
 use App\Traits\Eloquent\HasFillable;
+use App\Traits\Eloquent\HasTranslations;
 use Database\Factories\Eloquent\PaymentMethodFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -29,7 +31,12 @@ use Illuminate\Support\Carbon;
  * @property-read Collection|Goods[] $goods
  * @property-read int|null $goods_count
  * @property-read PaymentMethod|null $parent
+ * @property-read Collection|PaymentMethodTranslation[] $translations
+ * @property-read int|null $translations_count
+ * @property string $title title translation
+ * @method static Builder|PaymentMethod active()
  * @method static PaymentMethodFactory factory(...$parameters)
+ * @method static Builder|PaymentMethod loadTranslations() WARNING! This scope must be in start of all query
  * @method static Builder|PaymentMethod newModelQuery()
  * @method static Builder|PaymentMethod newQuery()
  * @method static Builder|PaymentMethod query()
@@ -46,6 +53,7 @@ class PaymentMethod extends Model
 {
     use HasFactory;
     use HasFillable;
+    use HasTranslations;
 
     public $incrementing = false;
 
@@ -55,6 +63,11 @@ class PaymentMethod extends Model
         'name',
         'order',
         'status',
+        'title'
+    ];
+
+    protected $casts = [
+        'title' => Translatable::class
     ];
 
     public function goods(): BelongsToMany
