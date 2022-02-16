@@ -221,9 +221,7 @@ deploy-preprod:
   when: manual
   only:
     - master
-  except:
     - tags
-    - branches
 
 rollback-preprod:
   stage: rollback
@@ -236,9 +234,7 @@ rollback-preprod:
   when: manual
   only:
     - master
-  except:
     - tags
-    - branches
 
 restart-preprod-supervisor:
   stage: stop-restart
@@ -249,9 +245,7 @@ restart-preprod-supervisor:
   when: manual
   only:
     - master
-  except:
     - tags
-    - branches
 
 deploy-prod:
   stage: deploy
