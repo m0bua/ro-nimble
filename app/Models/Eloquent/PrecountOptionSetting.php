@@ -53,15 +53,13 @@ class PrecountOptionSetting extends Model
         $this->option = app()->make(Option::class);
     }
 
-    public function fillTable(int $categoryId): void
+    public function fillTable(int $categoryId, array $optionIds): void
     {
         $optionSettingsTable = $this->optionSettings->getTable();
         $precountOptionSettingsTable = $this->getTable();
         $categoryTable = $this->category->getTable();
         $optTable = $this->option->getTable();
-        $specificOptions = array_merge($this->option->getSpecificOptions(), [26294, 218618]);
-        $specificOptions = implode(',', $specificOptions);
-        static::query()->update(['is_deleted' => 1]);
+        $optionIds = implode(',', $optionIds);
 
         $childCategories = $this->category->getNestedCategoriesIds($categoryId);
         $childCategories = join(',', $childCategories);
@@ -78,11 +76,11 @@ class PrecountOptionSetting extends Model
                     JOIN "$optTable" o ON
                         os.option_id = o.id
                  JOIN "$categoryTable" os_category ON
-                      (os.category_id IS NULL AND o.category_id = os_category.id) OR
-                      (os.category_id IS NOT NULL AND os.category_id = os_category.id)
+                      (os.category_id = 0 AND o.category_id = os_category.id) OR
+                      (os.category_id != 0 AND os.category_id = os_category.id)
                   JOIN "$categoryTable" childs ON
                       os_category.left_key <= childs.left_key AND childs.right_key <= os_category.right_key AND childs.level > 0
-              WHERE {$whereClause} AND (o.category_id != 0 OR o.id IN({$specificOptions}))
+              WHERE $whereClause AND (o.category_id != 0 OR o.id IN($optionIds))
               ORDER BY
                   o.id DESC,
                   childs.id DESC,
@@ -107,6 +105,5 @@ class PrecountOptionSetting extends Model
         UPSERT_QUERY;
 
         DB::insert($upsertQuery);
-        DB::table($precountOptionSettingsTable)->where(['is_deleted' => 1])->delete();
     }
 }

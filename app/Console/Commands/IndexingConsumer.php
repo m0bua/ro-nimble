@@ -141,7 +141,7 @@ class IndexingConsumer extends Command
             $item->car_brand_id = [];
             $item->car_model_id = [];
             $item->car_year_id = [];
-            $item->producer_title = $ptItem ? $ptItem->producer_title : '';
+            $item->producer_title = ($ptItem && $ptItem->producer_title) ? $ptItem->producer_title : '';
 
             if (!empty($ciItem) && !empty($ciItem->car_infos)) {
                 $data = collect(json_decode($ciItem->car_infos));
