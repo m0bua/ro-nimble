@@ -63,7 +63,6 @@ build:
 run_autotest:
   image: registry.gitlab.rozetka.company/common/ci-docker-images/ci-tests-php74:latest
   stage: run_autotest
-  except:  [tags]
   tags:
     - rozetka-shared-standart
   services:
@@ -98,6 +97,7 @@ run_autotest:
     - vendor/bin/codecept run -c vendor/ivv/nimble-test -g api --html
   only:
     - branches
+  except:  [tags]
   artifacts:
     when: always
     paths:
@@ -149,10 +149,8 @@ run-unit:
     - sleep 30
     - php artisan migrate
     - php artisan test --testsuite=Unit
-  only:
-    - branches
   except:
-    - master
+    - tags
 
 
 report:
@@ -195,6 +193,7 @@ deploy-dev:
     - branches
   except:
     - master
+    - tags
 
 
 restart-dev-supervisor:
@@ -208,6 +207,7 @@ restart-dev-supervisor:
     - branches
   except:
     - master
+    - tags
 
 deploy-preprod:
   stage: deploy
@@ -219,6 +219,11 @@ deploy-preprod:
 #    - curl -X POST -H "Content-Type:application/json" -d "{\"alias\":\"gitlab\",\"text\":\"* ${CI_PROJECT_NAME}:*   пользователь *${GITLAB_USER_LOGIN}* запустил деплой  \nversion:*$CI_COMMIT_REF_NAME* \npipeline:${CI_PROJECT_URL}/pipelines/${CI_PIPELINE_ID}/   \"}" ${rocket}
     - dep deploy preprod -p -vv
   when: manual
+  only:
+    - master
+  except:
+    - tags
+    - branches
 
 rollback-preprod:
   stage: rollback
@@ -230,9 +235,10 @@ rollback-preprod:
   allow_failure: true
   when: manual
   only:
-    - branches
-  except:
     - master
+  except:
+    - tags
+    - branches
 
 restart-preprod-supervisor:
   stage: stop-restart
@@ -241,6 +247,11 @@ restart-preprod-supervisor:
   script:
     - dep supervisor:restart preprod -p -vv
   when: manual
+  only:
+    - master
+  except:
+    - tags
+    - branches
 
 deploy-prod:
   stage: deploy
@@ -253,7 +264,7 @@ deploy-prod:
     - dep deploy prod -p -vv
   when: manual
   only:
-    - master
+    - tags
 
 rollback-prod:
   stage: rollback
@@ -265,7 +276,7 @@ rollback-prod:
   allow_failure: true
   when: manual
   only:
-    - master
+    - tags
 
 restart-prod-supervisor:
   stage: stop-restart
@@ -275,7 +286,7 @@ restart-prod-supervisor:
     - dep supervisor:restart prod -p -vv
   when: manual
   only:
-    - master
+    - tags
 
 jirabot:
   stage: report
