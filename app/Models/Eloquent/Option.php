@@ -155,7 +155,7 @@ class Option extends Model
      * @param array $categoryIds
      * @return SupportCollection
      */
-    public function getOptionsByCategory(array $categoryIds): SupportCollection
+    public function getOptionsByCategory(array $optionsIds, array $categoryIds): SupportCollection
     {
         $optionTable = $this->getTable();
         $optionValueTable = OptionValue::make()->getTable();
@@ -166,11 +166,11 @@ class Option extends Model
             ->select([
                 'o.id as option_id',
                 'o.name as option_name',
-                \DB::raw('COALESCE(option_setting_translations_option_title.value, option_translations_title.value) as option_title'),
                 'o.type',
                 'ov.color as option_value_color',
                 'ov.id as option_value_id',
                 'ov.name as option_value_name',
+                'os.id as option_setting_id',
                 'os.order',
                 'os.special_combobox_view as special_combobox_view',
                 'os.comparable',
@@ -184,28 +184,14 @@ class Option extends Model
                 $join->on('ov.option_id', 'o.id')
                     ->where('ov.status', OptionValue::STATUS_ACTIVE);
             })
+            ->whereIn('o.id', $optionsIds)
             ->whereIn('pos.category_id', $categoryIds)
             ->whereIn('os.comparable', [Filters::COMPARABLE_MAIN, Filters::COMPARABLE_BOTTOM])
             ->where('o.state', self::STATE_ACTIVE)
             ->whereIn('os.status', OptionSetting::$availableStatuses)
             ->whereNotIn('o.type', self::$sliderTypes)
             ->orderBy('os.order')
-            ->orderBy('ov.order')
-            ->orderBy('ov.title')
-            ->selectTranslation('title')
-            ->selectNestedTranslations(OptionValue::class, [
-                'option_value_title' => 'title',
-                'option_value_title_genetive' => 'title_genetive',
-                'option_value_title_accusative' => 'title_accusative',
-                'option_value_title_prepositional' => 'title_prepositional',
-            ], 'ov')
-            ->selectNestedTranslations(OptionSetting::class, [
-                'os_option_title' => 'option_title',
-                'option_value_unit' => 'unit',
-                'option_title_genetive' => 'title_genetive',
-                'option_title_accusative' => 'title_accusative',
-                'option_title_prepositional' => 'title_prepositional',
-            ], 'os');
+            ->orderBy('ov.order');
 
         return $query->get()->recursive();
     }
@@ -223,9 +209,9 @@ class Option extends Model
         $query = static::query()
             ->select([
                 'o.id as option_id',
-                \DB::raw('COALESCE(option_setting_translations_option_title.value, option_translations_title.value) as option_title'),
                 'o.name as option_name',
                 'o.type as option_type',
+                'os.id as option_setting_id',
                 'os.special_combobox_view',
                 'os.order',
                 'os.category_id as category_id',
@@ -244,12 +230,7 @@ class Option extends Model
                     ->orWhereNull('os.category_id');
             })
             ->orderBy('option_id')
-            ->orderBy('category_id')
-            ->selectNestedTranslation(Option::class, 'title', '', 'o')
-            ->selectNestedTranslations(OptionSetting::class, [
-                'os_option_title' => 'option_title',
-                'unit' => 'unit',
-            ], 'os');
+            ->orderBy('category_id');
 
         //если одинаковых опций пришло две, оставляем ту что с категорией
         return $query->get()->keyBy('option_id')->values()->recursive();

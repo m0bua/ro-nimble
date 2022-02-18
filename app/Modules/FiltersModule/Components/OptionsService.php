@@ -12,9 +12,14 @@ use App\Enums\Filters;
 use App\Filters\Components\Options\OptionValues;
 use App\Helpers\CountryHelper;
 use App\Models\Eloquent\Option;
+use App\Models\Eloquent\OptionSettingTranslation;
+use App\Models\Eloquent\OptionTranslation;
+use App\Models\Eloquent\OptionValueTranslation;
 use App\Modules\FiltersModule\Components\Traits\OptionTraits\SliderTrait;
 use App\Modules\FiltersModule\Components\Traits\OptionTraits\ValuesAndCheckedTrait;
 use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Facades\App;
 
 class OptionsService extends BaseComponent
 {
@@ -24,27 +29,44 @@ class OptionsService extends BaseComponent
     /**
      * @var Collection
      */
-    private $allOptions;
+    private Collection $allOptions;
     /**
      * @var Collection
      */
-    private $optionValuesCount;
+    private Collection $optionsCount;
     /**
      * @var Collection
      */
-    private $optionCheckedCount;
+    private Collection $optionValuesCount;
     /**
      * @var Collection
      */
-    private $optionSlidersCount;
+    private Collection $optionCheckedCount;
     /**
      * @var Collection
      */
-    private $chosenOptionValues;
+    private Collection $optionSlidersCount;
     /**
      * @var Collection
      */
-    private $chosenOptionChecked;
+    private Collection $chosenOptionValues;
+    /**
+     * @var Collection
+     */
+    private Collection $chosenOptionChecked;
+    /**
+     * @var Collection
+     */
+    private Collection $optionTranslations;
+    /**
+     * @var Collection
+     */
+    private Collection $optionValueTranslations;
+    /**
+     * @var Collection
+     */
+    private Collection $optionSettingTranslations;
+
 
     /** @var array $currentFilterComponent */
     private array $currentFilterComponent = [];
@@ -100,6 +122,8 @@ class OptionsService extends BaseComponent
     public function setAllOptions(Collection $options)
     {
         $this->allOptions = collect([]);
+
+        $this->initTranslations($options);
 
         $options->each(function (Collection $option) {
             if ($this->checkIsTag($option)) {
@@ -215,6 +239,7 @@ class OptionsService extends BaseComponent
         $this->filters->hideFilters();
 
         $this->setCurrentFilterComponent(array_merge(
+            $this->optionsFilterComponent->getValue(),
             $this->optionValuesFilterComponent->getValue(),
             $this->optionCheckedFilterComponent->getValue(),
             $this->optionSlidersFilterComponent->getValue(),
@@ -222,6 +247,9 @@ class OptionsService extends BaseComponent
 
         $data = $this->getData();
 
+        $this->optionsCount = collect($this->elasticWrapper->prepareAggrCompositeData(
+            $data, Elastic::FIELD_OPTIONS
+        ))->recursive();
         $this->optionValuesCount = collect($this->elasticWrapper->prepareAggrCompositeData(
             $data, Elastic::FIELD_OPTION_VALUES
         ))->recursive();
@@ -312,5 +340,43 @@ class OptionsService extends BaseComponent
         return !CountryHelper::isUaCountry()
             && !empty($option['comparable'])
             && $option['comparable'] == Filters::COMPARABLE_BOTTOM;
+    }
+
+    /**
+     * @param Collection $options
+     * @return void
+     */
+    public function initTranslations(Collection $options): void
+    {
+        $this->optionTranslations = $this->getTranslationFields(
+            OptionTranslation::getByOptionIds($options->pluck('option_id')->toArray()),
+            'option_id'
+        );
+        $this->optionValueTranslations = $this->getTranslationFields(
+            OptionValueTranslation::getByOptionValueIds($options->pluck('option_value_id')->filter()->toArray()),
+            'option_value_id'
+        );
+        $this->optionSettingTranslations = $this->getTranslationFields(
+            OptionSettingTranslation::getByOptionSettingIds($options->pluck('option_setting_id')->toArray()),
+            'option_setting_id'
+        );
+    }
+
+    /**
+     * Создаем список переводов для фильтров
+     * @param EloquentCollection $translations
+     * @return void|string
+     */
+    public function getTranslationFields(EloquentCollection $translations, string $translationField): Collection
+    {
+        return $translations->groupBy([$translationField, 'column', 'lang'])->map(function (Collection $column) {
+            return $column->map(function (Collection $langs) {
+                if ($lang = $langs->get(App::getLocale())) {
+                    return $lang->first()->value;
+                } elseif ($lang = $langs->get(config('translatable.default_language'))) {
+                    return $lang->first()->value;
+                }
+            });
+        });
     }
 }

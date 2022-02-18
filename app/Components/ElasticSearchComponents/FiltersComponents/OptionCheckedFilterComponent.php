@@ -1,6 +1,6 @@
 <?php
 /**
- * Класс для генерации запроса для динамических фильтров - чекбоксов
+ * Класс генерации запроса агрегации для динамических фильтров - чекбоксов
  * Class OptionCheckedFilterComponent
  * @package App\Components\ElasticSearchComponents\FiltersComponents
  */

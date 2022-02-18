@@ -10,6 +10,7 @@ namespace App\Modules\FiltersModule\Components;
 use App\Components\ElasticSearchComponents\FiltersComponents\CategoriesFilterComponent;
 use App\Components\ElasticSearchComponents\FiltersComponents\CountFilterComponent;
 use App\Components\ElasticSearchComponents\FiltersComponents\OptionCheckedFilterComponent;
+use App\Components\ElasticSearchComponents\FiltersComponents\OptionsFilterComponent;
 use App\Components\ElasticSearchComponents\FiltersComponents\OptionSlidersFilterComponent;
 use App\Components\ElasticSearchComponents\FiltersComponents\OptionValuesFilterComponent;
 use App\Components\ElasticSearchComponents\FiltersComponents\PriceFilterComponent;
@@ -100,6 +101,10 @@ abstract class BaseComponent
      */
     protected SectionFilterComponent $sectionFilterComponent;
     /**
+     * @var OptionsFilterComponent
+     */
+    protected OptionsFilterComponent $optionsFilterComponent;
+    /**
      * @var OptionValuesFilterComponent
      */
     protected OptionValuesFilterComponent $optionValuesFilterComponent;
@@ -131,6 +136,7 @@ abstract class BaseComponent
         SeriesFilterComponent $seriesFilterComponent,
         CategoriesFilterComponent $categoriesFilterComponent,
         SectionFilterComponent $sectionFilterComponent,
+        OptionsFilterComponent $optionsFilterComponent,
         OptionValuesFilterComponent $optionValuesFilterComponent,
         OptionCheckedFilterComponent $optionCheckedFilterComponent,
         OptionSlidersFilterComponent $optionSlidersFilterComponent
@@ -153,6 +159,7 @@ abstract class BaseComponent
         $this->seriesFilterComponent = $seriesFilterComponent;
         $this->categoriesFilterComponent = $categoriesFilterComponent;
         $this->sectionFilterComponent = $sectionFilterComponent;
+        $this->optionsFilterComponent = $optionsFilterComponent;
         $this->optionValuesFilterComponent = $optionValuesFilterComponent;
         $this->optionCheckedFilterComponent = $optionCheckedFilterComponent;
         $this->optionSlidersFilterComponent = $optionSlidersFilterComponent;

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 
 /**
@@ -21,6 +22,7 @@ use Illuminate\Support\Str;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Model $entity
+ * @method static Builder|Translation withLang()
  * @method static Builder|Translation newModelQuery()
  * @method static Builder|Translation newQuery()
  * @method static Builder|Translation query()
@@ -57,5 +59,15 @@ abstract class Translation extends Model
         }
 
         return $this->belongsTo($model);
+    }
+
+    /**
+     * @param static|Builder $query
+     */
+    public function scopeWithLang($query): Builder
+    {
+        return $query->whereIn('lang', [
+            App::getLocale(), config('translatable.default_language')
+        ]);
     }
 }

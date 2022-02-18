@@ -4,7 +4,9 @@ namespace App\Models\Eloquent;
 
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\App;
 
 /**
  * App\Models\Eloquent\OptionTranslation
@@ -37,4 +39,15 @@ class OptionTranslation extends Translation
         'column',
         'value',
     ];
+
+    /**
+     * @param array $ids
+     * @return Collection
+     */
+    public static function getByOptionIds(array $ids): Collection
+    {
+        return static::query()->whereIn('option_id', $ids)
+            ->withLang()
+            ->get();
+    }
 }

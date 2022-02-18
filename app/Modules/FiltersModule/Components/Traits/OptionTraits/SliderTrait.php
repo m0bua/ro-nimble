@@ -41,6 +41,8 @@ trait SliderTrait
         public function prepareSliderOption(Collection $option): Collection
     {
         $isInt = $option['option_type'] === Option::TYPE_INTEGER;
+        $optionTitle = $this->optionSettingTranslations[$option['option_setting_id']]['option_title']
+            ?? $this->optionTranslations[$option['option_id']]['title'] ?? '';
 
         if ($isInt) {
             $option['min_value'] = (int) $option['min_value'];
@@ -66,7 +68,7 @@ trait SliderTrait
             $this->chosen[$option['option_name']]['range'] = [
                 'id' => $option['option_id'],
                 'name' => $range,
-                'option_title' => $option['option_title'],
+                'option_title' => $optionTitle,
                 'option_value_title' => $range,
                 'comparable' => Filters::COMPARABLE_MAIN
             ];
@@ -75,12 +77,12 @@ trait SliderTrait
         return collect([
             'option_id' => $option['option_id'],
             'option_name' => $option['option_name'],
-            'option_title' => $option['option_title'],
+            'option_title' => $optionTitle,
             'option_type' => $option['option_type'],
             'special_combobox_view' => Filters::SPECIAL_COMBOBOX_VIEW_SLIDER,
             'comparable' => Filters::COMPARABLE_MAIN,
             'config' => [
-                'unit' => $option['unit'] ?? '',
+                'unit' => $this->optionSettingTranslations[$option['option_setting_id']]['unit'] ?? '',
                 'values_pattern' => $valuesPattern
             ],
             'range_values' => [

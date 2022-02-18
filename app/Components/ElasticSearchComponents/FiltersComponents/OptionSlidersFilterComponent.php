@@ -1,6 +1,6 @@
 <?php
 /**
- * Класс для генерации запроса для динамических фильтров - слайдеров
+ * Класс генерации запроса агрегации для динамических фильтров - слайдеров
  * Class OptionSlidersFilterComponent
  * @package App\Components\ElasticSearchComponents\FiltersComponents
  */
