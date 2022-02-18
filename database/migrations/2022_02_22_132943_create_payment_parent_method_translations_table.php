@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePaymentMethodTranslationsTable extends Migration
+class CreatePaymentParentMethodTranslationsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,16 @@ class CreatePaymentMethodTranslationsTable extends Migration
      */
     public function up(): void
     {
-        Schema::create('payment_method_translations', static function (Blueprint $table) {
+        Schema::create('payment_parent_method_translations', static function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('payment_method_id');
+            $table->bigInteger('payment_parent_method_id');
             $table->string('lang', 3)->index();
             $table->string('column')->index();
             $table->text('value');
             $table->timestamp('created_at')->nullable()->useCurrent();
             $table->timestamp('updated_at')->nullable()->useCurrent();
 
-            $table->unique(['payment_method_id', 'lang', 'column']);
+            $table->unique(['payment_parent_method_id', 'lang', 'column']);
         });
     }
 
@@ -33,6 +33,6 @@ class CreatePaymentMethodTranslationsTable extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('payment_method_translations');
+        Schema::dropIfExists('payment_parent_method_translations');
     }
 }

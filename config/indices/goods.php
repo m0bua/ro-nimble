@@ -123,6 +123,9 @@ return [
             'payment_method_ids' => [
                 'type' => 'integer'
             ],
+            'payment_parent_method_ids' => [
+                'type' => 'integer'
+            ],
             'car_trim_id' => [
                 'type' => 'integer'
             ],

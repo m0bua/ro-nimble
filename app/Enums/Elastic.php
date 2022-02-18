@@ -22,6 +22,8 @@ class Elastic
     public const FIELD_GROUP_ID = 'group_id';
     public const FIELD_IS_GROUP_PRIMARY = 'is_group_primary';
     public const FIELD_SERIES = 'series_id';
+    public const FIELD_PAYMENT_IDS = 'payment_ids';
+    public const FIELD_PAYMENT_METHOD_IDS = 'payment_method_ids';
     public const FIELD_SELL_STATUS = 'sell_status';
     public const FIELD_CATEGORIES_PATH = 'categories_path';
     public const FIELD_CATEGORY_ID = 'category_id';

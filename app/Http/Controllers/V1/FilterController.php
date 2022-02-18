@@ -170,6 +170,18 @@ class FilterController extends Controller
      *              )
      *          )
      *     ),
+     *     @OA\Parameter (
+     *          name="payments",
+     *          in="query",
+     *          required=false,
+     *          description="Список методов оплаты",
+     *          @OA\Schema (
+     *              type="array",
+     *              @OA\Items (
+     *                  type="int"
+     *              )
+     *          )
+     *     ),
      *     @OA\Response (
      *          response=200,
      *          description="Успешный ответ"

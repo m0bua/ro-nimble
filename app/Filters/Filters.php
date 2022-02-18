@@ -2,29 +2,31 @@
 
 namespace App\Filters;
 
-use App\Filters\Contracts\FiltersInterface;
-use App\Http\Requests\FilterRequest;
-use App\Filters\Components\Page;
-use App\Filters\Components\PerPage;
-use App\Filters\Components\Category;
-use App\Filters\Components\Categories;
-use App\Filters\Components\Promotion;
-use App\Filters\Components\Sort;
-use App\Filters\Components\Section;
-use App\Filters\Components\Producers;
-use App\Filters\Components\Price;
-use App\Filters\Components\Sellers;
 use App\Filters\Components\Bonus;
-use App\Filters\Components\States;
-use App\Filters\Components\Series;
-use App\Filters\Components\SingleGoods;
-use App\Filters\Components\GoodsWithPromotions;
+use App\Filters\Components\Categories;
+use App\Filters\Components\Category;
 use App\Filters\Components\Country;
-use App\Filters\Components\SellStatuses;
+use App\Filters\Components\GoodsWithPromotions;
 use App\Filters\Components\Lang;
 use App\Filters\Components\Options;
+use App\Filters\Components\Page;
+use App\Filters\Components\Payments;
+use App\Filters\Components\PerPage;
+use App\Filters\Components\Price;
+use App\Filters\Components\Producers;
+use App\Filters\Components\Promotion;
 use App\Filters\Components\Query;
+use App\Filters\Components\Section;
+use App\Filters\Components\Sellers;
+use App\Filters\Components\SellStatuses;
+use App\Filters\Components\Series;
+use App\Filters\Components\SingleGoods;
+use App\Filters\Components\Sort;
+use App\Filters\Components\States;
+use App\Filters\Contracts\FiltersInterface;
+use App\Http\Requests\FilterRequest;
 use Exception;
+use RuntimeException;
 
 class Filters implements FiltersInterface
 {
@@ -129,6 +131,11 @@ class Filters implements FiltersInterface
     public Query $query;
 
     /**
+     * @var Payments
+     */
+    public Payments $payments;
+
+    /**
      * Filter constructor.
      * @param array $attributes
      * @throws Exception
@@ -137,7 +144,7 @@ class Filters implements FiltersInterface
     {
         foreach ($attributes as $name => $attribute) {
             if (!property_exists($this, $name)) {
-                throw new Exception("Unknown property $name");
+                throw new RuntimeException("Unknown property $name");
             }
 
             $this->$name = $attribute;
@@ -158,9 +165,11 @@ class Filters implements FiltersInterface
         foreach ($attributes as $key => &$attribute) {
             $className = __NAMESPACE__ . '\\Components\\' . ucfirst($key);
             if (!class_exists($className)) {
-                throw new Exception("Missed class for $key attribute");
-            } elseif (!method_exists($className, 'fromRequest')) {
-                throw new Exception("Unable to create $className from Request");
+                throw new RuntimeException("Missed class for $key attribute");
+            }
+
+            if (!method_exists($className, 'fromRequest')) {
+                throw new RuntimeException("Unable to create $className from Request");
             }
 
             $attribute = $className::fromRequest($request);
@@ -174,7 +183,7 @@ class Filters implements FiltersInterface
      * @return void
      * @throws Exception
      */
-    public function hideFilters()
+    public function hideFilters(): void
     {
         foreach (\App\Enums\Filters::$toggleFilters as $filter) {
             $this->$filter->hideValues();
@@ -185,7 +194,7 @@ class Filters implements FiltersInterface
      * @return void
      * @throws Exception
      */
-    public function showFilters()
+    public function showFilters(): void
     {
         foreach (\App\Enums\Filters::$toggleFilters as $filter) {
             $this->$filter->showValues();

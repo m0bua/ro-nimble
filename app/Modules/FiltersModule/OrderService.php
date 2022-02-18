@@ -76,7 +76,7 @@ class OrderService
     public function orderOptions(Collection $options): Collection
     {
         if ($options->isEmpty()) {
-            return collect([]);
+            return $options;
         }
 
         $this->currentOptionsNames = $options->pluck('option_name');

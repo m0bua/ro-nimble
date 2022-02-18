@@ -134,6 +134,7 @@ class IndexingConsumer extends Command
             $item->option_sliders = $osItem ? json_decode($osItem->option_sliders) : [];
             $item->promotion_ids = $this->mergePromotionItems($gpItem, $grpItem);
             $item->payment_method_ids = $pmItem ? json_decode($pmItem->payment_method_ids) : [];
+            $item->payment_ids = $pmItem ? json_decode($pmItem->payment_ids) : [];
             $item->bonus_charge_pcs = $bItem ? $bItem->bonus_charge_pcs : 0;
             $item->tags = json_decode($item->tags);
             $item->car_trim_id = [];
@@ -339,7 +340,8 @@ class IndexingConsumer extends Command
         return DB::table('goods', 'g')
             ->select([
                 'g.id',
-                DB::raw("coalesce(json_agg(DISTINCT pm.id), '[]') as payment_method_ids")
+                DB::raw("coalesce(json_agg(DISTINCT pm.id), '[]') as payment_method_ids"),
+                DB::raw("coalesce(json_agg(DISTINCT pm.parent_id), '[]') as payment_ids"),
             ])
             ->join('goods_payment_method as gpm', 'g.id', '=', 'gpm.goods_id')
             ->join('payment_methods as pm', 'gpm.payment_method_id', '=', 'pm.id')

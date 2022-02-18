@@ -13,6 +13,7 @@ use App\Components\ElasticSearchComponents\FiltersComponents\OptionCheckedFilter
 use App\Components\ElasticSearchComponents\FiltersComponents\OptionsFilterComponent;
 use App\Components\ElasticSearchComponents\FiltersComponents\OptionSlidersFilterComponent;
 use App\Components\ElasticSearchComponents\FiltersComponents\OptionValuesFilterComponent;
+use App\Components\ElasticSearchComponents\FiltersComponents\PaymentsFilterComponent;
 use App\Components\ElasticSearchComponents\FiltersComponents\PriceFilterComponent;
 use App\Components\ElasticSearchComponents\FiltersComponents\ProducerFilterComponent;
 use App\Components\ElasticSearchComponents\FiltersComponents\SectionFilterComponent;
@@ -33,7 +34,7 @@ abstract class BaseComponent
     /**
      * @var array
      */
-    protected $chosen = [];
+    protected array $chosen = [];
 
     /**
      * @var ElasticService
@@ -117,6 +118,11 @@ abstract class BaseComponent
      */
     protected OptionSlidersFilterComponent $optionSlidersFilterComponent;
 
+    /**
+     * @var PaymentsFilterComponent
+     */
+    protected PaymentsFilterComponent $paymentsFilterComponent;
+
     public function __construct(
         ElasticService $elasticService,
         GoodsModel $goodsModel,
@@ -139,7 +145,8 @@ abstract class BaseComponent
         OptionsFilterComponent $optionsFilterComponent,
         OptionValuesFilterComponent $optionValuesFilterComponent,
         OptionCheckedFilterComponent $optionCheckedFilterComponent,
-        OptionSlidersFilterComponent $optionSlidersFilterComponent
+        OptionSlidersFilterComponent $optionSlidersFilterComponent,
+        PaymentsFilterComponent $paymentMethodsFilterComponent
     ) {
         $this->elasticService = $elasticService;
         $this->goodsModel = $goodsModel;
@@ -163,6 +170,7 @@ abstract class BaseComponent
         $this->optionValuesFilterComponent = $optionValuesFilterComponent;
         $this->optionCheckedFilterComponent = $optionCheckedFilterComponent;
         $this->optionSlidersFilterComponent = $optionSlidersFilterComponent;
+        $this->paymentsFilterComponent = $paymentMethodsFilterComponent;
     }
 
     /**

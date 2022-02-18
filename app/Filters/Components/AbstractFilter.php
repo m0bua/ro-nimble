@@ -38,7 +38,7 @@ abstract class AbstractFilter implements Filterable
     /**
      * Returns filter values
      *
-     * @return array
+     * @return Collection
      */
     public function getValues(): Collection
     {
@@ -47,6 +47,7 @@ abstract class AbstractFilter implements Filterable
 
     /**
      * @return bool
+     * @noinspection PhpUnused
      */
     public function toggleValues(): bool
     {
@@ -73,6 +74,7 @@ abstract class AbstractFilter implements Filterable
 
     /**
      * @return bool
+     * @noinspection PhpUnused
      */
     public function isValueHidden(): bool
     {
@@ -81,17 +83,19 @@ abstract class AbstractFilter implements Filterable
 
     /**
      * @return bool
+     * @noinspection PhpUnused
      */
     public function issetFilter(): bool
     {
-        return !!$this->getValues();
+        return $this->getValues()->isNotEmpty();
     }
 
     /**
      * @param $key
      * @return void
+     * @noinspection PhpUnused
      */
-    public function forgetValueItem($key)
+    public function forgetValueItem($key): void
     {
         unset($this->values[$key]);
     }
@@ -100,8 +104,9 @@ abstract class AbstractFilter implements Filterable
      * @param $key
      * @param $value
      * @return void
+     * @noinspection PhpUnused
      */
-    public function putValueItem($key, $value)
+    public function putValueItem($key, $value): void
     {
         $this->values[$key] = $value;
     }

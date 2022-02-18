@@ -79,6 +79,13 @@ class SpecificOptionResource extends BaseResource
                     'method' => 'make'
                 ]
             ],
+            [
+                'field' => 'payments',
+                'resource' => [
+                    'class' => CustomOptionWithoutTranslateResource::class,
+                    'method' => 'make'
+                ]
+            ],
         ];
     }
 }

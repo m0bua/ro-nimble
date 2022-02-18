@@ -23,6 +23,8 @@ class Filters
     public const SECTION = 'section';
     // "Производитель"
     public const PRODUCERS = 'producers';
+    // Payment methods
+    public const PAYMENTS = 'payments';
     // "Цена"
     public const PRICE = 'price';
     // "Продавец"
@@ -68,6 +70,7 @@ class Filters
     public const PARAM_BONUS = 'with_bonus';
     public const PARAM_STATES = 'states';
     public const PARAM_SERIES = 'series';
+    public const PARAM_PAYMENTS = 'payments';
     public const PARAM_SINGLE_GOODS = 'single_goods';
     public const PARAM_PROMOTION_GOODS = 'goods_with_promotions';
     public const PARAM_COUNTRY = 'country';
@@ -113,6 +116,7 @@ class Filters
         self::PARAM_LANG,
         self::OPTIONS,
         self::QUERY,
+        self::PAYMENTS,
     ];
 
     /**
@@ -138,6 +142,7 @@ class Filters
         self::PARAM_PROMOTION_GOODS,
         self::PARAM_COUNTRY,
         self::PARAM_LANG,
+        self::PARAM_PAYMENTS,
     ];
 
     /**
@@ -161,10 +166,10 @@ class Filters
     ];
 
     /**
-     * Доступные динамичесчие фильтра
+     * Доступные динамические фильтры
      * @var string[]
      */
-    public static $dynamicFiltersAttributes = [
+    public static array $dynamicFiltersAttributes = [
         self::OPTION_VALUES,
         self::OPTION_CHECKED,
         self::OPTION_SLIDERS,
@@ -223,7 +228,7 @@ class Filters
      * Набор тегов для опции "Акция" фильтра "Товары с акциями"
      * @var int[]
      */
-    public static $filterPromotionTags = [
+    public static array $filterPromotionTags = [
         self::TAGS_ACTION,
         self::TAGS_PROMOTION_NOVELTY,
     ];
@@ -256,7 +261,7 @@ class Filters
      * Список статусов товаров для выдачи
      * @var array
      */
-    public static $sellActiveStatuses = [
+    public static array $sellActiveStatuses = [
         self::SELL_STATUS_UNAVAILABLE,
         self::SELL_STATUS_WAITING_FOR_SUPPLY,
         self::SELL_STATUS_LIMITED,
@@ -268,7 +273,7 @@ class Filters
      * Список статусов товаров для выдачи категорий фешен
      * @var array
      */
-    public static $sellActiveStatusesFashion = [
+    public static array $sellActiveStatusesFashion = [
         self::SELL_STATUS_LIMITED,
         self::SELL_STATUS_AVAILABLE,
     ];

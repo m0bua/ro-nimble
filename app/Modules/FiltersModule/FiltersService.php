@@ -13,6 +13,7 @@ use App\Modules\FiltersModule\Components\BonusService;
 use App\Modules\FiltersModule\Components\CategoriesService;
 use App\Modules\FiltersModule\Components\GoodsWithPromotionsService;
 use App\Modules\FiltersModule\Components\OptionsService;
+use App\Modules\FiltersModule\Components\PaymentService;
 use App\Modules\FiltersModule\Components\PriceService;
 use App\Modules\FiltersModule\Components\ProducerService;
 use App\Modules\FiltersModule\Components\SectionService;
@@ -90,22 +91,29 @@ class FiltersService
      */
     private OptionsService $optionsService;
 
-    public function __construct(
-        Filters $filters,
-        OrderService $orderService,
+    /**
+     * @var PaymentService
+     */
+    private PaymentService $payments;
 
-        SectionService $sectionService,
-        CategoriesService $categoriesService,
-        SellerService $sellerService,
-        ProducerService $producerService,
-        SeriesService $seriesService,
-        PriceService $priceService,
+    public function __construct(
+        Filters                    $filters,
+        OrderService               $orderService,
+
+        SectionService             $sectionService,
+        CategoriesService          $categoriesService,
+        SellerService              $sellerService,
+        ProducerService            $producerService,
+        SeriesService              $seriesService,
+        PriceService               $priceService,
         GoodsWithPromotionsService $goodsWithPromotionsService,
-        BonusService $bonusService,
-        StateService $stateService,
-        SellStatusService $sellStatusService,
-        OptionsService $optionsService
-    ) {
+        BonusService               $bonusService,
+        StateService               $stateService,
+        SellStatusService          $sellStatusService,
+        OptionsService             $optionsService,
+        PaymentService             $paymentsService
+    )
+    {
         $this->filters = $filters;
         $this->orderService = $orderService;
 
@@ -120,12 +128,12 @@ class FiltersService
         $this->stateService = $stateService;
         $this->sellStatusService = $sellStatusService;
         $this->optionsService = $optionsService;
+        $this->payments = $paymentsService;
     }
 
     /**
      * Возвращает набор фильтров
-     * @return \array[][]
-     * @throws ApiException
+     * @return array
      */
     public function getFilters(): array
     {
@@ -143,31 +151,34 @@ class FiltersService
      * Подготовка параметра option
      * @param Collection $options
      * @return array
+     * @noinspection ClosureToArrowFunctionInspection
      */
     public function prepareOptions(Collection $options): array
     {
-        return $options->groupBy(function ($option) {
-            switch (true) {
-                case in_array($option['option_name'], EnumsFilters::$staticFiltersParams):
-                    return Resources::OPTIONS_SPECIFIC;
-                case $option->has('option_values'):
-                    return Resources::OPTIONS_GENERAL;
-                default:
-                    return Resources::OPTIONS_SLIDERS;
-            }
-        })->map(function (Collection $group, string $key) {
-            if ($key === Resources::OPTIONS_SPECIFIC) {
-                return $group->keyBy('option_name');
-            }
+        return $options
+            ->groupBy(function ($option) {
+                switch (true) {
+                    case in_array($option['option_name'], EnumsFilters::$staticFiltersParams, false):
+                        return Resources::OPTIONS_SPECIFIC;
+                    case $option->has('option_values'):
+                        return Resources::OPTIONS_GENERAL;
+                    default:
+                        return Resources::OPTIONS_SLIDERS;
+                }
+            })
+            ->map(function (Collection $group, string $key) {
+                if ($key === Resources::OPTIONS_SPECIFIC) {
+                    return $group->keyBy('option_name');
+                }
 
-            return $group;
-        })
-        ->toArray();
+                return $group;
+            })
+            ->toArray();
     }
 
     /**
      * Возвращает набор кастомных фильтров
-     * @return array
+     * @return Collection
      */
     public function getOptions(): Collection
     {
@@ -181,7 +192,8 @@ class FiltersService
                 $this->goodsWithPromotionsService->getValue(),
                 $this->bonusService->getValue(),
                 $this->stateService->getValue(),
-                $this->sellStatusService->getValue()
+                $this->sellStatusService->getValue(),
+                $this->payments->getValue()
             ) + $this->optionsService->getValue()
         )->values()->recursive();
     }
@@ -202,7 +214,8 @@ class FiltersService
                 $this->goodsWithPromotionsService->getChosen(),
                 $this->bonusService->getChosen(),
                 $this->stateService->getChosen(),
-                $this->sellStatusService->getChosen()
+                $this->sellStatusService->getChosen(),
+                $this->payments->getChosen(),
             ) + $this->optionsService->getChosen();
     }
 
