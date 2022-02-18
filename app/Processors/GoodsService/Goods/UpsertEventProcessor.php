@@ -25,6 +25,6 @@ class UpsertEventProcessor extends UpsertProcessor
      */
     protected function afterProcess(): void
     {
-        $this->goodsBuffer->add($this->data['goods_id']);
+        $this->goodsBuffer->add($this->data['id']);
     }
 }
