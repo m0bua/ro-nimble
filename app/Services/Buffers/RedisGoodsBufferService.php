@@ -52,6 +52,6 @@ class RedisGoodsBufferService implements GoodsBufferInterface
             yield $goodsIds;
             Redis::srem('index:goods', $goodsIds);
             [$cursor, $goodsIds] = Redis::sscan('index:goods', $iterator, ['count' => $this->maxBatch]);
-        } while ($iterator !== 0);
+        } while ($iterator != 0);
     }
 }
