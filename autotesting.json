@@ -1,7 +1,11 @@
 {
     "jiraBot": {
         "mergeRequestWhiteList": [
-            "ivv/nimble"
-        ]
+            "ivv/nimble",
+            "nimble-test"
+        ],
+        "repositoriesMap": {
+            "nimble-test": "ivv/nimble-test"
+        }
     }
 }
