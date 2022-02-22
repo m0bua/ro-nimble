@@ -31,6 +31,6 @@ class UpsertCommentProcessor extends UpsertProcessor
 
     public function afterProcess(): void
     {
-        $this->goodsBuffer->add($this->data['goods_id']);
+        $this->goodsBuffer->add($this->data['goods']);
     }
 }
