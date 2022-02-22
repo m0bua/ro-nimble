@@ -6,7 +6,6 @@ use App\Models\Elastic\Elastic;
 use App\Models\Elastic\GoodsModel;
 use Bschmitt\Amqp\Amqp;
 use Illuminate\Console\Command;
-use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use PhpAmqpLib\Message\AMQPMessage;

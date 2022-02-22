@@ -51,7 +51,9 @@ class PartialIndexing extends Command
     public function proceed(): void
     {
         foreach ($this->goodsBuffer->scan() as $goodsIds) {
-            Artisan::call(IndexRefill::class, ['--goods-ids' => $goodsIds]);
+            if (!empty($goodsIds)) {
+                Artisan::call(IndexRefill::class, ['--goods-ids' => $goodsIds]);
+            }
         }
     }
 }

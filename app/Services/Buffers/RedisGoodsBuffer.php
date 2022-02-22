@@ -52,9 +52,13 @@ class RedisGoodsBuffer implements GoodsBuffer
     {
         [$cursor, $goodsIds] = Redis::sscan('index:goods', 0, ['count' => $this->maxBatch]);
         do {
-            $iterator = (int)$cursor;
             yield $goodsIds;
-            Redis::srem('index:goods', $goodsIds);
+
+            $iterator = (int)$cursor;
+            if (!empty($goodsIds)) {
+                Redis::srem('index:goods', $goodsIds);
+            }
+
             [$cursor, $goodsIds] = Redis::sscan('index:goods', $iterator, ['count' => $this->maxBatch]);
         } while ($iterator !== 0);
     }
