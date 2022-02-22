@@ -5,6 +5,7 @@ namespace App\Cores\ConsumerCore;
 use App\Cores\ConsumerCore\Interfaces\MessageInterface;
 use Exception;
 use PhpAmqpLib\Message\AMQPMessage;
+use RuntimeException;
 
 class Message implements MessageInterface
 {
@@ -99,7 +100,7 @@ class Message implements MessageInterface
     private function getFieldArray(array $data, string $route)
     {
         if (!array_key_exists($route, $data)) {
-            throw new Exception("Field \"$route\" does not exists.");
+            throw new RuntimeException("Field \"$route\" does not exists.");
         }
 
         return $data[$route];
@@ -116,7 +117,7 @@ class Message implements MessageInterface
     private function getFieldObject(object $data, string $route)
     {
         if (!property_exists($data, $route)) {
-            throw new Exception("Field \"$route\" does not exists.");
+            throw new RuntimeException("Field \"$route\" does not exists.");
         }
 
         return $data->$route;
@@ -166,7 +167,7 @@ class Message implements MessageInterface
         }
 
         if (isset($error)) {
-            throw new Exception("$error; Json was given: $json");
+            throw new RuntimeException("$error; Json was given: $json");
         }
     }
 }
