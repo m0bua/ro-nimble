@@ -33,8 +33,6 @@ abstract class Elastic
      */
     private array $attributes = [];
 
-    private string $tmpOldIndexName = 'goods_index_a';
-
     /**
      * Elastic constructor.
      * @throws Exception
