@@ -1,16 +1,18 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Indexing;
 
+use App\Console\Commands\Command;
 use App\Models\Elastic\Elastic;
 use App\Models\Elastic\GoodsModel;
 use App\Models\Eloquent\Goods;
 use Bschmitt\Amqp\Amqp;
+use Bschmitt\Amqp\Exception\Configuration;
 use Bschmitt\Amqp\Message;
 use Illuminate\Database\Eloquent\Collection;
 use JsonException;
 
-class IndexRefill extends Command
+class Publish extends Command
 {
     /**
      * The name and signature of the console command.
@@ -36,31 +38,32 @@ class IndexRefill extends Command
      *
      * @var Goods
      */
-    protected Goods $goods;
+    private Goods $goods;
 
     /**
      * Elasticsearch goods model
      *
      * @var Elastic
      */
-    protected Elastic $goodsElastic;
+    private Elastic $elastic;
 
     /**
      * Create a new command instance.
      *
      * @return void
+     * @noinspection LaravelFunctionsInspection
      */
-    public function __construct(Goods $goods, GoodsModel $goodsElastic)
+    public function __construct(Goods $goods, GoodsModel $elastic)
     {
         parent::__construct();
         $this->goods = $goods;
-        $this->goodsElastic = $goodsElastic;
+        $this->elastic = $elastic;
         $this->maxBatch = env("MAX_INDEXING_BATCH", 100);
     }
 
     /**
      * @inheritDoc
-     * @throws JsonException
+     * @throws JsonException|Configuration
      */
     protected function proceed(): void
     {
@@ -69,7 +72,7 @@ class IndexRefill extends Command
         if ($goodsIds->isEmpty() && !$this->option('same')) {
             $this->createIndex();
         }
-        $indexName = $this->goodsElastic->getIndexName();
+        $indexName = $this->elastic->getIndexName();
 
         $query = $this->goods->query()
             ->select('id')
@@ -82,15 +85,16 @@ class IndexRefill extends Command
             $query->whereIn('id', $goodsIds->toArray());
         }
 
-        $amqp = new Amqp();
-        /** @var Collection $goods */
+        $rabbitMq = new Amqp();
+
+        /** @var Collection|Goods[] $goods */
         foreach ($query->trueCursor($this->maxBatch) as $goods) {
             $data = [
                 'index_name' => $indexName,
                 'ids' => $goods->pluck('id'),
             ];
 
-            $amqp->publish(
+            $rabbitMq->publish(
                 'indexing.goods.ids',
                 new Message(json_encode($data, JSON_THROW_ON_ERROR)),
                 config('amqp.properties.local')
@@ -104,8 +108,8 @@ class IndexRefill extends Command
      */
     protected function createIndex(): void
     {
-        $this->goodsElastic->createIndex(
-            $this->goodsElastic->buildNewIndexName(),
+        $this->elastic->createIndex(
+            $this->elastic->buildNewIndexName(),
             [
                 'body' => [
                     'settings' => config('indices.goods.settings'),

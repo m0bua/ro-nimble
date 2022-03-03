@@ -138,6 +138,12 @@ return [
             'car_year_id' => [
                 'type' => 'integer'
             ],
+            'comment_avg_marks' => [
+                'type' => 'float'
+            ],
+            'group_comment_avg_marks' => [
+                'type' => 'float'
+            ],
         ]
     ],
 ];

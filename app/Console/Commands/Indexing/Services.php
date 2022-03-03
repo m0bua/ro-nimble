@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Indexing;
 
+use App\Console\Commands\Command;
 use App\Models\Elastic\GoodsModel;
 
-class IndexServices extends Command
+class Services extends Command
 {
     /**
      * The name and signature of the console command.
@@ -37,8 +38,7 @@ class IndexServices extends Command
     }
 
     /**
-     * Execute the console command.
-     *
+     * @inheritDoc
      */
     public function proceed(): void
     {
@@ -54,17 +54,11 @@ class IndexServices extends Command
                 ? ($activeCount - $lastCount) / $activeCount * 100
                 : 0;
 
-            if (
-                $percentageDiff < 10
-                && $lastIndexInfo['status'] == 'open'
-                && $lastIndexInfo['health'] == 'green'
-            ) {
-                $this->goodsElastic->updateAliases(
-                    [
-                        $this->goodsElastic->addAliasAction($lastIndexInfo['index'], $this->goodsElastic->indexPrefix()),
-                        $this->goodsElastic->removeAliasAction($activeIndexName, $this->goodsElastic->indexPrefix()),
-                    ]
-                );
+            if ($percentageDiff < 10 && $lastIndexInfo['status'] === 'open' && $lastIndexInfo['health'] = 'green') {
+                $this->goodsElastic->updateAliases([
+                    $this->goodsElastic->addAliasAction($lastIndexInfo['index'], $this->goodsElastic->indexPrefix()),
+                    $this->goodsElastic->removeAliasAction($activeIndexName, $this->goodsElastic->indexPrefix()),
+                ]);
 
                 $this->goodsElastic->deleteIndex($activeIndexName);
             }

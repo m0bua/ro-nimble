@@ -3,7 +3,7 @@
 namespace App\Processors\CommentService\GoodsComments;
 
 use App\Interfaces\GoodsBuffer;
-use App\Models\Eloquent\GoodsComments;
+use App\Models\Eloquent\GoodsComment;
 use App\Processors\UpsertProcessor;
 
 class UpsertCommentProcessor extends UpsertProcessor
@@ -20,10 +20,10 @@ class UpsertCommentProcessor extends UpsertProcessor
     private GoodsBuffer $goodsBuffer;
 
     /**
-     * @param GoodsComments $model
+     * @param GoodsComment $model
      * @param GoodsBuffer $goodsBuffer
      */
-    public function __construct(GoodsComments $model, GoodsBuffer $goodsBuffer)
+    public function __construct(GoodsComment $model, GoodsBuffer $goodsBuffer)
     {
         $this->model = $model;
         $this->goodsBuffer = $goodsBuffer;

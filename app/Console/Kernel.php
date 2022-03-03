@@ -6,11 +6,8 @@ use App\Console\Commands\Delete;
 use App\Console\Commands\Dev;
 use App\Console\Commands\FetchFiltersAutoranking;
 use App\Console\Commands\FillLostTranslations;
-use App\Console\Commands\IndexingConsumer;
+use App\Console\Commands\Indexing;
 use App\Console\Commands\IndexProducers;
-use App\Console\Commands\IndexRefill;
-use App\Console\Commands\IndexServices;
-use App\Console\Commands\PartialIndexing;
 use App\Console\Commands\Precount\FillPrecountOptionSettings;
 use App\Console\Commands\Precount\FillPrecountOptionSliders;
 use App\Console\Commands\StartConsumer;
@@ -27,14 +24,9 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         FillLostTranslations::class,
 
-        Delete\DeleteConstructors::class,
-        Delete\DeleteGoodsConstructors::class,
-        Delete\DeleteGroupsConstructors::class,
         Delete\DeleteMarkedGoods::class,
 
         StartConsumer::class,
-        IndexingConsumer::class,
-        IndexRefill::class,
         Dev\TestCommand::class,
         Dev\GenerateModelMeta::class,
 
@@ -43,8 +35,10 @@ class Kernel extends ConsoleKernel
         FillPrecountOptionSettings::class,
         FillPrecountOptionSliders::class,
 
-        PartialIndexing::class,
-        IndexServices::class,
+        Indexing\Consumer::class,
+        Indexing\Publish::class,
+        Indexing\Partial::class,
+        Indexing\Services::class,
 
         FetchFiltersAutoranking::class,
     ];
@@ -62,9 +56,9 @@ class Kernel extends ConsoleKernel
         $schedule->command(FillPrecountOptionSliders::class)->runInBackground()->dailyAt('21:00');
 
         $schedule->command(IndexProducers::class)->dailyAt('00:00');
-        $schedule->command(IndexRefill::class)->dailyAt('02:00');
-        $schedule->command(IndexServices::class);
-        $schedule->command(PartialIndexing::class)->runInBackground()->withoutOverlapping();
+        $schedule->command(Indexing\Publish::class)->dailyAt('02:00');
+        $schedule->command(Indexing\Services::class);
+        $schedule->command(Indexing\Partial::class)->runInBackground()->withoutOverlapping();
 
         $schedule->command(Delete\DeleteMarkedGoods::class);
 

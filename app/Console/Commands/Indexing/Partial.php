@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Indexing;
 
+use App\Console\Commands\Command;
 use App\Interfaces\GoodsBuffer;
-use App\Models\Eloquent\IndexGoods;
-use Illuminate\Support\Facades\Artisan;
 
-class PartialIndexing extends Command
+class Partial extends Command
 {
     /**
      * The name and signature of the console command.
@@ -20,12 +19,7 @@ class PartialIndexing extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
-
-    /**
-     * @var IndexGoods
-     */
-    protected IndexGoods $indexGoods;
+    protected $description = 'Partial indexing from buffer';
 
     /**
      * @var GoodsBuffer
@@ -37,10 +31,9 @@ class PartialIndexing extends Command
      *
      * @return void
      */
-    public function __construct(IndexGoods $indexGoods, GoodsBuffer $goodsBuffer)
+    public function __construct(GoodsBuffer $goodsBuffer)
     {
         parent::__construct();
-        $this->indexGoods = $indexGoods;
         $this->goodsBuffer = $goodsBuffer;
     }
 
@@ -52,7 +45,7 @@ class PartialIndexing extends Command
     {
         foreach ($this->goodsBuffer->scan() as $goodsIds) {
             if (!empty($goodsIds)) {
-                Artisan::call(IndexRefill::class, ['--goods-ids' => $goodsIds]);
+                $this->call(Publish::class, ['--goods-ids' => $goodsIds]);
             }
         }
     }

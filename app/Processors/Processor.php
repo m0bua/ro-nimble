@@ -117,7 +117,7 @@ abstract class Processor implements ProcessorInterface
         foreach ($fields as $field) {
             $fieldName = in_array($field, $this->aliases, true) ? array_search($field, $this->aliases, true) : $field;
 
-            if (isset($this->data[$fieldName])) {
+            if (array_key_exists($fieldName, $this->data)) {
                 $prepared[$field] = $this->resolveField($this->data[$fieldName]);
             }
         }
@@ -138,7 +138,7 @@ abstract class Processor implements ProcessorInterface
         }
 
         if (is_bool($field) || in_array($field, ['true', 'false'], true)) {
-            return $field === true || $field === 'true' ? 'true' : 'false';
+            return ($field === true || $field === 'true') ? 'true' : 'false';
         }
 
         if (is_string($field)) {
