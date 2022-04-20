@@ -34,7 +34,7 @@ class OptionPluralAggregator extends AbstractAggregator
             ->select([
                 'gop.goods_id',
                 DB::raw("coalesce(json_agg(DISTINCT o.id) filter (WHERE o.id IS NOT NULL), '[]') as options"),
-                DB::raw("coalesce(json_agg(DISTINCT gop.value_id) filter (WHERE ov.status IS NOT NULL), '[]') AS option_values"),
+                DB::raw("coalesce(json_agg(DISTINCT CASE WHEN ov.parent_id = 0 THEN ov.id WHEN ov.parent_id is null THEN ov.id ELSE ov.parent_id END) filter (WHERE ov.status IS NOT NULL), '[]') AS option_values"),
             ])
             ->from($this->model->getTable(), 'gop')
             ->join('options as o', 'gop.option_id', 'o.id')
