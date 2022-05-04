@@ -26,14 +26,6 @@ class CommentsAggregator extends AbstractAggregator
     /**
      * @inheritDoc
      */
-    public function get(int $key): float
-    {
-        return parent::get($key) ?? 0.0;
-    }
-
-    /**
-     * @inheritDoc
-     */
     protected function prepare(Collection $ids): Collection
     {
         $groupComments = $this->model
