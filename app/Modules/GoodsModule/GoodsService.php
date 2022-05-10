@@ -5,6 +5,7 @@
  */
 namespace App\Modules\GoodsModule;
 
+use App\Components\ElasticSearchComponents\CategoryComponent;
 use App\Components\ElasticSearchComponents\CollapseComponent;
 use App\Components\ElasticSearchComponents\FromComponent;
 use App\Components\ElasticSearchComponents\SingleGoodsComponent;
@@ -36,7 +37,10 @@ class GoodsService
      * @var ElasticWrapper
      */
     private ElasticWrapper $elasticWrapper;
-
+    /**
+     * @var CategoryComponent
+     */
+    private CategoryComponent $categoryComponent;
     /**
      * @var FromComponent
      */
@@ -68,6 +72,7 @@ class GoodsService
         Filters $filters,
         ElasticWrapper $elasticWrapper,
 
+        CategoryComponent $categoryComponent,
         FromComponent $fromComponent,
         SizeComponent $sizeComponent,
         SortComponent $sortComponent,
@@ -80,6 +85,7 @@ class GoodsService
         $this->filters = $filters;
         $this->elasticWrapper = $elasticWrapper;
 
+        $this->categoryComponent = $categoryComponent;
         $this->fromComponent = $fromComponent;
         $this->sizeComponent = $sizeComponent;
         $this->sortComponent = $sortComponent;
@@ -124,11 +130,20 @@ class GoodsService
             ])
         );
 
+        $goodsInCategory = $this->goodsModel->search(
+            $this->elasticWrapper->body(
+                $this->elasticWrapper->query(
+                    $this->categoryComponent->getValue()
+                )
+            )
+        )['hits']['total']['value'];
+
         $idsCount = $data['hits']['total']['value'];
 
         return [
             'ids' => $this->getIds($data['hits']['hits']),
             'ids_count' => $idsCount,
+            'goods_in_category' => $goodsInCategory,
             'shown_page' => $this->filters->page->getValues()['min'],
             'goods_limit' => $this->filters->perPage->getValues()[0],
             'total_pages' => ceil($idsCount / $this->filters->perPage->getValues()[0])

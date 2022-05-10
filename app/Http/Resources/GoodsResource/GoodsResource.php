@@ -11,6 +11,7 @@ class GoodsResource extends BaseResource
         return [
             'ids',
             'ids_count',
+            'goods_in_category',
             'shown_page',
             'goods_limit',
             'total_pages',
