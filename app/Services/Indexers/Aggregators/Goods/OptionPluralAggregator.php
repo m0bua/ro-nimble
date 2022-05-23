@@ -46,6 +46,7 @@ class OptionPluralAggregator extends AbstractAggregator
                 'bottom'
             ])
             ->whereIn('o.type', [
+                'value',
                 'List',
                 'ComboBox',
                 'ListValues',
