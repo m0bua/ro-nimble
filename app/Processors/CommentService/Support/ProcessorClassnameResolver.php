@@ -8,9 +8,9 @@ class ProcessorClassnameResolver
 {
     private const PROCESSOR_NAMESPACE = 'CommentService\\GoodsComments\\';
     private const ROUTING_SEPARATOR = '.';
-    private const CHANGE_EVENT = 'change';
-    private const CREATE_EVENT = 'create';
-    private const DELETE_EVENT = 'delete';
+    private const CHANGE_EVENT = 'change.totalComments';
+    private const CREATE_EVENT = 'create.totalComments';
+    private const DELETE_EVENT = 'delete.totalComments';
 
     /**
      * @param string $routingKey
@@ -29,7 +29,8 @@ class ProcessorClassnameResolver
      */
     public static function resolve(string $routingKey): string
     {
-        $event = explode(self::ROUTING_SEPARATOR, $routingKey)[0];
+        $keyParts = explode(self::ROUTING_SEPARATOR, $routingKey);
+        $event = $keyParts[0] . '.' . $keyParts[1];
 
         switch ($event) {
             case self::CREATE_EVENT:
