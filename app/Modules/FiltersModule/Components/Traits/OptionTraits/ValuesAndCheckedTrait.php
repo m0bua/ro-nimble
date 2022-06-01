@@ -10,9 +10,10 @@ trait ValuesAndCheckedTrait
 {
     /**
      * Получаем значения обычных фильтров и чекбоксов
+     * @param array $optionValues
      * @return Collection
      */
-    public function getValuesAndChecked(): Collection
+    public function getValuesAndChecked(array $optionValues): Collection
     {
         if (
             $this->optionsCount->isEmpty()
@@ -25,7 +26,8 @@ trait ValuesAndCheckedTrait
         return $this->option->getOptionsByCategory(
             $this->optionsCount->keys()->merge($this->optionCheckedCount->keys())->toArray(),
             $this->getFiltersCategories(),
-            $this->isFilterAutoranking
+            $this->isFilterAutoranking,
+            $optionValues
         )
             ->filter(function(Collection $option) {
                 if (is_null($option['option_value_id'])) {

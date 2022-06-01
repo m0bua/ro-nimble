@@ -43,6 +43,11 @@ class OptionValues extends AbstractOptionFilter
     {
         $result = Filters::DEFAULT_FILTER_VALUE;
 
+        $allOptionValueNames = collect();
+        collect($params)->each(function ($option) use (&$allOptionValueNames) {
+            $allOptionValueNames = $allOptionValueNames->merge($option['optionValues']);
+        });
+
         foreach ($params as $param) {
             /** @var Option $option */
             $option = $param['option'];
@@ -52,7 +57,11 @@ class OptionValues extends AbstractOptionFilter
                 continue;
             }
 
-            $optionValues = OptionValue::getOptValueIdsByNames($option->id, $optionValues);
+            $optionValues = OptionValue::getOptValueIdsByNames(
+                $option->id,
+                $optionValues,
+                $allOptionValueNames->toArray()
+            );
 
             if ($optionValues) {
                 $result[$option->id] = [

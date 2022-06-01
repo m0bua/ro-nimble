@@ -98,7 +98,12 @@ class OptionsService extends BaseComponent
 
         $this->isFilterAutoranking = $this->filters->category->isFilterAutoranking();
 
-        $valuesAndChecked = $this->getValuesAndChecked();
+        $filterValues = collect();
+        $this->filters->options->optionValues->getValues()->each(function ($item) use (&$filterValues) {
+            $filterValues = $filterValues->merge(collect($item)['values']);
+        });
+
+        $valuesAndChecked = $this->getValuesAndChecked($filterValues->toArray());
         $sliders = $this->getSliders();
 
         if ($valuesAndChecked->isEmpty() && $sliders->isEmpty()) {

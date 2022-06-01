@@ -129,9 +129,10 @@ class OptionValue extends Model
     /**
      * @param int $optionId
      * @param array $names
+     * @param array $allOptionValueNames
      * @return array
      */
-    public static function getOptValueIdsByNames(int $optionId, array $names): array
+    public static function getOptValueIdsByNames(int $optionId, array $names, array $allOptionValueNames): array
     {
         return static::select([DB::raw("COALESCE(ov_parent.id, ov.id) as id")])
             ->from('option_values', 'ov')
@@ -139,8 +140,14 @@ class OptionValue extends Model
                 $join->on('ov.parent_id', '=', 'ov_parent.id')
                     ->whereColumn('ov_parent.status', '!=', DB::raw("'not-use'"));
             })
+            ->leftJoin('option_value_relations as ovr', 'ov.option_id',  'ovr.option_id')
+            ->leftJoin('option_values as ov2r', 'ov2r.id',  'ovr.value_id')
             ->where('ov.option_id', $optionId)
             ->whereIn('ov.name', $names)
+            ->whereNested(function($query) use ($allOptionValueNames) {
+                $query->whereNull('ovr.id')
+                    ->orWhereIn('ov2r.name', $allOptionValueNames);
+            })
             ->pluck('id')
             ->toArray();
     }

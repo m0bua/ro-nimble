@@ -172,14 +172,23 @@ class Option extends Model
     }
 
     /**
+     * @param array $optionsIds
      * @param array $categoryIds
+     * @param bool $isFilterAutoranking
+     * @param array $optionValues
      * @return SupportCollection
      */
-    public function getOptionsByCategory(array $optionsIds, array $categoryIds, bool $isFilterAutoranking): SupportCollection
+    public function getOptionsByCategory(
+        array $optionsIds,
+        array $categoryIds,
+        bool $isFilterAutoranking,
+        array $optionValues
+    ): SupportCollection
     {
         $optionTable = $this->getTable();
         $optionValueTable = OptionValue::make()->getTable();
         $optionSettingTable = OptionSetting::make()->getTable();
+        $optionValueRelation = OptionValueRelation::make()->getTable();
         $precountOptionSettingTable = PrecountOptionSetting::make()->getTable();
 
         $query = static::query()
@@ -198,6 +207,7 @@ class Option extends Model
             ->from($optionTable, 'o')
             ->join("{$precountOptionSettingTable} as pos", 'pos.option_id', 'o.id')
             ->join("{$optionSettingTable} as os", 'os.id', 'pos.options_settings_id')
+            ->leftJoin("{$optionValueRelation} as ovr", 'ovr.option_id', 'o.id')
             ->leftJoin("{$optionValueTable} as ov", function(JoinClause $join) {
                 $join->on('ov.option_id', 'o.id')
                     ->where('ov.status', OptionValue::STATUS_ACTIVE);
@@ -207,7 +217,11 @@ class Option extends Model
             ->whereIn('os.comparable', [Filters::COMPARABLE_MAIN, Filters::COMPARABLE_BOTTOM])
             ->where('o.state', self::STATE_ACTIVE)
             ->whereIn('os.status', OptionSetting::$availableStatuses)
-            ->whereNotIn('o.type', self::$sliderTypes);
+            ->whereNotIn('o.type', self::$sliderTypes)
+            ->whereNested(function ($q) use ($optionValues) {
+                $q->whereNull('ovr.id')
+                    ->orWhereIn('ovr.value_id', $optionValues);
+            });
 
         if ($isFilterAutoranking) {
             $filterAutorankingOptionsQuery = FilterAutoranking::getOptionsQuery($categoryIds[0]);
