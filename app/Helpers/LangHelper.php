@@ -8,41 +8,23 @@ namespace App\Helpers;
 
 class LangHelper
 {
-    public const LOCALE_UA = 'ua';
-    public const LOCALE_RU = 'ru';
-
     /**
      * Возвращает соответсвие стран и локалей
      * @return array
      */
     public static function getLocalesMap(): array
     {
-        return [
-            self::LOCALE_UA => 'uk-UA',
-            self::LOCALE_RU => 'ru-RU',
-        ];
+        return config('translatable.locales_lang_map');
     }
 
     /**
-     * Возвращает соответсвие локалей и переводов
-     * @return array
-     */
-    public static function getLocalesLangsList(): array
-    {
-        return [
-            self::LOCALE_UA => 'uk',
-            self::LOCALE_RU => 'ru',
-        ];
-    }
-
-    /**
-     * Возвращает язык для локали
-     * @param $locale
+     * Возвращает откорректированный язык
+     * @param string $lang
      * @return string
      */
-    public static function getLocaleLang($locale): string
+    public static function getCorrectLang(string $lang): string
     {
-        return self::getLocalesLangsList()[$locale];
+        return config('translatable.lang_corrector_map')[$lang] ?? $lang;
     }
 
     /**
@@ -51,7 +33,7 @@ class LangHelper
      */
     public static function getDefaultLang(): string
     {
-        return self::LOCALE_RU;
+        return config('translatable.default_language');
     }
 
     /**
@@ -60,17 +42,18 @@ class LangHelper
      */
     public static function getRequestLang(): string
     {
-        return strtolower((string) request('lang'));
+        return \strtolower((string) request('lang'));
     }
 
     /**
      * Проверяет наличие локали среди доступных
      * @param string $lang
+     * @param string $country
      * @return bool
      */
-    public static function hasLang(string $lang): bool
+    public static function hasLocale(string $lang, string $country): bool
     {
-        return array_key_exists($lang, self::getLocalesMap());
+        return \array_key_exists("{$lang}_{$country}", self::getLocalesMap());
     }
 
     /**
@@ -79,13 +62,9 @@ class LangHelper
      */
     public static function getCurrentLang()
     {
-        $urlCountry = self::getRequestLang();
-        $currentLang = self::hasLang($urlCountry) ? $urlCountry : self::getDefaultLang();
+        $urlCountry = \strtoupper(CountryHelper::getRequestCountry());
+        $urlLang = self::getCorrectLang(self::getRequestLang());
 
-        if ($currentLang == self::LOCALE_UA && !CountryHelper::isUaCountry()) {
-            $currentLang = self::getDefaultLang();
-        }
-
-        return self::getLocaleLang($currentLang);
+        return self::hasLocale($urlLang, $urlCountry) ? $urlLang : self::getDefaultLang();
     }
 }

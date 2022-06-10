@@ -41,7 +41,7 @@ class CountryHelper
      */
     public static function getDefaultCountry(): string
     {
-        return self::COUNTRY_UA;
+        return config('translatable.default_country');
     }
 
     /**
