@@ -57,6 +57,7 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $promotion_group_constructors_count
  * @property-read Collection|GoodsTranslation[] $translations
  * @property-read int|null $translations_count
+ * @property-read Collection|Label[] $label
  * @method static GoodsFactory factory(...$parameters)
  * @method static Builder|Goods newModelQuery()
  * @method static Builder|Goods newQuery()
@@ -182,5 +183,11 @@ class Goods extends Model
                 'paymentMethods' => fn($q) => $q->active(),
             ])
             ->get();
+    }
+
+    public function label(): BelongsToMany
+    {
+        return $this->belongsToMany(Label::class);
+
     }
 }

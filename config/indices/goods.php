@@ -144,6 +144,9 @@ return [
             'group_comment_avg_marks' => [
                 'type' => 'float'
             ],
+            'goods_labels_ids' => [
+                'type' => 'integer',
+            ],
         ]
     ],
 ];

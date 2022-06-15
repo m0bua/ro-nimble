@@ -51,6 +51,9 @@ class Label extends Model
     use HasFillable;
     use HasTranslations;
 
+    const STATUS_ACTIVE = 'active';
+    const STATUS_LOCKED = 'locked';
+
     protected $fillable = [
         'id',
         'name',
