@@ -5,7 +5,6 @@ namespace App\Processors\GoodsService\Option;
 use App\Models\Eloquent\GoodsOptionBoolean;
 use App\Models\Eloquent\GoodsOptionNumber;
 use App\Models\Eloquent\GoodsOptionPlural;
-use App\Models\Eloquent\IndexGoods;
 use App\Models\Eloquent\Option;
 use App\Models\Eloquent\OptionValue;
 use App\Processors\DeleteProcessor;
@@ -16,7 +15,6 @@ class DeleteEventProcessor extends DeleteProcessor
 
     private GoodsOptionPlural $goodsOptionPlural;
     private OptionValue $optionValue;
-    private IndexGoods $indexGoods;
     private GoodsOptionBoolean $boolean;
     private GoodsOptionNumber $number;
 
@@ -26,15 +24,13 @@ class DeleteEventProcessor extends DeleteProcessor
      * @param GoodsOptionNumber $number
      * @param GoodsOptionPlural $goodsOptionPlural
      * @param OptionValue $optionValue
-     * @param IndexGoods $indexGoods
      */
     public function __construct(
         Option             $model,
         GoodsOptionBoolean $boolean,
         GoodsOptionNumber  $number,
         GoodsOptionPlural  $goodsOptionPlural,
-        OptionValue        $optionValue,
-        IndexGoods         $indexGoods
+        OptionValue        $optionValue
     )
     {
         $this->model = $model;
@@ -42,7 +38,6 @@ class DeleteEventProcessor extends DeleteProcessor
         $this->number = $number;
         $this->goodsOptionPlural = $goodsOptionPlural;
         $this->optionValue = $optionValue;
-        $this->indexGoods = $indexGoods;
     }
 
     /**
@@ -82,8 +77,6 @@ class DeleteEventProcessor extends DeleteProcessor
             ->merge($gopGoods)
             ->unique('id')
             ->toArray();
-
-        $this->indexGoods->query()->insertOrIgnore($goods);
 
         $boolQuery->delete();
         $numQuery->delete();

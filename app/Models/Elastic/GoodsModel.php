@@ -2,9 +2,6 @@
 
 namespace App\Models\Elastic;
 
-use App\Models\GraphQL\ProducerOneModel;
-use Exception;
-
 /**
  * Class GoodsModel
  * @package App\Models\Elastic\Promotions

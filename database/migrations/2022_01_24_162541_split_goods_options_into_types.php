@@ -43,7 +43,7 @@ class SplitGoodsOptionsIntoTypes extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('goods_options_booleans');
-        Schema::dropIfExists('goods_options_numbers');
+        Schema::dropIfExists('goods_option_booleans');
+        Schema::dropIfExists('goods_option_numbers');
     }
 }
