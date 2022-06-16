@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b97fe71cd94f8731eaab9b6475a4c4eb",
+    "content-hash": "b1cce78c3466a7f1a1b1e76506f6d67d",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -8595,6 +8595,59 @@
             "time": "2020-10-24T15:29:28+00:00"
         },
         {
+            "name": "codeception/module-redis",
+            "version": "1.4.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Codeception/module-redis.git",
+                "reference": "a0f26804200346761500a37a39aed919ada20b3f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Codeception/module-redis/zipball/a0f26804200346761500a37a39aed919ada20b3f",
+                "reference": "a0f26804200346761500a37a39aed919ada20b3f",
+                "shasum": ""
+            },
+            "require": {
+                "codeception/codeception": "^4.1",
+                "php": "^7.4 | ^8.0",
+                "predis/predis": "^1.1",
+                "sebastian/comparator": "^4.0"
+            },
+            "require-dev": {
+                "codeception/stub": "^4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Bodnarchuk"
+                },
+                {
+                    "name": "Dmitriy Maltsev"
+                }
+            ],
+            "description": "Redis module for Codeception",
+            "homepage": "https://codeception.com/",
+            "keywords": [
+                "codeception",
+                "redis"
+            ],
+            "support": {
+                "issues": "https://github.com/Codeception/module-redis/issues",
+                "source": "https://github.com/Codeception/module-redis/tree/1.4.1"
+            },
+            "time": "2021-12-21T01:52:19+00:00"
+        },
+        {
             "name": "codeception/module-rest",
             "version": "1.4.2",
             "source": {
@@ -9730,25 +9783,26 @@
         },
         {
             "name": "ivv/nimble-test",
-            "version": "1.0.27",
+            "version": "1.0.28",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.rozetka.company:ivv/nimble-test.git",
-                "reference": "7933973714607c4211f2e59683f802355e78e282"
+                "reference": "db2e0c2e2e2b2c2b477a4500a387cecb032d1093"
             },
             "require": {
                 "automation-testing-tools/allure-codeception": "*",
                 "automation-testing-tools/codeception-test-helper": "*",
                 "automation-testing-tools/module-db": "*",
                 "codeception/codeception": "^4",
-                "codeception/module-laravel": "^2.1"
+                "codeception/module-laravel": "^2.1",
+                "codeception/module-redis": "^1.4"
             },
             "type": "project",
             "license": [
                 "Open Source"
             ],
             "description": "API tests for nimble",
-            "time": "2022-06-14T09:40:05+00:00"
+            "time": "2022-06-16T11:06:25+00:00"
         },
         {
             "name": "jms/metadata",
