@@ -11,6 +11,9 @@ variables:
   TELEGRAM_CHAT_ID: "-1001552457457"
   #for CI pipelines
   CI_HELPER_GET_DEPENDENCIES_V2: 1
+  CI_HELPER_COMPOSER_INSTALL: 1
+  COMPOSER_MEMORY_LIMIT: -1
+  COMPOSER_VERSION: 2
   PROJECT_PREFIX: SELFI
   MAIN_BRANCH: master
   GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
@@ -47,10 +50,11 @@ build:
     - vault read -field=PROD_PRIVATE devops/infra/rzk > /root/.ssh/id_rsa
     - chmod 600 /root/.ssh/id_rsa
   script:
-    - ci-helper rebase-main
     - cp env.test-default .env.test
     - cp env.test-default .env
-    - composer install
+    - ci-helper rebase-main
+    - ci-helper get-dependencies
+    - ci-helper rebase-vendor-dependencies
   only:
     - branches
     - tags
@@ -192,7 +196,6 @@ deploy-dev:
   only:
     - branches
   except:
-    - master
     - tags
 
 
