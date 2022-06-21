@@ -78,6 +78,7 @@ class GoodsAggregator extends AbstractAggregator
                 'sell_status',
                 'state',
                 'status_inherited',
+                'status',
                 'country_code',
                 'rank',
                 DB::raw("to_json(string_to_array(trim('.' from mpath), '.')) as categories_path"),

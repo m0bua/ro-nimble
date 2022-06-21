@@ -36,6 +36,8 @@ use Illuminate\Support\Carbon;
  * @property int|null $order
  * @property int|null $series_id
  * @property string|null $state
+ * @property string|null $status
+ * @property int $needs_index
  * @property int $is_deleted
  * @property string|null $country_code
  * @property Carbon|null $created_at
@@ -114,6 +116,8 @@ class Goods extends Model
         'country_code',
         'series_id',
         'state',
+        'status',
+        'needs_index',
         'is_deleted',
     ];
 
