@@ -9787,7 +9787,7 @@
             "source": {
                 "type": "git",
                 "url": "git@gitlab.rozetka.company:ivv/nimble-test.git",
-                "reference": "7f9965b43c9407c5805d49e18f8acd5f499ea545"
+                "reference": "26b6e70b3f53d6f7816d3924e178e66d758229f5"
             },
             "require": {
                 "automation-testing-tools/allure-codeception": "*",
