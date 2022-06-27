@@ -78,13 +78,14 @@ class GoodsAggregator extends AbstractAggregator
                 'sell_status',
                 'state',
                 'status_inherited',
-                'status',
                 'country_code',
                 'rank',
+                'order',
                 DB::raw("to_json(string_to_array(trim('.' from mpath), '.')) as categories_path"),
                 DB::raw("'[]'::json as tags"),
             ])
             ->whereIn('id', $ids)
+            ->whereIn('status', [Goods::STATUS_ACTIVE, Goods::STATUS_CONFIGURABLE_BY_SERVICES])
             ->toBase()
             ->get()
             ->keyBy('id')

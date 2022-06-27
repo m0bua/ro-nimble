@@ -73,13 +73,23 @@ class GoodsIndexer implements Indexer
     {
         $data = [];
         $goods = $this->goods->aggregate($ids);
+        $indexIds = [];
 
         foreach ($goods->all() as $item) {
+            $indexIds[] = $item->id;
             $data[] = ['index' => [
                 '_index' => $this->index,
                 '_id' => $item->id,
             ]];
             $data[] = $item;
+        }
+
+        $deleteIds = \array_diff($ids->toArray(), $indexIds);
+        foreach ($deleteIds as $id) {
+            $data[] = ['delete' => [
+                '_index' => $this->index,
+                '_id' => $id,
+            ]];
         }
 
         return ['body' => $data];

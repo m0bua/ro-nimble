@@ -39,6 +39,9 @@ return [
             'category_id' => [
                 'type' => 'integer',
             ],
+            'order' => [
+                'type' => 'integer'
+            ],
             'categories_path' => [
                 'type' => 'integer'
             ],

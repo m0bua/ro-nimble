@@ -95,6 +95,9 @@ class Goods extends Model
     public const SELL_STATUS_ARCHIVE = 'archive';
     public const SELL_STATUS_HIDDEN = 'hidden';
 
+    public const STATUS_ACTIVE = 'active';
+    public const STATUS_CONFIGURABLE_BY_SERVICES = 'configurable_by_services';
+
     public $incrementing = false;
 
     protected $fillable = [
