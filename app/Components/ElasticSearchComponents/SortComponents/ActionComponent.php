@@ -24,26 +24,26 @@ class ActionComponent extends BaseComponent
                             return 99999;
                         }
 
-                        int sell_status = 1;
-                        int tag = 2;
+                        int sell_status_rate = 1;
+                        int label_rate = 2;
 
-                        for (int tag : doc['tags']) {
-                            if (tag == 4) {
-                                tag = 1;
+                        for (int label_id : doc['goods_labels_ids']) {
+                            if (label_id == 4 || label_id == 10 || label_id == 17 || label_id == 18) {
+                                label_rate = 1;
                             }
                         }
 
                         if (doc['sell_status'].value == 'available' || doc['sell_status'].value == 'limited') {
-                            sell_status = 1;
+                            sell_status_rate = 1;
                         } else if (doc['sell_status'].value == 'waiting_for_supply') {
-                            sell_status = 3;
+                            sell_status_rate = 3;
                         } else if (doc['sell_status'].value == 'out_of_stock') {
-                            sell_status = 4;
+                            sell_status_rate = 4;
                         } else if (doc['sell_status'].value == 'unavailable') {
-                            sell_status = 5;
+                            sell_status_rate = 5;
                         }
 
-                        return sell_status * tag;
+                        return sell_status_rate * label_rate;
                     EOF
                 ],
                 'order' => 'asc'
