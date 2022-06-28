@@ -2,9 +2,7 @@
 
 namespace App\Models\Eloquent;
 
-use App\Casts\Translatable;
 use App\Traits\Eloquent\HasFillable;
-use App\Traits\Eloquent\HasTranslations;
 use Database\Factories\Eloquent\ProducerFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -39,11 +37,8 @@ use Illuminate\Support\Facades\DB;
  * @property int $needs_index
  * @property-read Collection|Goods[] $goods
  * @property-read int|null $goods_count
- * @property-read Collection|ProducerTranslation[] $translations
- * @property-read int|null $translations_count
  * @method static Builder|Producer active()
  * @method static ProducerFactory factory(...$parameters)
- * @method static Builder|Producer loadTranslations() WARNING! This scope must be in start of all query
  * @method static Builder|Producer needsIndex()
  * @method static Builder|Producer newModelQuery()
  * @method static Builder|Producer newQuery()
@@ -71,7 +66,6 @@ class Producer extends Model
 {
     use HasFactory;
     use HasFillable;
-    use HasTranslations;
 
     public $incrementing = false;
 
@@ -90,10 +84,6 @@ class Producer extends Model
         'disable_filter_series',
         'is_deleted',
         'needs_index',
-    ];
-
-    protected $casts = [
-        'title' => Translatable::class,
     ];
 
     /**
@@ -160,6 +150,7 @@ class Producer extends Model
             ->select([
                 'p.id as id',
                 'p.name',
+                'p.title',
             ])
             ->from($producerTable, 'p')
             ->whereIn('p.id', $ids)

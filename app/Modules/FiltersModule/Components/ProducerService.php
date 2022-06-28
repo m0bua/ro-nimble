@@ -7,25 +7,15 @@
 
 namespace App\Modules\FiltersModule\Components;
 
-use App\Enums\Config;
 use App\Enums\Elastic;
 use App\Enums\Filters;
-use App\Helpers\TranslateHelper;
-use App\Models\Eloquent\OptionTranslation;
 use App\Models\Eloquent\Producer;
-use App\Models\Eloquent\ProducerTranslation;
 use App\Modules\FiltersModule\Components\Traits\SortTrait;
 use Illuminate\Support\Collection;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class ProducerService extends BaseComponent
 {
     use SortTrait;
-
-    /**
-     * @var Collection
-     */
-    private Collection $producersTranslations;
 
     /**
      * @return array
@@ -103,28 +93,19 @@ class ProducerService extends BaseComponent
             return [];
         }
 
-        $this->producersTranslations = TranslateHelper::getTranslationFields(
-            ProducerTranslation::getByProducerIds($producersData->pluck('id')->toArray()),
-            'producer_id'
-        );
-
         $producers = [];
 
         /** @var Producer $producer */
         foreach ($producersData as $producer) {
             $id = $producer['id'];
-            $optionValueTitle = $this->producersTranslations[$id]['title'] ?? '';
-
-            if ($optionValueTitle) {
-                $producers[$id] = [
-                    'option_value_id' => $id,
-                    'option_value_name' => $producer['name'],
-                    'option_value_title' => $optionValueTitle,
-                    'is_chosen' => false,
-                    'products_quantity' => $foundProducersWithChosen[$id] ?? 0,
-                    'is_value_show' => !!$producer['is_value_show'],
-                ];
-            }
+            $producers[$id] = [
+                'option_value_id' => $id,
+                'option_value_name' => $producer['name'],
+                'option_value_title' => $producer['title'] ?? '',
+                'is_chosen' => false,
+                'products_quantity' => $foundProducersWithChosen[$id] ?? 0,
+                'is_value_show' => !!$producer['is_value_show'],
+            ];
         }
 
         // установка выбранных фильтров
