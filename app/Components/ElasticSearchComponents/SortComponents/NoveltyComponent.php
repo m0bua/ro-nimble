@@ -47,6 +47,9 @@ class NoveltyComponent extends BaseComponent
                 ],
                 'order' => 'asc'
             ],
+            'order' => [
+                'order' => 'asc'
+            ],
             'rank' => [
                 'order' => 'desc'
             ],

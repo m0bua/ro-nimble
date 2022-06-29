@@ -51,6 +51,9 @@ class ActionComponent extends BaseComponent
             'price' => [
                 'order' => 'desc'
             ],
+            'order' => [
+                'order' => 'asc'
+            ],
             'rank' => [
                 'order' => 'desc'
             ],

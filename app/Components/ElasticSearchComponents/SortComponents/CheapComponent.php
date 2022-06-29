@@ -40,6 +40,9 @@ class CheapComponent extends BaseComponent
             'price' => [
                 'order' => 'asc'
             ],
+            'order' => [
+                'order' => 'asc'
+            ],
             'rank' => [
                 'order' => 'desc'
             ],

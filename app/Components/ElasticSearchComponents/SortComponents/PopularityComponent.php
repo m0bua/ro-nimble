@@ -50,6 +50,9 @@ class PopularityComponent extends BaseComponent
             'rank' => [
                 'order' => 'desc'
             ],
+            'order' => [
+                'order' => 'asc'
+            ],
             'id' => [
                 'order' => 'desc'
             ]
