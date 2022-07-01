@@ -19,6 +19,7 @@ use Illuminate\Support\Carbon;
  * @property int $goods_id
  * @property int $needs_index
  * @property int $is_deleted
+ * @property int $order
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property int $needs_migrate
@@ -53,6 +54,7 @@ class PromotionGoodsConstructor extends Model
         'needs_index',
         'is_deleted',
         'needs_migrate',
+        'order',
     ];
 
     public function goods(): BelongsTo
