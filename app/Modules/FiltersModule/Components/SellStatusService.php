@@ -46,9 +46,6 @@ class SellStatusService extends BaseComponent
                 'option_value_id' => $status,
                 'option_value_name' => $status,
                 'option_value_title' => __('filters.' . $status),
-                'title_genetive' => __('filters.' . $status),
-                'title_accusative' => __('filters.' . $status),
-                'title_prepositional' => __('filters.' . $status),
             ];
 
             $order++;
@@ -75,9 +72,6 @@ class SellStatusService extends BaseComponent
                 'option_name' => Filters::PARAM_SELL_STATUSES,
                 'option_title' => __('filters.' . Filters::PARAM_SELL_STATUSES),
                 'option_type' => Filters::OPTION_TYPE_COMBOBOX,
-                'title_genetive' => __('filters.' . Filters::PARAM_SELL_STATUSES),
-                'title_accusative' => __('filters.' . Filters::PARAM_SELL_STATUSES),
-                'title_prepositional' => __('filters.' . Filters::PARAM_SELL_STATUSES),
                 'special_combobox_view' => Filters::SPECIAL_COMBOBOX_VIEW_LIST,
                 'comparable' => Filters::COMPARABLE_MAIN,
                 'hide_block' => false,
