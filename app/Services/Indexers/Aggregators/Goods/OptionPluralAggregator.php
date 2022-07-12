@@ -39,9 +39,10 @@ class OptionPluralAggregator extends AbstractAggregator
             ->from($this->model->getTable(), 'gop')
             ->join('options as o', 'gop.option_id', 'o.id')
             ->join('option_values as ov', 'gop.value_id', 'ov.id')
+            ->join('option_settings as os', 'os.option_id', 'o.id')
             ->where('o.state', 'active')
             ->where('ov.status', 'active')
-            ->whereIn('o.option_record_comparable', [
+            ->whereIn('os.comparable', [
                 'main',
                 'bottom'
             ])
