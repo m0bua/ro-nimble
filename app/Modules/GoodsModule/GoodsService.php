@@ -130,13 +130,18 @@ class GoodsService
             ])
         );
 
-        $goodsInCategory = $this->goodsModel->search(
-            $this->elasticWrapper->body(
-                $this->elasticWrapper->query(
-                    $this->categoryComponent->getValue()
+        if ($this->filters->promotion->getValues()->isNotEmpty()
+                && $this->filters->category->getValues()->isEmpty()) {
+            $goodsInCategory = $data['hits']['total']['value'];
+        } else {
+            $goodsInCategory = $this->goodsModel->search(
+                $this->elasticWrapper->body(
+                    $this->elasticWrapper->query(
+                        $this->categoryComponent->getValue()
+                    )
                 )
-            )
-        )['hits']['total']['value'];
+            )['hits']['total']['value'];
+        }
 
         $idsCount = $data['hits']['total']['value'];
 
