@@ -40,4 +40,5 @@ class Elastic
     public const FIELD_BONUS = 'bonus_charge_pcs';
     public const FIELD_PRODUCER_TITLE_KEYWORD = 'producer_title.keyword';
     public const FIELD_PRODUCER_TITLE_TEXT = 'producer_title.text';
+    public const FIELD_GOODS_LABELS_IDS = 'goods_labels_ids';
 }

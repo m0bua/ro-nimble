@@ -25,13 +25,21 @@ class GoodsWithPromotionsComponent extends BaseComponent
             return $result;
         }
 
+        $installment = [];
+        $promotion = [];
         foreach ($params as $param) {
             if ($param == Filters::PROMOTION_GOODS_INSTALLMENT) {
-                $result[] = $this->elasticWrapper->term(Elastic::FIELD_OPTIONS, Config::INSTALLMENT_OPTION);
+                $installment[] = $this->elasticWrapper->term(Elastic::FIELD_OPTIONS, Config::INSTALLMENT_OPTION);
             } elseif ($param == Filters::PROMOTION_GOODS_PROMOTION) {
-                $result[] = $this->elasticWrapper->terms(Elastic::FIELD_TAGS, Filters::$filterPromotionTags);
+                $promotion[] = $this->elasticWrapper->terms(Elastic::FIELD_GOODS_LABELS_IDS, Filters::$filterPromotionTags);
             }
         }
+
+        $result[] = $this->elasticWrapper->bool(
+            $this->elasticWrapper->should(
+                array_merge($installment, $promotion)
+            )
+        );
 
         return $result;
     }
