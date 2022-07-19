@@ -104,17 +104,6 @@ class SellerService extends BaseComponent
                 'products_quantity' => 0,
                 'order' => 1,
             ],
-            $this->filters->sellers::MERCHANT_TYPE_FULFILLMENT => [
-                'option_value_id' => Filters::SELLER_FULFILLMENT,
-                'option_value_name' => Filters::SELLER_FULFILLMENT,
-                'option_value_title' => __('filters.seller_fulfillment'),
-                'title_genetive' => __('filters.seller_fulfillment'),
-                'title_accusative' => __('filters.seller_fulfillment'),
-                'title_prepositional' => __('filters.seller_fulfillment'),
-                'is_chosen' => false,
-                'products_quantity' => 0,
-                'order' => 2,
-            ]
         ];
     }
 }
