@@ -69,9 +69,16 @@ class GoodsAggregator extends AbstractAggregator
                 DB::raw("(case
                         when merchant_id = 1 then 1
                         when merchant_id = 2 then 1
-                        when merchant_id = 43 then 2
+                        when merchant_id = 14 then 1
+                        when merchant_id = 20 then 1
+                        when merchant_id = 51 then 1
+                        when merchant_id = 67 then 1
+                        when merchant_id = 43 then 1
+                        when merchant_id = 58 then 1
+                        when merchant_id = 64 then 1
+                        when merchant_id = 56 then 1
                         when merchant_id = 0 then 0
-                        else 3
+                        else 2
                     end) as merchant_type"
                 ),
                 'series_id',
