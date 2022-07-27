@@ -290,6 +290,7 @@ class Option extends Model
             ->whereNotIn('os.comparable', [Filters::COMPARABLE_DISABLE, Filters::COMPARABLE_LOCKED])
             ->where(function(Builder $query) use ($categoryIds) {
                 $query->whereIn('os.category_id', $categoryIds)
+                    ->orWhere('os.category_id', 0)
                     ->orWhereNull('os.category_id');
             })
             ->orderBy('option_id')
