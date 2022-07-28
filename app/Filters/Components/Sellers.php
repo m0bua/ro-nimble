@@ -12,21 +12,18 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class Sellers extends AbstractFilter
 {
     /**
-     * merchant_type = 1, если merchant_id равен 1 или 2
-     * merchant_type = 2, если merchant_id равен 43
-     * merchant_type = 3, если merchant_id не равен 1,2 или 43
+     * merchant_type = 1, если merchant_id равен 1,2,14,20,51,67,43,58,64,56
+     * merchant_type = 2, если merchant_id не равен ˆ
      */
 
     /**
      * Sellers merchant types
      */
     public const MERCHANT_TYPE_ROZETKA = 1;
-    public const MERCHANT_TYPE_FULFILLMENT = 2;
-    public const MERCHANT_TYPE_OTHER = 3;
+    public const MERCHANT_TYPE_OTHER = 2;
 
     protected static array $seller_params = [
         Filters::SELLER_ROZETKA => self::MERCHANT_TYPE_ROZETKA,
-        Filters::SELLER_FULFILLMENT => self::MERCHANT_TYPE_FULFILLMENT,
         Filters::SELLER_OTHER => self::MERCHANT_TYPE_OTHER,
     ];
 
