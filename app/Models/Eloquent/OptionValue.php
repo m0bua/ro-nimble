@@ -31,9 +31,6 @@ use Illuminate\Support\Carbon;
  * @property string|null $similars_value
  * @property int|null $show_value_in_short_set
  * @property string|null $color
- * @property string $title_genetive
- * @property string $title_accusative
- * @property string $title_prepositional
  * @property string $description
  * @property string $shortening
  * @property int|null $record_type
@@ -100,18 +97,12 @@ class OptionValue extends Model
         'is_deleted',
         'is_section',
         'title',
-        'title_genetive',
-        'title_accusative',
-        'title_prepositional',
         'description',
         'shortening',
     ];
 
     protected $casts = [
         'title' => Translatable::class,
-        'title_genetive' => Translatable::class,
-        'title_accusative' => Translatable::class,
-        'title_prepositional' => Translatable::class,
         'description' => Translatable::class,
         'shortening' => Translatable::class,
     ];

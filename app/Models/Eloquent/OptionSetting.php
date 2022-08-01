@@ -122,17 +122,13 @@ class OptionSetting extends Model
         'disallow_import_filters_orders',
         'number_template',
         'get_from_standard',
-        'title_genetive',
-        'title_accusative',
-        'title_prepositional',
+        'option_title',
     ];
 
     protected $casts = [
         'unit' => Translatable::class,
         'more_word' => Translatable::class,
-        'title_genetive' => Translatable::class,
-        'title_accusative' => Translatable::class,
-        'title_prepositional' => Translatable::class,
+        'option_title' => Translatable::class,
     ];
 
     public function category(): BelongsTo
