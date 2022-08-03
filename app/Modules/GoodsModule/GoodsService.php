@@ -101,7 +101,7 @@ class GoodsService
             throw new BadRequestHttpException('Missing required parameters');
         }
 
-        if ($this->filters->promotion->getValues() && !$this->filters->singleGoods->isCheck()) {
+        if (!$this->filters->singleGoods->isCheck()) {
             $queryBody = $this->elasticWrapper->terms(Elastic::FIELD_ID, $this->getFilteredGoods());
         } else {
             $queryBody = $this->elasticWrapper->bool(
