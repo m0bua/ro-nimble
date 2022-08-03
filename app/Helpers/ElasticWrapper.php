@@ -12,6 +12,16 @@ namespace App\Helpers;
 class ElasticWrapper
 {
     public const DEFAULT_RESULT = [];
+    public const EMPTY_SEARCH_RESULT = [
+        "hits" => [
+            "total" => [
+                "value" => 0,
+                "relation" => "eq"
+            ],
+            "max_score" => null,
+            "hits" => []
+        ]
+    ];
 
     public const RANGE_GTE = 'gte'; // >=
     public const RANGE_GT = 'gt'; // >
@@ -225,6 +235,22 @@ class ElasticWrapper
     public function getUniqueFieldData(array $data, string $field): array
     {
         return array_values(array_unique(array_column(array_column($data['hits']['hits'], '_source'), $field)));
+    }
+
+    /**
+     * @param array $data
+     * @param string $field
+     * @return array
+     */
+    public function getUniqueInnerHitsFieldData(array $data, string $field): array
+    {
+        $result = [];
+        foreach ($data['hits']['hits'] as $hit) {
+            foreach ($hit['inner_hits']['group']['hits']['hits'] as $innerHit) {
+                $result[] = $innerHit['_source'][$field];
+            }
+        }
+        return $result;
     }
 
     /**

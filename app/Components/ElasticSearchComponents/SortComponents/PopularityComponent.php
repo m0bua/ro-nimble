@@ -7,11 +7,12 @@
 
 namespace App\Components\ElasticSearchComponents\SortComponents;
 
-use App\Components\ElasticSearchComponents\BaseComponent;
-
-class PopularityComponent extends BaseComponent
+class PopularityComponent extends BaseSortComponent
 {
-    public function getValue(): array
+    /**
+     * @return array[]
+     */
+    protected function getScript(): array
     {
         return [
             '_script' => [
@@ -46,16 +47,38 @@ class PopularityComponent extends BaseComponent
                     EOF
                 ],
                 'order' => 'asc'
-            ],
-            'rank' => [
-                'order' => 'desc'
-            ],
-            'order' => [
-                'order' => 'asc'
-            ],
-            'id' => [
-                'order' => 'desc'
             ]
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getValue(): array
+    {
+        return [
+            array_merge(
+                $this->getScript(),
+                $this->getOrder(),
+                $this->getRank(),
+                $this->getId()
+            )
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getValueForCollapse(): array
+    {
+        return [
+            array_merge(
+                $this->getScript(),
+                $this->getIsGroupPrimary(),
+                $this->getOrder(),
+                $this->getRank(),
+                $this->getId()
+            )
         ];
     }
 }

@@ -58,10 +58,6 @@ class GoodsService
      */
     private SourceComponent $sourceComponent;
     /**
-     * @var SingleGoodsComponent
-     */
-    private SingleGoodsComponent $singleGoodsComponent;
-    /**
      * @var CollapseComponent
      */
     private CollapseComponent $collapseComponent;
@@ -77,7 +73,6 @@ class GoodsService
         SizeComponent $sizeComponent,
         SortComponent $sortComponent,
         SourceComponent $sourceComponent,
-        SingleGoodsComponent $singleGoodsComponent,
         CollapseComponent $collapseComponent
     ) {
         $this->elasticService = $elasticService;
@@ -90,7 +85,6 @@ class GoodsService
         $this->sizeComponent = $sizeComponent;
         $this->sortComponent = $sortComponent;
         $this->sourceComponent = $sourceComponent->setFields($this->selectFields);
-        $this->singleGoodsComponent = $singleGoodsComponent;
         $this->collapseComponent = $collapseComponent;
     }
 
@@ -107,28 +101,34 @@ class GoodsService
             throw new BadRequestHttpException('Missing required parameters');
         }
 
-        $data = $this->goodsModel->search(
-            $this->elasticWrapper->body([
-                $this->fromComponent->getValue(),
-                $this->sizeComponent->getValue(),
-                $this->sortComponent->getValue(),
-                $this->sourceComponent->setFields($this->selectFields)->getValue(),
-                $this->elasticWrapper->query(
-                    $this->elasticWrapper->bool(
-                        [
-                            $this->elasticWrapper->filter(
-                                array_merge(
-                                    $this->elasticService->getDefaultFiltersConditions(),
-                                    [$this->getSingleGoodsConditions()]
-                                )
-                            ),
-                            $this->elasticWrapper->mustNotSingle($this->elasticService->getExcludedCategories())
-                        ]
+        if ($this->filters->promotion->getValues() && !$this->filters->singleGoods->isCheck()) {
+            $queryBody = $this->elasticWrapper->terms(Elastic::FIELD_ID, $this->getFilteredGoods());
+        } else {
+            $queryBody = $this->elasticWrapper->bool(
+                [
+                    $this->elasticWrapper->filter(
+                        $this->elasticService->getDefaultFiltersConditions()
+                    ),
+                    $this->elasticWrapper->mustNotSingle($this->elasticService->getExcludedCategories())
+                ]
+            );
+        }
+
+        if (!empty($queryBody)) {
+            $data = $this->goodsModel->search(
+                $this->elasticWrapper->body([
+                    $this->fromComponent->getValue(),
+                    $this->sizeComponent->getValue(),
+                    $this->sortComponent->getValue(),
+                    $this->sourceComponent->setFields($this->selectFields)->getValue(),
+                    $this->elasticWrapper->query(
+                        $queryBody
                     )
-                ),
-                $this->collapseComponent->getValue()
-            ])
-        );
+                ])
+            );
+        } else {
+            $data = $this->elasticWrapper::EMPTY_SEARCH_RESULT;
+        }
 
         if ($this->filters->promotion->getValues()->isNotEmpty()
                 && $this->filters->category->getValues()->isEmpty()) {
@@ -151,7 +151,7 @@ class GoodsService
             'goods_in_category' => $goodsInCategory,
             'shown_page' => $this->filters->page->getValues()['min'],
             'goods_limit' => $this->filters->perPage->getValues()[0],
-            'total_pages' => ceil($idsCount / $this->filters->perPage->getValues()[0])
+            'total_pages' => ceil($idsCount / $this->filters->perPage->getValues()[0]),
         ];
     }
 
@@ -171,46 +171,31 @@ class GoodsService
     }
 
     /**
-     * Генерит условие для вывода групповых товаров в акции
-     * @return array
+     * Отфильтровывает результаты,
+     * Соединяет в группы и внутри груп проводит сортировку
+     * Отдает id товаров из поля inner_hits
+     *
+     * @return int[]
      */
-    public function getSingleGoodsConditions()
-    {
-        if ($this->singleGoodsComponent->isCheck()) {
-            $this->singleGoodsComponent->setExcludedGroups(
-                $this->getExcludedGroups()
-            );
-        }
-
-        return $this->singleGoodsComponent->getValue();
-    }
-
-    /**
-     * Получает группы, для которых в выдаче, нет главных товаров
-     * @return array
-     */
-    public function getExcludedGroups(): array
+    public function getFilteredGoods (): array
     {
         $data = $this->goodsModel->search(
             $this->elasticWrapper->body([
-                $this->sizeComponent->getDefaultElasticSize(),
-                $this->sourceComponent->setFields([Elastic::FIELD_GROUP_ID])->getValue(),
+                $this->sourceComponent->setFields([Elastic::FIELD_GROUP_TOKEN])->getValue(),
                 $this->elasticWrapper->query(
                     $this->elasticWrapper->bool(
                         [
                             $this->elasticWrapper->filter(
-                                array_merge(
-                                    $this->elasticService->getDefaultFiltersConditions(),
-                                    [$this->singleGoodsComponent->getPrimaryGroupConditions()]
-                                )
+                                $this->elasticService->getDefaultFiltersConditions(),
                             ),
                             $this->elasticWrapper->mustNotSingle($this->elasticService->getExcludedCategories())
                         ]
                     )
-                )
+                ),
+                $this->collapseComponent->getCollapseForGoods($this->sortComponent->getValueForCollapse())
             ])
         );
 
-        return $this->elasticWrapper->getUniqueFieldData($data, 'group_id');
+        return $this->getIds($data['hits']['hits']);
     }
 }

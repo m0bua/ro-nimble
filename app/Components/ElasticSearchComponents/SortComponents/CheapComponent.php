@@ -7,11 +7,12 @@
 
 namespace App\Components\ElasticSearchComponents\SortComponents;
 
-use App\Components\ElasticSearchComponents\BaseComponent;
-
-class CheapComponent extends BaseComponent
+class CheapComponent extends BaseSortComponent
 {
-    public function getValue(): array
+    /**
+     * @return array[]
+     */
+    protected function getScript(): array
     {
         return [
             '_script' => [
@@ -36,19 +37,52 @@ class CheapComponent extends BaseComponent
                     EOF
                 ],
                 'order' => 'asc'
-            ],
+            ]
+        ];
+    }
+
+    /**
+     * @return array[]
+     */
+    private function getPrice(): array
+    {
+        return [
             'price' => [
                 'order' => 'asc'
-            ],
-            'order' => [
-                'order' => 'asc'
-            ],
-            'rank' => [
-                'order' => 'desc'
-            ],
-            'id' => [
-                'order' => 'desc'
             ]
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getValue(): array
+    {
+        return [
+            array_merge(
+                $this->getScript(),
+                $this->getPrice(),
+                $this->getOrder(),
+                $this->getRank(),
+                $this->getId()
+            )
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getValueForCollapse(): array
+    {
+        return [
+            array_merge(
+                $this->getScript(),
+                $this->getPrice(),
+                $this->getIsGroupPrimary(),
+                $this->getOrder(),
+                $this->getRank(),
+                $this->getId()
+            )
         ];
     }
 }

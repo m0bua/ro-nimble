@@ -14,6 +14,7 @@ class Elastic
     public const PARAM_SIZE = 'size';
     public const PARAM_TRACK_TOTAL_HITS = 'track_total_hits';
 
+    public const FIELD_ID = 'id';
     public const FIELD_PRICE = 'price';
     public const FIELD_PRODUCER = 'producer_id';
     public const FIELD_MERCHANT = 'merchant_type';

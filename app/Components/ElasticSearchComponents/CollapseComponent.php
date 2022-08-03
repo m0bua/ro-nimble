@@ -39,4 +39,25 @@ class CollapseComponent extends BaseComponent
 
         return [self::PARAM_NAME => $params];
     }
+
+    /**
+     * Return condition for collapse
+     *
+     * @param array $sort
+     * @return float[]|int[]
+     */
+    public function getCollapseForGoods(array $sort): array
+    {
+        $params = ['field' => Elastic::FIELD_GROUP_TOKEN];
+
+        $params['inner_hits'] = [
+            'name' => 'group',
+            '_source' => 'id',
+            'size' => 1
+        ];
+
+        $params['inner_hits'] = array_merge($params['inner_hits'], $sort);
+
+        return [self::PARAM_NAME => $params];
+    }
 }

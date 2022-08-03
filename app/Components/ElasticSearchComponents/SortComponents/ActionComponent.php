@@ -7,12 +7,12 @@
 
 namespace App\Components\ElasticSearchComponents\SortComponents;
 
-
-use App\Components\ElasticSearchComponents\BaseComponent;
-
-class ActionComponent extends BaseComponent
+class ActionComponent extends BaseSortComponent
 {
-    public function getValue(): array
+    /**
+     * @return array[]
+     */
+    protected function getScript(): array
     {
         return [
             '_script' => [
@@ -24,42 +24,65 @@ class ActionComponent extends BaseComponent
                             return 99999;
                         }
 
-                        int sell_status_rate = 1;
-                        int label_rate = 2;
+                        int sell_status = 1;
 
-                        for (int label_id : doc['goods_labels_ids']) {
-                            if (label_id == 4 || label_id == 10 || label_id == 17 || label_id == 18) {
-                                label_rate = 1;
-                            }
+                        if (doc['sell_status'].value == 'waiting_for_supply'
+                            || doc['sell_status'].value == 'out_of_stock'
+                            || doc['sell_status'].value == 'unavailable'
+                        ) {
+                            sell_status = 2;
                         }
 
-                        if (doc['sell_status'].value == 'available' || doc['sell_status'].value == 'limited') {
-                            sell_status_rate = 1;
-                        } else if (doc['sell_status'].value == 'waiting_for_supply') {
-                            sell_status_rate = 3;
-                        } else if (doc['sell_status'].value == 'out_of_stock') {
-                            sell_status_rate = 4;
-                        } else if (doc['sell_status'].value == 'unavailable') {
-                            sell_status_rate = 5;
-                        }
-
-                        return sell_status_rate * label_rate;
+                        return sell_status;
                     EOF
                 ],
                 'order' => 'asc'
-            ],
+            ]
+        ];
+    }
+
+    /**
+     * @return array[]
+     */
+    private function getPrice(): array
+    {
+        return [
             'price' => [
                 'order' => 'desc'
-            ],
-            'order' => [
-                'order' => 'asc'
-            ],
-            'rank' => [
-                'order' => 'desc'
-            ],
-            'id' => [
-                'order' => 'desc'
             ]
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getValue(): array
+    {
+        return [
+            array_merge(
+                $this->getScript(),
+                $this->getPrice(),
+                $this->getOrder(),
+                $this->getRank(),
+                $this->getId()
+            )
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getValueForCollapse(): array
+    {
+        return [
+            array_merge(
+                $this->getScript(),
+                $this->getPrice(),
+                $this->getIsGroupPrimary(),
+                $this->getOrder(),
+                $this->getRank(),
+                $this->getId()
+            )
         ];
     }
 }
