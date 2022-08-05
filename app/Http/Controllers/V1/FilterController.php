@@ -178,7 +178,7 @@ class FilterController extends Controller
      *          @OA\Schema (
      *              type="array",
      *              @OA\Items (
-     *                  type="int"
+     *                  type="string"
      *              )
      *          )
      *     ),
