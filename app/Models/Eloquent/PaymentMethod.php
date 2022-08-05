@@ -60,6 +60,7 @@ class PaymentMethod extends Model
     protected $fillable = [
         'id',
         'parent_id',
+        'payment_term_id',
         'name',
         'order',
         'status',
@@ -83,6 +84,11 @@ class PaymentMethod extends Model
     public function children(): HasMany
     {
         return $this->hasMany(static::class, 'parent_id');
+    }
+
+    public function terms(): BelongsTo
+    {
+        return $this->belongsTo(PaymentMethodsTerm::class, 'payment_term_id');
     }
 
     /**
