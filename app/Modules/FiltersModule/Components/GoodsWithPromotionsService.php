@@ -54,7 +54,7 @@ class GoodsWithPromotionsService extends BaseComponent
      */
     private function promotionsCustomFiltersConditions(): array
     {
-        return $this->elasticWrapper->terms(Elastic::FIELD_TAGS, Filters::$filterPromotionTags);
+        return $this->elasticWrapper->terms(Elastic::FIELD_GOODS_LABELS_IDS, Filters::$filterPromotionTags);
     }
 
     /**

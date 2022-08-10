@@ -223,6 +223,8 @@ class Filters
     public const TAGS_ACTION = 4;
     // Новинка-акция
     public const TAGS_PROMOTION_NOVELTY = 7;
+    public const TAGS_PROMOTION_FIRST = 17;
+    public const TAGS_PROMOTION_SECOND = 18;
 
     /**
      * Набор тегов для опции "Акция" фильтра "Товары с акциями"
@@ -231,6 +233,8 @@ class Filters
     public static array $filterPromotionTags = [
         self::TAGS_ACTION,
         self::TAGS_PROMOTION_NOVELTY,
+        self::TAGS_PROMOTION_FIRST,
+        self::TAGS_PROMOTION_SECOND,
     ];
 
     /**
