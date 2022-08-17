@@ -150,6 +150,17 @@ return [
             'goods_labels_ids' => [
                 'type' => 'integer',
             ],
+            'promotion' => [
+                'type' => 'nested',
+                'properties' => [
+                    'id' => [
+                        'type' => 'integer',
+                    ],
+                    'order' => [
+                        'type' => 'integer',
+                    ]
+                ]
+            ],
         ]
     ],
 ];

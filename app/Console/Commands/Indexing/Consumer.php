@@ -21,7 +21,7 @@ class Consumer extends Command
      *
      * @var string
      */
-    protected $signature = 'consumer:index {queue?}';
+    protected $signature = 'consumer:index {queue?} {--stop=0}';
 
     /**
      * The console command description.
@@ -76,11 +76,15 @@ class Consumer extends Command
      */
     public function handle(): int
     {
-        $queue =  $this->argument('queue') ?? config(self::CONFIG . '.queue');
+        $queue = $this->argument('queue') ?? config(self::CONFIG . '.queue');
+        $stop = (bool) $this->option('stop');
 
         $rabbitMq = new Amqp();
-        $rabbitMq->consume($queue, function (AMQPMessage $message) {
+        $rabbitMq->consume($queue, function (AMQPMessage $message, \Bschmitt\Amqp\Consumer $consumer) use ($stop) {
             $this->indexer->handleMessage($message);
+            if ($stop) {
+                $consumer->stopWhenProcessed();
+            }
         }, config(self::CONFIG));
 
         return 0;
