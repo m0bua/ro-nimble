@@ -69,4 +69,6 @@ return [
         public_path('storage') => storage_path('app/public'),
     ],
 
+    'main_local_dump_path' => 'database/seeders/data/main/',
+    'secondary_local_dump_path' => 'database/seeders/data/secondary/',
 ];

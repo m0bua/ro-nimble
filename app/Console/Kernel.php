@@ -10,6 +10,10 @@ use App\Console\Commands\Indexing;
 use App\Console\Commands\IndexProducers;
 use App\Console\Commands\Precount\FillPrecountOptionSettings;
 use App\Console\Commands\Precount\FillPrecountOptionSliders;
+use App\Console\Commands\Seed\{
+    Seed,
+    GenerateSeed
+};
 use App\Console\Commands\StartConsumer;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -41,6 +45,9 @@ class Kernel extends ConsoleKernel
         Indexing\Services::class,
 
         FetchFiltersAutoranking::class,
+
+        GenerateSeed::class,
+        Seed::class,
     ];
 
     /**
