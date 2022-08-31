@@ -7,21 +7,22 @@
 
 namespace App\Components\ElasticSearchComponents\SortComponents;
 
-use App\Components\ElasticSearchComponents\BaseComponent;
-
-class RankComponent extends BaseComponent
+class RankComponent extends BaseSortComponent
 {
-    public function getValue(): array
+    /**
+     * @return array[]
+     */
+    protected function getScript(): array
     {
         return [
             '_script' => [
-                'type' => 'number',
-                'script' => [
-                    'lang' => 'painless',
-                    'params' => [
-                        'is_rozetka_top' => $this->filters->category->isRozetkaTop()
-                    ],
-                    'source' => <<< EOF
+            'type' => 'number',
+            'script' => [
+                'lang' => 'painless',
+                'params' => [
+                    'is_rozetka_top' => $this->filters->category->isRozetkaTop()
+                ],
+                'source' => <<< EOF
                         if (doc['price'].value == 0) {
                             return 99999;
                         }
@@ -54,18 +55,40 @@ class RankComponent extends BaseComponent
 
                         return sell_status * state * seller;
                     EOF
-                ],
-                'order' => 'asc'
             ],
-            'order' => [
-                'order' => 'asc'
-            ],
-            'rank' => [
-                'order' => 'desc'
-            ],
-            'id' => [
-                'order' => 'desc'
-            ]
+            'order' => 'asc'
+        ]
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getValue(): array
+    {
+        return [
+            array_merge(
+                $this->getScript(),
+                $this->getOrder(),
+                $this->getRank(),
+                $this->getId()
+            )
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getValueForCollapse(): array
+    {
+        return [
+            array_merge(
+                $this->getScript(),
+                $this->getIsGroupPrimary(),
+                $this->getOrder(),
+                $this->getRank(),
+                $this->getId()
+            )
         ];
     }
 }

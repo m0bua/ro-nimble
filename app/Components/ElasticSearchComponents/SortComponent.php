@@ -7,16 +7,16 @@
 
 namespace App\Components\ElasticSearchComponents;
 
-use App\Components\ElasticSearchComponents\SortComponents\SortComponentsInterface;
+use App\Components\ElasticSearchComponents\SortComponents\BaseSortComponent;
 
 class SortComponent extends BaseComponent
 {
     public const PARAM_NAME = 'sort';
 
     /**
-     * @var SortComponentsInterface
+     * @var BaseSortComponent
      */
-    public BaseComponent $currentSortComponent;
+    public BaseSortComponent $currentSortComponent;
 
     /**
      * @return float[]|int[]
@@ -26,6 +26,16 @@ class SortComponent extends BaseComponent
         $this->initCurrentSortComponent();
 
         return [self::PARAM_NAME => $this->currentSortComponent->getValue()];
+    }
+
+    /**
+     * @return float[]|int[]
+     */
+    public function getValueForCollapse(): array
+    {
+        $this->initCurrentSortComponent();
+
+        return [self::PARAM_NAME => $this->currentSortComponent->getValueForCollapse()];
     }
 
     /**
