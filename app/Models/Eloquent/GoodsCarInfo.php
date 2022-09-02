@@ -20,6 +20,7 @@ use Illuminate\Support\Carbon;
  * @property int $car_year_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property int $need_delete
  * @method static Builder|GoodsCarInfo newModelQuery()
  * @method static Builder|GoodsCarInfo newQuery()
  * @method static Builder|GoodsCarInfo query()

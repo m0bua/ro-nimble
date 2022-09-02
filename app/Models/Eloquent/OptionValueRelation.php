@@ -17,6 +17,7 @@ use Illuminate\Support\Carbon;
  * @property int $option_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property int $need_delete
  * @method static Builder|OptionValueRelation newModelQuery()
  * @method static Builder|OptionValueRelation newQuery()
  * @method static Builder|OptionValueRelation query()

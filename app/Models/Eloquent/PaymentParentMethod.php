@@ -20,6 +20,7 @@ use Illuminate\Support\Collection;
  * @property int|null $order
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property int $need_delete
  * @property-read Collection|PaymentParentMethodTranslation[] $translations
  * @property-read int|null $translations_count
  * @property string $title title translation

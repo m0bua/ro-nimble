@@ -24,6 +24,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property int $needs_migrate
+ * @property int $need_delete
  * @property-read PromotionConstructor $constructor
  * @property-read Collection|Goods[] $goods
  * @property-read int|null $goods_count

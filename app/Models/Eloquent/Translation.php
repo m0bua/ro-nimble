@@ -21,6 +21,7 @@ use Illuminate\Support\Str;
  * @property string $value
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property int $need_delete
  * @property-read Model $entity
  * @method static Builder|Translation withLang()
  * @method static Builder|Translation newModelQuery()

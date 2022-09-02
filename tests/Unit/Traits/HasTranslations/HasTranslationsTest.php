@@ -60,6 +60,7 @@ class HasTranslationsTest extends TestCase
                 $table->string('lang', 3);
                 $table->string('column');
                 $table->string('value');
+                $table->integer('need_delete');
                 $table->timestamps();
 
                 $table->unique([
@@ -119,7 +120,8 @@ class HasTranslationsTest extends TestCase
             'dummy_id' => 1,
             'lang' => Language::RU,
             'column' => 'title',
-            'value' => 'title_ru'
+            'value' => 'title_ru',
+            'need_delete' => 0
         ]);
     }
 
@@ -138,19 +140,22 @@ class HasTranslationsTest extends TestCase
             'dummy_id' => 1,
             'lang' => Language::RU,
             'column' => 'title',
-            'value' => 'title_ru'
+            'value' => 'title_ru',
+            'need_delete' => 0
         ]);
         $this->assertDatabaseHas('dummy_translations', [
             'dummy_id' => 1,
             'lang' => Language::EN,
             'column' => 'title',
-            'value' => 'title_en'
+            'value' => 'title_en',
+            'need_delete' => 0
         ]);
         $this->assertDatabaseHas('dummy_translations', [
             'dummy_id' => 1,
             'lang' => Language::UK,
             'column' => 'title',
-            'value' => 'title_uk'
+            'value' => 'title_uk',
+            'need_delete' => 0
         ]);
     }
 
@@ -164,7 +169,8 @@ class HasTranslationsTest extends TestCase
             'dummy_id' => 1,
             'lang' => Language::RU,
             'column' => 'title',
-            'value' => 'title_ru_2'
+            'value' => 'title_ru_2',
+            'need_delete' => 0
         ]);
     }
 
@@ -189,19 +195,22 @@ class HasTranslationsTest extends TestCase
             'dummy_id' => 1,
             'lang' => Language::RU,
             'column' => 'title',
-            'value' => 'title_ru_2'
+            'value' => 'title_ru_2',
+            'need_delete' => 0
         ]);
         $this->assertDatabaseHas('dummy_translations', [
             'dummy_id' => 1,
             'lang' => Language::EN,
             'column' => 'title',
-            'value' => 'title_en_2'
+            'value' => 'title_en_2',
+            'need_delete' => 0
         ]);
         $this->assertDatabaseHas('dummy_translations', [
             'dummy_id' => 1,
             'lang' => Language::UK,
             'column' => 'title',
-            'value' => 'title_uk'
+            'value' => 'title_uk',
+            'need_delete' => 0
         ]);
     }
 
@@ -263,7 +272,8 @@ class HasTranslationsTest extends TestCase
             'dummy_id' => 1,
             'lang' => Language::UK,
             'column' => 'title',
-            'value' => 'title_uk'
+            'value' => 'title_uk',
+            'need_delete' => 0
         ]);
     }
 

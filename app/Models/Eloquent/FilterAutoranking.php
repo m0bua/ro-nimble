@@ -19,6 +19,7 @@ use Illuminate\Support\Carbon;
  * @property int $filter_rank
  * @property bool $is_value_show
  * @property bool $is_filter_show
+ * @property int $need_delete
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @method static Builder|FilterAutoranking newModelQuery()

@@ -46,6 +46,7 @@ use Illuminate\Support\Facades\DB;
  * @property int $is_deleted
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property int $need_delete
  * @property-read Collection|Category[] $children
  * @property-read int|null $children_count
  * @property-read Category|null $parent

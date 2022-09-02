@@ -21,6 +21,7 @@ use Illuminate\Support\Carbon;
  * @property int $is_deleted
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ * @property int $need_delete
  * @property-read Collection|PromotionGoodsConstructor[] $goodsConstructors
  * @property-read int|null $goods_constructors_count
  * @property-read Collection|PromotionGroupConstructor[] $groupConstructors

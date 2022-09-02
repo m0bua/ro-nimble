@@ -240,7 +240,7 @@ trait HasTranslations
     private function getUpdateColumns(): array
     {
         return [
-            'value',
+            'value', 'need_delete'
         ];
     }
 
@@ -259,6 +259,7 @@ trait HasTranslations
             'lang' => $lang,
             'column' => $column,
             'value' => $value,
+            'need_delete' => 0,
         ];
     }
 }

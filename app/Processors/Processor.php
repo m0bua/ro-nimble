@@ -121,6 +121,7 @@ abstract class Processor implements ProcessorInterface
                 $prepared[$field] = $this->resolveField($this->data[$fieldName]);
             }
         }
+        $prepared['need_delete'] = 0;
 
         return $prepared;
     }

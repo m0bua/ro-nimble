@@ -16,6 +16,7 @@ use Illuminate\Support\Carbon;
  * @property string $value
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property int $need_delete
  * @property-read PaymentMethod $entity
  * @method static Builder|PaymentMethodTranslation newModelQuery()
  * @method static Builder|PaymentMethodTranslation newQuery()

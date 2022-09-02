@@ -17,6 +17,7 @@ use Illuminate\Support\Carbon;
  * @property int $summ_marks
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property int $need_delete
  * @method static Builder|GoodsComment newModelQuery()
  * @method static Builder|GoodsComment newQuery()
  * @method static Builder|GoodsComment query()

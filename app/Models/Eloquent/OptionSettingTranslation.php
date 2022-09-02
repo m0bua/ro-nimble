@@ -17,6 +17,7 @@ use Illuminate\Support\Carbon;
  * @property string $value
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property int $need_delete
  * @property-read OptionSetting $entity
  * @method static Builder|OptionSettingTranslation newModelQuery()
  * @method static Builder|OptionSettingTranslation newQuery()

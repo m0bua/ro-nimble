@@ -46,7 +46,8 @@ class UpsertEventProcessor extends UpsertProcessor
                 $this->boolean->upsert(
                     [
                         'goods_id' => $data['goods_id'],
-                        'option_id' => $data['option_id']
+                        'option_id' => $data['option_id'],
+                        'need_delete' => $data['need_delete'],
                     ],
                     $uniqueBy,
                     $update
@@ -65,7 +66,8 @@ class UpsertEventProcessor extends UpsertProcessor
                         [
                             'goods_id' => $data['goods_id'],
                             'option_id' => $data['option_id'],
-                            'value' => $data['value']
+                            'value' => $data['value'],
+                            'need_delete' => $data['need_delete'],
                         ],
                         $uniqueBy,
                         $update

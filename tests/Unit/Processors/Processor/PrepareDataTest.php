@@ -29,6 +29,7 @@ class PrepareDataTest extends TestCase
             'field2' => 'value2',
             'field3' => 'value3',
             'field4' => 'value4',
+            'need_delete' => 0,
         ];
         $result = $this->processor()->_prepareData($data);
 
@@ -53,6 +54,7 @@ class PrepareDataTest extends TestCase
             'field2' => 'value2',
             'field3' => 'value3',
             'field4' => 'value4',
+            'need_delete' => 0,
         ];
         $this->assertEquals($expected, $result);
     }

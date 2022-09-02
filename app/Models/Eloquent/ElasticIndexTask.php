@@ -27,6 +27,7 @@ use Throwable;
  * @property bool $update_aliases
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property int $need_delete
  * @property-read bool $can_be_processed
  * @property-read string $target_model_name
  * @method static Builder|ElasticIndexTask canBeProcessed()

@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $option_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property int $need_delete
  * @property-read \App\Models\Eloquent\Goods $goods
  * @property-read \App\Models\Eloquent\Option $option
  * @method static \Illuminate\Database\Eloquent\Builder|GoodsOptionBoolean newModelQuery()

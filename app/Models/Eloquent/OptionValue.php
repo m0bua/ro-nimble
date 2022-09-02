@@ -38,6 +38,7 @@ use Illuminate\Support\Carbon;
  * @property int $is_deleted
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ * @property int $need_delete
  * @property-read Option|null $option
  * @property-read OptionValue|null $parent
  * @property-read Collection|OptionValueTranslation[] $translations

@@ -23,6 +23,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $ext_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property int $need_delete
  * @property-read Collection|SeriesTranslation[] $translations
  * @property-read int|null $translations_count
  * @property array<string> $title title translations

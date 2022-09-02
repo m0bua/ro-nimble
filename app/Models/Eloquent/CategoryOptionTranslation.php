@@ -17,6 +17,7 @@ use Illuminate\Support\Carbon;
  * @property array|null $compound_key
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property int $need_delete
  * @property-read CategoryOption $entity
  * @method static Builder|CategoryOptionTranslation newModelQuery()
  * @method static Builder|CategoryOptionTranslation newQuery()

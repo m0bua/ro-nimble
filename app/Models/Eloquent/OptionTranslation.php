@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\App;
  * @property string $value
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property int $need_delete
  * @property-read Option $entity
  * @method static Builder|OptionTranslation newModelQuery()
  * @method static Builder|OptionTranslation newQuery()

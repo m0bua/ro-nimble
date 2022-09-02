@@ -42,6 +42,7 @@ use Illuminate\Support\Carbon;
  * @property bool|null $get_from_standard
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property int $need_delete
  * @property-read Category|null $category
  * @property-read Option|null $option
  * @property-read Collection|OptionSettingTranslation[] $translations

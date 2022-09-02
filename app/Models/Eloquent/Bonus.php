@@ -26,6 +26,7 @@ use Illuminate\Support\Carbon;
  * @property int $premium_bonus_charge_pcs
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property int $need_delete
  * @property-read Goods $goods
  * @method static BonusFactory factory(...$parameters)
  * @method static Builder|Bonus newModelQuery()

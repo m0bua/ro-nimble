@@ -69,6 +69,9 @@ abstract class DeleteProcessor extends Processor
 
     public static function updatableFields(): array
     {
-        return ['is_deleted' => 1];
+        return [
+            'is_deleted' => 1,
+            'need_delete' => 0,
+        ];
     }
 }

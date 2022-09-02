@@ -42,6 +42,7 @@ use Illuminate\Support\Facades\DB;
  * @property int $is_deleted
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ * @property int $need_delete
  * @property-read Category|null $category
  * @property-read int|null $goods_options_count
  * @property-read Collection|OptionTranslation[] $translations

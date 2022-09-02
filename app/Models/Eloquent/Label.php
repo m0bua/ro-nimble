@@ -27,6 +27,7 @@ use Illuminate\Support\Carbon;
  * @property string $country_code
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property int $need_delete
  * @property-read Collection|Goods[] $goods
  * @property-read int|null $goods_count
  * @method static Builder|Label newModelQuery()

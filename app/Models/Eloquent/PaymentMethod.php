@@ -26,6 +26,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property int $need_delete
  * @property-read Collection|PaymentMethod[] $children
  * @property-read int|null $children_count
  * @property-read Collection|Goods[] $goods

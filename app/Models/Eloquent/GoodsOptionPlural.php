@@ -22,6 +22,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property int $needs_index
+ * @property int $need_delete
  * @property-read Goods|null $goods
  * @property-read Option|null $option
  * @property-read OptionValue|null $value

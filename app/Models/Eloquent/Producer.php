@@ -35,6 +35,7 @@ use Illuminate\Support\Facades\DB;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property int $needs_index
+ * @property int $need_delete
  * @property-read Collection|Goods[] $goods
  * @property-read int|null $goods_count
  * @method static Builder|Producer active()

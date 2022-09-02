@@ -16,6 +16,7 @@ use Illuminate\Support\Carbon;
  * @property string $value
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property int $need_delete
  * @property-read Goods $entity
  * @method static Builder|GoodsTranslation newModelQuery()
  * @method static Builder|GoodsTranslation newQuery()
