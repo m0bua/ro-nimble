@@ -21,7 +21,7 @@ variables:
 
 before_script:
   - export VAULT_ADDR=https://vault.rozetka.company:8200
-  - vault read -field=PROD_PRIVATE devops/infra/rzk > /root/.ssh/id_rsa
+  - vault kv get -field=PROD_PRIVATE devops/infra/rzk > /root/.ssh/id_rsa
   - chmod 600 /root/.ssh/id_rsa
 
 stages:
@@ -275,6 +275,35 @@ rollback-prod:
   only:
     - tags
 
+
+deploy-pld-prod:
+  stage: deploy
+  tags:
+    - rozetka-shared-standart
+  script:
+    - consul-template -template "env.prod.atman:.env" -once
+    - dep build pld-prod -p -vv
+#    - curl -X POST -H "Content-Type:application/json" -d "{\"alias\":\"gitlab\",\"text\":\"* ${CI_PROJECT_NAME}:*   пользователь *${GITLAB_USER_LOGIN}* запустил деплой  \nversion:*$CI_COMMIT_REF_NAME* \npipeline:${CI_PROJECT_URL}/pipelines/${CI_PIPELINE_ID}/   \"}" ${rocket}
+    - dep deploy pld-prod -p -vv
+  when: manual
+  only:
+    - tags
+    - branches
+
+rollback-pld-prod:
+  stage: rollback
+  tags:
+    - rozetka-shared-standart
+  script:
+#    - curl -X POST -H "Content-Type:application/json" -d "{\"alias\":\"gitlab\",\"text\":\"* ${CI_PROJECT_NAME}:*   пользователь *${GITLAB_USER_LOGIN}* запустил откат  \nversion:*$CI_COMMIT_REF_NAME* \npipeline:${CI_PROJECT_URL}/pipelines/${CI_PIPELINE_ID}/   \"}" ${rocket}
+    - dep rollback pld-prod -p -vv
+  allow_failure: true
+  when: manual
+  only:
+    - tags
+    - branches
+
+
 restart-prod-supervisor:
   stage: stop-restart
   tags:
@@ -284,6 +313,18 @@ restart-prod-supervisor:
   when: manual
   only:
     - tags
+
+
+restart-pld-prod-supervisor:
+  stage: stop-restart
+  tags:
+    - rozetka-shared-standart
+  script:
+    - dep supervisor:restart pld-prod -p -vv
+  when: manual
+  only:
+    - tags
+    - branches
 
 jirabot:
   stage: report
