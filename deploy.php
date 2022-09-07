@@ -49,6 +49,26 @@ host('10.10.16.191')
     ->addSshOption('StrictHostKeyChecking', 'no');
 
 
+host('10.10.60.47')
+    ->stage('pld-prod')
+    ->roles('app1')
+    ->set('deploy_path', '/var/www/ivv-nimble')
+    ->user('rzk')
+    ->port(10022)
+    ->multiplexing(true)
+    ->addSshOption('StrictHostKeyChecking', 'no');
+
+host('10.10.60.46')
+    ->stage('pld-prod')
+    ->roles('api')
+    ->set('deploy_path', '/var/www/ivv-nimble')
+    ->user('rzk')
+    ->port(10022)
+    ->multiplexing(true)
+    ->addSshOption('StrictHostKeyChecking', 'no');
+
+
+
 ######## TEST ENV ###########
 host('10.10.29.66')
     ->stage('dev')
