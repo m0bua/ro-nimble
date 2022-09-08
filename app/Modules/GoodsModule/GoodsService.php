@@ -181,6 +181,7 @@ class GoodsService
     {
         $data = $this->goodsModel->search(
             $this->elasticWrapper->body([
+                $this->sizeComponent->getDefaultElasticSize(),
                 $this->sourceComponent->setFields([Elastic::FIELD_GROUP_TOKEN])->getValue(),
                 $this->elasticWrapper->query(
                     $this->elasticWrapper->bool(
