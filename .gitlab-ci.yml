@@ -250,30 +250,30 @@ restart-preprod-supervisor:
     - master
     - tags
 
-deploy-prod:
-  stage: deploy
-  tags:
-    - rozetka-shared-standart
-  script:
-    - consul-template -template "env.prod:.env" -once
-    - dep build prod -p -vv
-    - curl -X POST -H "Content-Type:application/json" -d "{\"alias\":\"gitlab\",\"text\":\"* ${CI_PROJECT_NAME}:*   пользователь *${GITLAB_USER_LOGIN}* запустил деплой  \nversion:*$CI_COMMIT_REF_NAME* \npipeline:${CI_PROJECT_URL}/pipelines/${CI_PIPELINE_ID}/   \"}" ${rocket}
-    - dep deploy prod -p -vv
-  when: manual
-  only:
-    - tags
+# deploy-prod:
+#   stage: deploy
+#   tags:
+#     - rozetka-shared-standart
+#   script:
+#     - consul-template -template "env.prod:.env" -once
+#     - dep build prod -p -vv
+#     - curl -X POST -H "Content-Type:application/json" -d "{\"alias\":\"gitlab\",\"text\":\"* ${CI_PROJECT_NAME}:*   пользователь *${GITLAB_USER_LOGIN}* запустил деплой  \nversion:*$CI_COMMIT_REF_NAME* \npipeline:${CI_PROJECT_URL}/pipelines/${CI_PIPELINE_ID}/   \"}" ${rocket}
+#     - dep deploy prod -p -vv
+#   when: manual
+#   only:
+#     - tags
 
-rollback-prod:
-  stage: rollback
-  tags:
-    - rozetka-shared-standart
-  script:
-    - curl -X POST -H "Content-Type:application/json" -d "{\"alias\":\"gitlab\",\"text\":\"* ${CI_PROJECT_NAME}:*   пользователь *${GITLAB_USER_LOGIN}* запустил откат  \nversion:*$CI_COMMIT_REF_NAME* \npipeline:${CI_PROJECT_URL}/pipelines/${CI_PIPELINE_ID}/   \"}" ${rocket}
-    - dep rollback prod -p -vv
-  allow_failure: true
-  when: manual
-  only:
-    - tags
+# rollback-prod:
+#   stage: rollback
+#   tags:
+#     - rozetka-shared-standart
+#   script:
+#     - curl -X POST -H "Content-Type:application/json" -d "{\"alias\":\"gitlab\",\"text\":\"* ${CI_PROJECT_NAME}:*   пользователь *${GITLAB_USER_LOGIN}* запустил откат  \nversion:*$CI_COMMIT_REF_NAME* \npipeline:${CI_PROJECT_URL}/pipelines/${CI_PIPELINE_ID}/   \"}" ${rocket}
+#     - dep rollback prod -p -vv
+#   allow_failure: true
+#   when: manual
+#   only:
+#     - tags
 
 
 deploy-pld-prod:
@@ -283,36 +283,34 @@ deploy-pld-prod:
   script:
     - consul-template -template "env.prod.atman:.env" -once
     - dep build pld-prod -p -vv
-#    - curl -X POST -H "Content-Type:application/json" -d "{\"alias\":\"gitlab\",\"text\":\"* ${CI_PROJECT_NAME}:*   пользователь *${GITLAB_USER_LOGIN}* запустил деплой  \nversion:*$CI_COMMIT_REF_NAME* \npipeline:${CI_PROJECT_URL}/pipelines/${CI_PIPELINE_ID}/   \"}" ${rocket}
+    - curl -X POST -H "Content-Type:application/json" -d "{\"alias\":\"gitlab\",\"text\":\"* ${CI_PROJECT_NAME}:*   пользователь *${GITLAB_USER_LOGIN}* запустил деплой  \nversion:*$CI_COMMIT_REF_NAME* \npipeline:${CI_PROJECT_URL}/pipelines/${CI_PIPELINE_ID}/   \"}" ${rocket}
     - dep deploy pld-prod -p -vv
   when: manual
   only:
     - tags
-    - branches
 
 rollback-pld-prod:
   stage: rollback
   tags:
     - rozetka-shared-standart
   script:
-#    - curl -X POST -H "Content-Type:application/json" -d "{\"alias\":\"gitlab\",\"text\":\"* ${CI_PROJECT_NAME}:*   пользователь *${GITLAB_USER_LOGIN}* запустил откат  \nversion:*$CI_COMMIT_REF_NAME* \npipeline:${CI_PROJECT_URL}/pipelines/${CI_PIPELINE_ID}/   \"}" ${rocket}
+    - curl -X POST -H "Content-Type:application/json" -d "{\"alias\":\"gitlab\",\"text\":\"* ${CI_PROJECT_NAME}:*   пользователь *${GITLAB_USER_LOGIN}* запустил откат  \nversion:*$CI_COMMIT_REF_NAME* \npipeline:${CI_PROJECT_URL}/pipelines/${CI_PIPELINE_ID}/   \"}" ${rocket}
     - dep rollback pld-prod -p -vv
   allow_failure: true
   when: manual
   only:
     - tags
-    - branches
 
 
-restart-prod-supervisor:
-  stage: stop-restart
-  tags:
-    - rozetka-shared-standart
-  script:
-    - dep supervisor:restart prod -p -vv
-  when: manual
-  only:
-    - tags
+# restart-prod-supervisor:
+#   stage: stop-restart
+#   tags:
+#     - rozetka-shared-standart
+#   script:
+#     - dep supervisor:restart prod -p -vv
+#   when: manual
+#   only:
+#     - tags
 
 
 restart-pld-prod-supervisor:
@@ -324,7 +322,6 @@ restart-pld-prod-supervisor:
   when: manual
   only:
     - tags
-    - branches
 
 jirabot:
   stage: report

@@ -51,7 +51,7 @@ host('10.10.16.191')
 
 host('10.10.60.47')
     ->stage('pld-prod')
-    ->roles('app1')
+    ->roles('app')
     ->set('deploy_path', '/var/www/ivv-nimble')
     ->user('rzk')
     ->port(10022)
