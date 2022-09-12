@@ -17,8 +17,12 @@ class SellStatusComponent extends BaseComponent
      */
     public function getValue(): array
     {
-        return $this->elasticWrapper->terms(Elastic::FIELD_SELL_STATUS,
-            $this->filters->category->isFashion() ? Filters::$sellActiveStatusesFashion : Filters::$sellActiveStatuses
-        );
+        $params = $this->filters->sellStatuses->getValues()->toArray();
+        if (empty($params)) {
+            $params = $this->filters->category->isFashion()
+                ? Filters::$sellActiveStatusesFashion
+                : Filters::$sellActiveStatuses;
+        }
+        return $this->elasticWrapper->terms(Elastic::FIELD_SELL_STATUS, $params);
     }
 }
