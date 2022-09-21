@@ -102,7 +102,28 @@ class GoodsService
         }
 
         if (!$this->filters->singleGoods->isCheck()) {
-            $queryBody = $this->elasticWrapper->terms(Elastic::FIELD_ID, $this->getFilteredGoods());
+            $queryBody = $this->elasticWrapper->bool([
+                    $this->elasticWrapper->filter(
+                        [
+                            $this->elasticWrapper->bool(
+                                $this->elasticWrapper->should(
+                                    array_merge(
+                                        [$this->elasticWrapper->bool(
+                                            $this->elasticWrapper->filter(
+                                                array_merge(
+                                                    $this->elasticService->getDefaultFiltersConditions(),
+                                                    [["term" => ["group_id" => 0]]]
+                                                )
+                                            )
+                                        )],
+                                        [$this->elasticWrapper->terms(Elastic::FIELD_ID, $this->getFilteredGoods())]
+                                    )
+                                )
+                            )
+                        ]
+                    ),
+                    $this->elasticWrapper->mustNotSingle($this->elasticService->getExcludedCategories())
+            ]);
         } else {
             $queryBody = $this->elasticWrapper->bool(
                 [
@@ -187,7 +208,10 @@ class GoodsService
                     $this->elasticWrapper->bool(
                         [
                             $this->elasticWrapper->filter(
-                                $this->elasticService->getDefaultFiltersConditions(),
+                                array_merge(
+                                    $this->elasticService->getDefaultFiltersConditions(),
+                                    [["range" => ["group_id" => ["gt" => 0]]]]
+                                )
                             ),
                             $this->elasticWrapper->mustNotSingle($this->elasticService->getExcludedCategories())
                         ]
