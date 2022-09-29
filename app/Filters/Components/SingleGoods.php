@@ -1,13 +1,30 @@
 <?php
-/**
- * Класс для работы с параметром для вывода сгруппированных товаров
- */
+
 namespace App\Filters\Components;
 
 use App\Enums\Filters;
 use App\Http\Requests\FilterRequest;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Класс для работы с параметром для вывода сгруппированных товаров
+ *
+ * @OA\Parameter (
+ *     name="single_goods",
+ *     in="query",
+ *     required=false,
+ *     description="Группировка товаров",
+ *     example="single_goods[]=1",
+ *     @OA\Schema (
+ *         type="array",
+ *         default="[0]",
+ *         @OA\Items (
+ *             enum={"0", "1"},
+ *             type="integer"
+ *         )
+ *     )
+ * ),
+ */
 class SingleGoods extends AbstractFilter
 {
     /**
@@ -35,9 +52,13 @@ class SingleGoods extends AbstractFilter
      */
     public static function fromRequest(FormRequest $request): SingleGoods
     {
-        $singleGoods = (int) filter_var($request->input(Filters::PARAM_SINGLE_GOODS), FILTER_VALIDATE_BOOLEAN);
+        $requestSingleGoods = $request->input(Filters::PARAM_SINGLE_GOODS);
+        if (!\is_array($requestSingleGoods) || empty($requestSingleGoods[0])) {
+            return new static(Filters::DEFAULT_FILTER_VALUE);
+        }
+        $requestSingleGoods = (int) filter_var($requestSingleGoods[0], FILTER_VALIDATE_BOOLEAN);
 
-        return new static($singleGoods ? [$singleGoods] : Filters::DEFAULT_FILTER_VALUE);
+        return new static($requestSingleGoods ? [$requestSingleGoods] : Filters::DEFAULT_FILTER_VALUE);
     }
 
     /**

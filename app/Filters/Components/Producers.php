@@ -10,6 +10,21 @@ use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Eloquent\Producer as ProducerModel;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
+/**
+ * @OA\Parameter (
+ *     name="producers",
+ *     in="query",
+ *     required=false,
+ *     description="Список производителей ('name' или 'v{id}')",
+ *     example="producer[]=v1234&producer[]=toshiba",
+ *     @OA\Schema (
+ *         type="array",
+ *         @OA\Items (
+ *             type="string"
+ *         )
+ *     )
+ * ),
+ */
 class Producers extends AbstractFilter
 {
     /**

@@ -1,7 +1,5 @@
 <?php
-/**
- * Класс для работы с фильтром "Серия"
- */
+
 namespace App\Filters\Components;
 
 use App\Enums\Filters;
@@ -10,6 +8,23 @@ use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Eloquent\Series as SeriesModel;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
+/**
+ * Класс для работы с фильтром "Серия"
+ *
+ * @OA\Parameter (
+ *     name="series",
+ *     in="query",
+ *     required=false,
+ *     description="Выбор серии производителя",
+ *     example="series[]=asuspro",
+ *     @OA\Schema (
+ *         type="array",
+ *         @OA\Items (
+ *             type="string"
+ *         )
+ *     )
+ * ),
+ */
 class Series extends AbstractFilter
 {
     /**

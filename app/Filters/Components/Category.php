@@ -1,7 +1,5 @@
 <?php
-/**
- * Класс для работы с фильтром "ID Категории"
- */
+
 namespace App\Filters\Components;
 
 use App\Enums\Filters;
@@ -11,6 +9,23 @@ use App\Models\Eloquent\Option;
 use Illuminate\Foundation\Http\FormRequest;
 use \App\Models\Eloquent\Category as CategoryModel;
 
+/**
+ * Класс для работы с фильтром "ID Категории"
+ *
+ * @OA\Parameter (
+ *     name="category_id",
+ *     in="query",
+ *     required=false,
+ *     description="Текущая категория",
+ *     example="category_id[]=1234567",
+ *     @OA\Schema (
+ *         type="array",
+ *         @OA\Items (
+ *             type="integer"
+ *         )
+ *     )
+ * )
+ */
 class Category extends AbstractFilter
 {
     public const FASHION_CATEGORY_ID = 1162030;
@@ -56,8 +71,12 @@ class Category extends AbstractFilter
      */
     public static function fromRequest(FormRequest $request): Category
     {
-        $categoryId = abs((int) $request->input(Filters::PARAM_CATEGORY));
+        $requestCategory = $request->input(Filters::PARAM_CATEGORY);
+        if (!\is_array($requestCategory) || empty($requestCategory[0])) {
+            return new static(Filters::DEFAULT_FILTER_VALUE);
+        }
 
+        $categoryId = abs((int) $requestCategory[0]);
         if (!$categoryId) {
             return new static(Filters::DEFAULT_FILTER_VALUE);
         }

@@ -50,7 +50,7 @@ class CountryHelper
      */
     public static function getRequestCountry(): string
     {
-        return strtolower((string) request('country'));
+        return \strtolower((string) request('country', [self::getDefaultCountry()])[0]);
     }
 
     /**

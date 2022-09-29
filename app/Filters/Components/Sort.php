@@ -1,13 +1,29 @@
 <?php
-/**
- * Класс для работы с параметром сортировки
- */
+
 namespace App\Filters\Components;
 
 use App\Enums\Filters;
 use App\Http\Requests\FilterRequest;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Класс для работы с параметром сортировки
+ *
+ * @OA\Parameter (
+ *     name="sort",
+ *     in="query",
+ *     required=false,
+ *     description="Сортировка",
+ *     example="sort[]=cheap",
+ *     @OA\Schema (
+ *         type="array",
+ *         @OA\Items (
+ *             enum={"cheap", "expensive", "popularity", "novelty", "action", "rank"},
+ *             type="string"
+ *         )
+ *     )
+ * ),
+ */
 class Sort extends AbstractFilter
 {
     /**
@@ -49,7 +65,11 @@ class Sort extends AbstractFilter
      */
     public static function fromRequest(FormRequest $request): Sort
     {
-        $sort = $request->input(Filters::PARAM_SORT, '');
+        $requestSort = $request->input(Filters::PARAM_SORT);
+        if (!\is_array($requestSort) || empty($requestSort[0])) {
+            return new static(self::DEFAULT_SORT);
+        }
+        $sort = $requestSort[0];
 
         return new static(in_array($sort, self::$availableParams) ? [$sort] : self::DEFAULT_SORT);
     }

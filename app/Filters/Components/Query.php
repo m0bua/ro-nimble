@@ -1,13 +1,28 @@
 <?php
-/**
- * Класс для работы с параметром "query" для поиска
- */
+
 namespace App\Filters\Components;
 
 use App\Enums\Filters;
 use App\Http\Requests\FilterRequest;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Класс для работы с параметром "query" для поиска
+ *
+ * @OA\Parameter (
+ *     name="query",
+ *     in="query",
+ *     required=false,
+ *     description="query",
+ *     example="query[]=query",
+ *     @OA\Schema (
+ *         type="array",
+ *         @OA\Items (
+ *             type="string"
+ *         )
+ *     )
+ * ),
+ */
 class Query extends AbstractFilter
 {
     /**
@@ -35,7 +50,11 @@ class Query extends AbstractFilter
      */
     public static function fromRequest(FormRequest $request): Query
     {
-        $query = (string) $request->input(Filters::PARAM_QUERY);
+        $requestQuery = $request->input(Filters::PARAM_QUERY);
+        if (!\is_array($requestQuery) || empty($requestQuery[0])) {
+            return new static(Filters::DEFAULT_FILTER_VALUE);
+        }
+        $query = (string) $requestQuery[0];
 
         return new static($query ? [mb_strtolower($query)] : Filters::DEFAULT_FILTER_VALUE);
     }

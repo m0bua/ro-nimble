@@ -7,6 +7,21 @@ use App\Models\Eloquent\PaymentParentMethod;
 use Illuminate\Foundation\Http\FormRequest;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
+/**
+ * @OA\Parameter (
+ *     name="payments",
+ *     in="query",
+ *     required=false,
+ *     description="Список методов оплаты",
+ *     example="payments[]=name1&payments[]=name2",
+ *     @OA\Schema (
+ *         type="array",
+ *         @OA\Items (
+ *             type="string"
+ *         )
+ *     )
+ * ),
+ */
 class Payments extends AbstractFilter
 {
     protected string $name = Filters::PAYMENTS;
@@ -26,7 +41,7 @@ class Payments extends AbstractFilter
      */
     public static function fromRequest(FormRequest $request): AbstractFilter
     {
-        $names = $request->input('payments', []);
+        $names = $request->input(Filters::PARAM_PAYMENTS, []);
         if (!is_array($names)) {
             throw new BadRequestHttpException(
                 sprintf('"%s" parameter must be an array', Filters::PARAM_PAYMENTS)
