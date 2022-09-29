@@ -1,7 +1,5 @@
 <?php
-/**
- * Класс для работы с фильтром "Товары с акциями"
- */
+
 namespace App\Filters\Components;
 
 use App\Enums\Filters;
@@ -9,6 +7,24 @@ use App\Http\Requests\FilterRequest;
 use Illuminate\Foundation\Http\FormRequest;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
+/**
+ * Класс для работы с фильтром "Товары с акциями"
+ *
+ * @OA\Parameter (
+ *     name="goods_with_promotions",
+ *     in="query",
+ *     required=false,
+ *     description="Параметры фильтра Товары с акциями",
+ *     example="goods_with_promotions[]=installments&goods_with_promotions[]=promotion",
+ *     @OA\Schema (
+ *         type="array",
+ *         @OA\Items (
+ *             enum={"installments", "promotion"},
+ *             type="string"
+ *         )
+ *     )
+ * ),
+ */
 class GoodsWithPromotions extends AbstractFilter
 {
     public static $availableParams = [

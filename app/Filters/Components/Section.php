@@ -1,13 +1,28 @@
 <?php
-/**
- * Класс для работы с секциями фильтра "Все товары"
- */
+
 namespace App\Filters\Components;
 
 use App\Enums\Filters;
 use App\Http\Requests\FilterRequest;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Класс для работы с секциями фильтра "Все товары"
+ *
+ * @OA\Parameter (
+ *     name="section_id",
+ *     in="query",
+ *     required=false,
+ *     description="Текущая секция(категория)",
+ *     example="section_id[]=123",
+ *     @OA\Schema (
+ *         type="array",
+ *         @OA\Items (
+ *             type="integer"
+ *         )
+ *     )
+ * ),
+ */
 class Section extends AbstractFilter
 {
     /**
@@ -35,7 +50,11 @@ class Section extends AbstractFilter
      */
     public static function fromRequest(FormRequest $request): Section
     {
-        $section = abs((int) $request->input(Filters::PARAM_SECTION));
+        $requestSection = $request->input(Filters::PARAM_SECTION);
+        if (!\is_array($requestSection) || empty($requestSection[0])) {
+            return new static(Filters::DEFAULT_FILTER_VALUE);
+        }
+        $section = abs((int) $requestSection[0]);
 
         return new static($section ? [$section] : Filters::DEFAULT_FILTER_VALUE);
     }

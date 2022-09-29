@@ -1,7 +1,5 @@
 <?php
-/**
- * Класс для работы с фильтром "Статус товара"
- */
+
 namespace App\Filters\Components;
 
 use App\Enums\Filters;
@@ -9,6 +7,25 @@ use App\Http\Requests\FilterRequest;
 use Illuminate\Foundation\Http\FormRequest;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
+/**
+ * Класс для работы с фильтром "Статус товара"
+ *
+ * @OA\Parameter (
+ *     name="sell_statuses",
+ *     in="query",
+ *     required=false,
+ *     description="Статусы товаров",
+ *     example="sell_statuses[]=limited&sell_statuses[]=available",
+ *     @OA\Schema (
+ *         type="array",
+ *         @OA\Items (
+ *             enum={"waiting_for_supply", "limited", "available",
+ *            "out_of_stock", "unavailable", "archive", "hidden"},
+ *             type="string"
+ *         )
+ *     )
+ * ),
+ */
 class SellStatuses extends AbstractFilter
 {
     /**

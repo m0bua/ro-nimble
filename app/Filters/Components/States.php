@@ -1,7 +1,5 @@
 <?php
-/**
- * Класс для работы с фильтром "Новый - б/у"
- */
+
 namespace App\Filters\Components;
 
 use App\Enums\Filters;
@@ -10,6 +8,24 @@ use App\Http\Requests\FilterRequest;
 use Illuminate\Foundation\Http\FormRequest;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
+/**
+ * Класс для работы с фильтром "Новый - б/у"
+ *
+ * @OA\Parameter (
+ *     name="states",
+ *     in="query",
+ *     required=false,
+ *     description="Выбор товаром Новый - Б/у",
+ *     example="states[]=new&states[]=used&states[]=refurbished",
+ *     @OA\Schema (
+ *         type="array",
+ *         @OA\Items (
+ *             enum={"new","used","refurbished"},
+ *             type="string"
+ *         )
+ *     )
+ * ),
+ */
 class States extends AbstractFilter
 {
     public static $availableParams = [

@@ -1,7 +1,5 @@
 <?php
-/**
- * Класс для работы с фильтром "Продавец"
- */
+
 namespace App\Filters\Components;
 
 use App\Enums\Filters;
@@ -9,6 +7,23 @@ use App\Http\Requests\FilterRequest;
 use Illuminate\Foundation\Http\FormRequest;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
+/**
+ * Класс для работы с фильтром "Продавец"
+ *
+ * @OA\Parameter (
+ *     name="sellers",
+ *     in="query",
+ *     required=false,
+ *     description="Список продавцов",
+ *     example="sellers[]=rozetka&sellers[]=other",
+ *     @OA\Schema (
+ *         type="array",
+ *         @OA\Items (
+ *             type="string"
+ *         )
+ *     )
+ * ),
+ */
 class Sellers extends AbstractFilter
 {
     /**

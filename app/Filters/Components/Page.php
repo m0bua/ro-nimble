@@ -1,7 +1,5 @@
 <?php
-/**
- * Класс для работы с фильтром "Страница"
- */
+
 namespace App\Filters\Components;
 
 use App\Enums\Filters;
@@ -9,6 +7,23 @@ use App\Http\Requests\FilterRequest;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 
+/**
+ * Класс для работы с фильтром "Страница"
+ *
+ * @OA\Parameter (
+ *     name="page",
+ *     in="query",
+ *     required=false,
+ *     description="Страница",
+ *     example="page[]=10-100500",
+ *     @OA\Schema (
+ *         type="array",
+ *         @OA\Items (
+ *             type="string"
+ *         )
+ *     )
+ * ),
+ */
 class Page extends AbstractFilter
 {
     public const PAGE_SEPARATOR = '-';
@@ -49,7 +64,11 @@ class Page extends AbstractFilter
      */
     public static function fromRequest(FormRequest $request): Page
     {
-        $page = $request->input(Filters::PARAM_PAGE);
+        $requestPage = $request->input(Filters::PARAM_PAGE);
+        if (!\is_array($requestPage) || empty($requestPage[0])) {
+            return self::getResponse();
+        }
+        $page = $requestPage[0];
 
         if (empty($page) || $page === '0') {
             return self::getResponse();

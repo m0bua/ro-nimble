@@ -1,7 +1,5 @@
 <?php
-/**
- * Класс для работы с фильтром "Категория"
- */
+
 namespace App\Filters\Components;
 
 use App\Enums\Filters;
@@ -10,6 +8,23 @@ use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Eloquent\Category as CategoryModel;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
+/**
+ * Класс для работы с фильтром "Категория"
+ *
+ * @OA\Parameter (
+ *     name="categories",
+ *     in="query",
+ *     required=false,
+ *     description="Список категорий",
+ *     example="categories[]=name1&categories[]=name2",
+ *     @OA\Schema (
+ *         type="array",
+ *         @OA\Items (
+ *             type="string"
+ *         )
+ *     )
+ * ),
+ */
 class Categories extends AbstractFilter
 {
     /**

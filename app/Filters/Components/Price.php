@@ -1,7 +1,5 @@
 <?php
-/**
- * Класс для работы с фильтром "Цена"
- */
+
 namespace App\Filters\Components;
 
 use App\Enums\Filters;
@@ -10,6 +8,23 @@ use App\Http\Requests\FilterRequest;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 
+/**
+ * Класс для работы с фильтром "Цена"
+ *
+ * @OA\Parameter (
+ *     name="price",
+ *     in="query",
+ *     required=false,
+ *     description="Диапазон цены",
+ *     example="price[]=100-200",
+ *     @OA\Schema (
+ *         type="array",
+ *         @OA\Items (
+ *             type="string"
+ *         )
+ *     )
+ * ),
+ */
 class Price extends AbstractFilter
 {
     use PrepareParamsTrait;
@@ -44,13 +59,13 @@ class Price extends AbstractFilter
      */
     public static function fromRequest(FormRequest $request): Price
     {
-        $price = $request->input(Filters::PARAM_PRICE);
+        $requestPrice = $request->input(Filters::PARAM_PRICE);
 
-        if (!Str::contains($price, self::SEPARATOR)) {
+        if (!\is_array($requestPrice) || empty($requestPrice[0]) || !Str::contains($requestPrice[0], self::SEPARATOR)) {
             return new static(Filters::DEFAULT_FILTER_VALUE);
         }
 
-        $price = self::prepareArrayByHyphen($request->input(Filters::PARAM_PRICE));
+        $price = self::prepareArrayByHyphen($requestPrice[0]);
 
         if (count($price) != 2
             || ((int) $price[0] == 0 && (int) $price[1] == 0)

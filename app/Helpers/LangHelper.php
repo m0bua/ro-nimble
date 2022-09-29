@@ -42,7 +42,7 @@ class LangHelper
      */
     public static function getRequestLang(): string
     {
-        return \strtolower((string) request('lang'));
+        return \strtolower((string) request('lang', [self::getDefaultLang()])[0]);
     }
 
     /**

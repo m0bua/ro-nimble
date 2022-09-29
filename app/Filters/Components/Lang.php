@@ -1,7 +1,5 @@
 <?php
-/**
- * Класс для работы с фильтром "Язык"
- */
+
 namespace App\Filters\Components;
 
 use App;
@@ -9,6 +7,25 @@ use App\Enums\Filters;
 use App\Http\Requests\FilterRequest;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Класс для работы с фильтром "Язык"
+ *
+ * @OA\Parameter (
+ *     name="lang",
+ *     in="query",
+ *     required=false,
+ *     description="Параметр языка",
+ *     example="lang[]=ua",
+ *     @OA\Schema (
+ *         type="array",
+ *         default="[ru]",
+ *         @OA\Items (
+ *             enum={"ua","ru","uz"},
+ *             type="string"
+ *         )
+ *     )
+ * )
+ */
 class Lang extends AbstractFilter
 {
     /**

@@ -12,177 +12,138 @@
                 "operationId": "25eb32e14399d9b203ea7f4745d37ef8",
                 "parameters": [
                     {
-                        "name": "country",
-                        "in": "query",
-                        "description": "Параметр страны",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "$ref": "#/components/parameters/country"
                     },
                     {
-                        "name": "lang",
-                        "in": "query",
-                        "description": "Параметр языка",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "$ref": "#/components/parameters/lang"
                     },
                     {
-                        "name": "category_id",
-                        "in": "query",
-                        "description": "Текущая категория",
-                        "required": false,
-                        "schema": {
-                            "type": "integer"
-                        }
+                        "$ref": "#/components/parameters/category_id"
                     },
                     {
-                        "name": "promotion_id",
-                        "in": "query",
-                        "description": "Текущая акция",
-                        "required": false,
-                        "schema": {
-                            "type": "integer"
-                        }
+                        "$ref": "#/components/parameters/promotion_id"
                     },
                     {
-                        "name": "section_id",
-                        "in": "query",
-                        "description": "Текущая секция(категория)",
-                        "required": false,
-                        "schema": {
-                            "type": "integer"
-                        }
+                        "$ref": "#/components/parameters/section_id"
                     },
                     {
-                        "name": "categories",
-                        "in": "query",
-                        "description": "Список категорий",
-                        "required": false,
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        }
+                        "$ref": "#/components/parameters/categories"
                     },
                     {
-                        "name": "producers",
-                        "in": "query",
-                        "description": "Список производителей",
-                        "required": false,
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        }
+                        "$ref": "#/components/parameters/producers"
                     },
                     {
-                        "name": "series",
-                        "in": "query",
-                        "description": "Выбор серии производителя",
-                        "required": false,
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        }
+                        "$ref": "#/components/parameters/series"
                     },
                     {
-                        "name": "price",
-                        "in": "query",
-                        "description": "Диапазон цены",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "$ref": "#/components/parameters/price"
                     },
                     {
-                        "name": "sellers",
-                        "in": "query",
-                        "description": "Список продавцов",
-                        "required": false,
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        }
+                        "$ref": "#/components/parameters/sellers"
                     },
                     {
-                        "name": "with_bonus",
-                        "in": "query",
-                        "description": "Товары с бонусами",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "$ref": "#/components/parameters/with_bonus"
                     },
                     {
-                        "name": "state",
-                        "in": "query",
-                        "description": "Выбор товаром Новый - Б/у",
-                        "required": false,
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        }
+                        "$ref": "#/components/parameters/states"
                     },
                     {
-                        "name": "single_goods",
-                        "in": "query",
-                        "description": "Группировка товаров",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "$ref": "#/components/parameters/sell_statuses"
                     },
                     {
-                        "name": "goods_with_promotions",
-                        "in": "query",
-                        "description": "Параметры фильтра Товары с акциями",
-                        "required": false,
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    {
-                        "name": "sell_statuses",
-                        "in": "query",
-                        "description": "Статусы товаров",
-                        "required": false,
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    {
-                        "name": "payments",
-                        "in": "query",
-                        "description": "Список методов оплаты",
-                        "required": false,
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "int"
-                            }
-                        }
+                        "$ref": "#/components/parameters/payments"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Успешный ответ"
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "data": {
+                                            "options": {
+                                                "general": [
+                                                    {
+                                                        "option_id": 225265,
+                                                        "option_name": "gotovo-k-otpravke",
+                                                        "option_title": "Готов к отправке",
+                                                        "option_type": "CheckBox",
+                                                        "special_combobox_view": "list",
+                                                        "comparable": "main",
+                                                        "hide_block": false,
+                                                        "option_values": [
+                                                            {
+                                                                "option_value_id": 225265,
+                                                                "option_value_name": "1",
+                                                                "option_value_title": "Готов к отправке",
+                                                                "color_hash": null,
+                                                                "is_chosen": false,
+                                                                "products_quantity": 397,
+                                                                "order": 0,
+                                                                "is_value_show": false
+                                                            }
+                                                        ]
+                                                    }
+                                                ],
+                                                "specific": [
+                                                    {
+                                                        "price": {
+                                                            "option_id": "price",
+                                                            "option_name": "price",
+                                                            "option_title": "Цена",
+                                                            "option_type": "Slider",
+                                                            "special_combobox_view": "slider",
+                                                            "comparable": "main",
+                                                            "chosen_values": {
+                                                                "min": 56,
+                                                                "max": 275945
+                                                            },
+                                                            "range_values": {
+                                                                "min": 56,
+                                                                "max": 275945
+                                                            },
+                                                            "order": 3
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            "chosen": []
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "code": "400",
+                                        "error": "Bad Request",
+                                        "messages": [
+                                            "Missing required parameters"
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "code": "500",
+                                        "error": "Internal Server Error",
+                                        "messages": []
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -192,9 +153,117 @@
                 "summary": "Получение списка ID товаров",
                 "description": "Производит подбор, фильтрацию и сортировку товаров по входящим параметрам (фильтрам)",
                 "operationId": "index",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/country"
+                    },
+                    {
+                        "$ref": "#/components/parameters/lang"
+                    },
+                    {
+                        "$ref": "#/components/parameters/category_id"
+                    },
+                    {
+                        "$ref": "#/components/parameters/promotion_id"
+                    },
+                    {
+                        "$ref": "#/components/parameters/section_id"
+                    },
+                    {
+                        "$ref": "#/components/parameters/categories"
+                    },
+                    {
+                        "$ref": "#/components/parameters/producers"
+                    },
+                    {
+                        "$ref": "#/components/parameters/series"
+                    },
+                    {
+                        "$ref": "#/components/parameters/price"
+                    },
+                    {
+                        "$ref": "#/components/parameters/sellers"
+                    },
+                    {
+                        "$ref": "#/components/parameters/with_bonus"
+                    },
+                    {
+                        "$ref": "#/components/parameters/states"
+                    },
+                    {
+                        "$ref": "#/components/parameters/payments"
+                    },
+                    {
+                        "$ref": "#/components/parameters/single_goods"
+                    },
+                    {
+                        "$ref": "#/components/parameters/goods_with_promotions"
+                    },
+                    {
+                        "$ref": "#/components/parameters/sort"
+                    },
+                    {
+                        "$ref": "#/components/parameters/page"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    },
+                    {
+                        "$ref": "#/components/parameters/query"
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Успешный ответ"
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "data": {
+                                            "ids": [
+                                                282286938,
+                                                344108557
+                                            ],
+                                            "ids_count": 10000,
+                                            "goods_in_category": 10000,
+                                            "shown_page": 1,
+                                            "goods_limit": 60,
+                                            "total_pages": 167
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "code": "400",
+                                        "error": "Bad Request",
+                                        "messages": [
+                                            "Missing required parameters"
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "code": "500",
+                                        "error": "Internal Server Error",
+                                        "messages": []
+                                    }
+                                }
+                            }
+                        }
                     }
                 },
                 "deprecated": false
@@ -223,6 +292,315 @@
                         "description": "Успешный ответ"
                     }
                 }
+            }
+        }
+    },
+    "components": {
+        "parameters": {
+            "with_bonus": {
+                "name": "with_bonus",
+                "in": "query",
+                "description": "Товары с бонусами",
+                "required": false,
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "with_bonus"
+                        ]
+                    }
+                },
+                "example": "with_bonus[]=with_bonus"
+            },
+            "categories": {
+                "name": "categories",
+                "in": "query",
+                "description": "Список категорий",
+                "required": false,
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "example": "categories[]=name1&categories[]=name2"
+            },
+            "category_id": {
+                "name": "category_id",
+                "in": "query",
+                "description": "Текущая категория",
+                "required": false,
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "example": "category_id[]=1234567"
+            },
+            "country": {
+                "name": "country",
+                "in": "query",
+                "description": "Параметр страны",
+                "required": false,
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "ua",
+                            "uz"
+                        ]
+                    },
+                    "default": "[ua]"
+                },
+                "example": "country[]=ua"
+            },
+            "goods_with_promotions": {
+                "name": "goods_with_promotions",
+                "in": "query",
+                "description": "Параметры фильтра Товары с акциями",
+                "required": false,
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "installments",
+                            "promotion"
+                        ]
+                    }
+                },
+                "example": "goods_with_promotions[]=installments&goods_with_promotions[]=promotion"
+            },
+            "lang": {
+                "name": "lang",
+                "in": "query",
+                "description": "Параметр языка",
+                "required": false,
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "ua",
+                            "ru",
+                            "uz"
+                        ]
+                    },
+                    "default": "[ru]"
+                },
+                "example": "lang[]=ua"
+            },
+            "page": {
+                "name": "page",
+                "in": "query",
+                "description": "Страница",
+                "required": false,
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "example": "page[]=10-100500"
+            },
+            "payments": {
+                "name": "payments",
+                "in": "query",
+                "description": "Список методов оплаты",
+                "required": false,
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "example": "payments[]=name1&payments[]=name2"
+            },
+            "per_page": {
+                "name": "per_page",
+                "in": "query",
+                "description": "Элементов на странице",
+                "required": false,
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "example": "per_page[]=30"
+            },
+            "price": {
+                "name": "price",
+                "in": "query",
+                "description": "Диапазон цены",
+                "required": false,
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "example": "price[]=100-200"
+            },
+            "producers": {
+                "name": "producers",
+                "in": "query",
+                "description": "Список производителей ('name' или 'v{id}')",
+                "required": false,
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "example": "producer[]=v1234&producer[]=toshiba"
+            },
+            "promotion_id": {
+                "name": "promotion_id",
+                "in": "query",
+                "description": "Текущая акция",
+                "required": false,
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "example": "promotion_id[]=377185"
+            },
+            "query": {
+                "name": "query",
+                "in": "query",
+                "description": "query",
+                "required": false,
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "example": "query[]=query"
+            },
+            "section_id": {
+                "name": "section_id",
+                "in": "query",
+                "description": "Текущая секция(категория)",
+                "required": false,
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "example": "section_id[]=123"
+            },
+            "sell_statuses": {
+                "name": "sell_statuses",
+                "in": "query",
+                "description": "Статусы товаров",
+                "required": false,
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "waiting_for_supply",
+                            "limited",
+                            "available",
+                            "out_of_stock",
+                            "unavailable",
+                            "archive",
+                            "hidden"
+                        ]
+                    }
+                },
+                "example": "sell_statuses[]=limited&sell_statuses[]=available"
+            },
+            "sellers": {
+                "name": "sellers",
+                "in": "query",
+                "description": "Список продавцов",
+                "required": false,
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "example": "sellers[]=rozetka&sellers[]=other"
+            },
+            "series": {
+                "name": "series",
+                "in": "query",
+                "description": "Выбор серии производителя",
+                "required": false,
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "example": "series[]=asuspro"
+            },
+            "single_goods": {
+                "name": "single_goods",
+                "in": "query",
+                "description": "Группировка товаров",
+                "required": false,
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer",
+                        "enum": [
+                            "0",
+                            "1"
+                        ]
+                    },
+                    "default": "[0]"
+                },
+                "example": "single_goods[]=1"
+            },
+            "sort": {
+                "name": "sort",
+                "in": "query",
+                "description": "Сортировка",
+                "required": false,
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "cheap",
+                            "expensive",
+                            "popularity",
+                            "novelty",
+                            "action",
+                            "rank"
+                        ]
+                    }
+                },
+                "example": "sort[]=cheap"
+            },
+            "states": {
+                "name": "states",
+                "in": "query",
+                "description": "Выбор товаром Новый - Б/у",
+                "required": false,
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "new",
+                            "used",
+                            "refurbished"
+                        ]
+                    }
+                },
+                "example": "states[]=new&states[]=used&states[]=refurbished"
             }
         }
     }
