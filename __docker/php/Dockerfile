@@ -5,6 +5,9 @@ RUN pecl install -o -f redis &&  rm -rf /tmp/pear &&  docker-php-ext-enable redi
 RUN pecl install xdebug-3.0.4 && docker-php-ext-enable xdebug
 RUN apt-get update && apt-get install -y libpq-dev libzip-dev zip git htop && docker-php-ext-install zip pdo pdo_pgsql mysqli pdo_mysql pcntl && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql
 
+# Install PS
+RUN apt-get update && apt-get install -y procps && rm -rf /var/lib/apt/lists/*
+
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 

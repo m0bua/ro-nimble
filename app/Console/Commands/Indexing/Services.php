@@ -4,6 +4,7 @@ namespace App\Console\Commands\Indexing;
 
 use App\Console\Commands\Command;
 use App\Models\Elastic\GoodsModel;
+use App\Models\Eloquent\Indices;
 
 class Services extends Command
 {
@@ -43,25 +44,60 @@ class Services extends Command
     public function proceed(): void
     {
         $activeIndexName = $this->goodsElastic->getIndexWithAlias();
-        $lastIndexInfo = $this->goodsElastic->indexInfo()->first();
+        $goodsIndices = $this->goodsElastic->indexInfo()->map(function ($item) {
+            $item['db_status'] = Indices::getStatus($item['index']);
+            return $item;
+        });
 
-        if ($lastIndexInfo && $activeIndexName !== $lastIndexInfo['index']) {
-            $activeIndexInfo = $this->goodsElastic->indexInfo($activeIndexName)->first();
+        $newestIndex = $olderIndex = null;
+        $activeIndex = $goodsIndices->filter(function ($item) use ($activeIndexName) {
+            return $item['index'] === $activeIndexName;
+        })->first();
+        foreach ($goodsIndices as $index) {
+            if ($index['index'] === $activeIndexName) {
+                $newestIndex = null === $newestIndex ? $activeIndex : null;
+                continue;
+            }
+            if (Indices::STATUS_ACTIVE === $index['db_status'] && null === $newestIndex) {
+                $newestIndex = $index;
+                $olderIndex = $activeIndex;
+                break;
+            }
 
-            $activeCount = (int)$activeIndexInfo['docs.count'];
-            $lastCount = (int)$lastIndexInfo['docs.count'];
-            $percentageDiff = ($activeCount !== 0)
-                ? ($activeCount - $lastCount) / $activeCount * 100
+            if (Indices::STATUS_ACTIVE === $index['db_status'] && null !== $newestIndex) {
+                $olderIndex = $index;
+                break;
+            }
+        }
+        $deleteIndices = $goodsIndices->filter(function ($item) use ($newestIndex, $olderIndex) {
+            return !($item['index'] === $newestIndex['index']
+                || (null !== $olderIndex && $item['index'] === $olderIndex['index'])
+                || $item['db_status'] === Indices::STATUS_LOCKED);
+        })->pluck('index')->toArray();
+
+        if (null !== $activeIndex && $activeIndex['index'] !== $newestIndex['index']) {
+            $currentCount = (int) $activeIndex['docs.count'];
+            $newestCount = (int) $newestIndex['docs.count'];
+            $percentageDiff = ($currentCount !== 0)
+                ? ($currentCount - $newestCount) / $currentCount * 100
                 : 0;
 
-            if ($percentageDiff < 10 && $lastIndexInfo['status'] === 'open' && $lastIndexInfo['health'] = 'green') {
+            if ($percentageDiff < 10 && $newestIndex['status'] === 'open' && $newestIndex['health'] = 'green') {
                 $this->goodsElastic->updateAliases([
-                    $this->goodsElastic->addAliasAction($lastIndexInfo['index'], $this->goodsElastic->indexPrefix()),
-                    $this->goodsElastic->removeAliasAction($activeIndexName, $this->goodsElastic->indexPrefix()),
+                    $this->goodsElastic->addAliasAction($newestIndex['index'], $this->goodsElastic->indexPrefix()),
+                    $this->goodsElastic->removeAliasAction($activeIndex['index'], $this->goodsElastic->indexPrefix()),
                 ]);
-
-                $this->goodsElastic->deleteIndex($activeIndexName);
             }
+        }
+
+        if (null === $activeIndex) {
+            $this->goodsElastic->updateAliases([
+                $this->goodsElastic->addAliasAction($newestIndex['index'], $this->goodsElastic->indexPrefix()),
+            ]);
+        }
+
+        foreach ($deleteIndices as $index) {
+            $this->goodsElastic->deleteIndex($index);
         }
     }
 }

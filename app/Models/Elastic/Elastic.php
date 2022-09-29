@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models\Elastic;
 
+use App\Models\Eloquent\Indices;
 use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
 use Exception;
@@ -22,6 +23,13 @@ abstract class Elastic
     private Client $client;
 
     /**
+     * Indices model
+     *
+     * @var Indices
+     */
+    private Indices $indices;
+
+    /**
      * Parameters for query
      *
      * @var array
@@ -37,8 +45,9 @@ abstract class Elastic
      * Elastic constructor.
      * @throws Exception
      */
-    public function __construct()
+    public function __construct(Indices $indices)
     {
+        $this->indices = $indices;
         $this->client = ClientBuilder::create()
             ->setHosts(config('database.elasticsearch.hosts'))
             ->setBasicAuthentication(
@@ -271,7 +280,7 @@ abstract class Elastic
      */
     private function prepareParams(array $params = []): self
     {
-        $this->params = array_merge(['index' => $this->getIndexName()], $params);
+        $this->params = array_merge(['index' => $this->getIndexWithAlias()], $params);
 
         return $this;
     }
@@ -287,6 +296,11 @@ abstract class Elastic
         if ($this->existIndex($name)) {
             return [];
         }
+        Indices::upsert([
+            'name'   => $name,
+            'type'   => $this->indexPrefix(),
+            'status' => Indices::STATUS_ACTIVE
+        ], 'name');
 
         return $this->client->indices()->create(array_merge(['index' => $name], $params));
     }
@@ -301,6 +315,7 @@ abstract class Elastic
         if (!$name || !$this->existIndex($name)) {
             return [];
         }
+        Indices::deleteByName($name);
 
         return $this->client->indices()->delete([
             'index' => $name
