@@ -6,6 +6,7 @@ use App\Console\Commands\Command;
 use App\Models\Elastic\Elastic;
 use App\Models\Elastic\GoodsModel;
 use App\Models\Eloquent\Goods;
+use App\Models\Eloquent\Indices;
 use Bschmitt\Amqp\Amqp;
 use Bschmitt\Amqp\Exception\Configuration;
 use Bschmitt\Amqp\Message;
@@ -48,15 +49,23 @@ class Publish extends Command
     private Elastic $elastic;
 
     /**
+     * Indices model
+     *
+     * @var Indices
+     */
+    private Indices $indices;
+
+    /**
      * Create a new command instance.
      *
      * @return void
      * @noinspection LaravelFunctionsInspection
      */
-    public function __construct(Goods $goods, GoodsModel $elastic)
+    public function __construct(Goods $goods, GoodsModel $elastic, Indices $indices)
     {
         parent::__construct();
         $this->goods = $goods;
+        $this->indices = $indices;
         $this->elastic = $elastic;
         $this->maxBatch = env("MAX_INDEXING_BATCH", 100);
     }
@@ -67,6 +76,7 @@ class Publish extends Command
      */
     protected function proceed(): void
     {
+        $this->indices->cleanUp($this->elastic->indexInfo()->pluck('index')->all());
         $goodsIds = collect($this->option('goods-ids'));
 
         if ($goodsIds->isEmpty() && !$this->option('same')) {
