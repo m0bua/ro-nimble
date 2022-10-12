@@ -42,7 +42,7 @@ class ProducerService extends BaseComponent
         $producers = $this->getValue();
 
         if (!$producers || !isset($producers[Filters::PARAM_PRODUCER])) {
-            return [];
+            return collect([]);
         }
 
         $producers = $producers[Filters::PARAM_PRODUCER];

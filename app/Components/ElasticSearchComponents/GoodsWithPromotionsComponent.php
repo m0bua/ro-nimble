@@ -25,8 +25,7 @@ class GoodsWithPromotionsComponent extends BaseComponent
             return $result;
         }
 
-        $installment = [];
-        $promotion = [];
+        $installment = $promotion = [];
         foreach ($params as $param) {
             if ($param == Filters::PROMOTION_GOODS_INSTALLMENT) {
                 $installment[] = $this->elasticWrapper->term(Elastic::FIELD_OPTIONS, Config::INSTALLMENT_OPTION);

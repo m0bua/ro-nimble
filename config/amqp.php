@@ -72,6 +72,7 @@ return [
             'password'              => env('AMQP_MS_PASSWORD', ''),
             'processor_name'        => [App\Processors\MarketingService\Support\ProcessorClassnameResolver::class, 'resolve'],
             'qos_prefetch_count'    => 1,
+            'queue'                 => env('AMQP_MS_QUEUE', ''),
         ]),
 
         // goods service
@@ -81,6 +82,7 @@ return [
             'username'              => env('AMQP_GS_USERNAME', ''),
             'password'              => env('AMQP_GS_PASSWORD', ''),
             'processor_name'        => [App\Processors\GoodsService\Support\ProcessorClassnameResolver::class, 'resolve'],
+            'queue'                 => env('AMQP_GS_QUEUE', ''),
         ]),
 
         // payment service
@@ -90,6 +92,7 @@ return [
             'username'              => env('AMQP_PS_USERNAME', ''),
             'password'              => env('AMQP_PS_PASSWORD', ''),
             'processor_name'        => [App\Processors\PaymentService\Support\ProcessorClassnameResolver::class, 'resolve'],
+            'queue'                 => env('AMQP_PS_QUEUE', ''),
         ]),
 
         // bonus service
@@ -99,6 +102,7 @@ return [
             'username'              => env('AMQP_BS_USERNAME', ''),
             'password'              => env('AMQP_BS_PASSWORD', ''),
             'processor_name'        => [App\Processors\BonusService\Support\ProcessorClassnameResolver::class, 'resolve'],
+            'queue'                 => env('AMQP_BS_QUEUE', ''),
         ]),
 
         // market enterprise
@@ -108,6 +112,7 @@ return [
             'username'              => env('AMQP_ME_USERNAME', ''),
             'password'              => env('AMQP_ME_PASSWORD', ''),
             'processor_name'        => [App\Processors\MarketEnterprise\Support\ProcessorClassnameResolver::class, 'resolve'],
+            'queue'                 => env('AMQP_ME_QUEUE', ''),
         ]),
 
         // marketing service labels
@@ -117,6 +122,7 @@ return [
             'username'              => env('AMQP_MSL_USERNAME', ''),
             'password'              => env('AMQP_MSL_PASSWORD', ''),
             'processor_name'        => [App\Processors\MarketingService\Support\LabelProcessorClassnameResolver::class, 'resolve'],
+            'queue'                 => env('AMQP_MSL_QUEUE', ''),
         ]),
 
         // comment service
@@ -126,6 +132,7 @@ return [
             'username'              => env('AMQP_CS_USERNAME', ''),
             'password'              => env('AMQP_CS_PASSWORD', ''),
             'processor_name'        => [App\Processors\CommentService\Support\ProcessorClassnameResolver::class, 'resolve'],
+            'queue'                 => env('AMQP_CS_QUEUE', ''),
         ]),
 
         'local' => [
@@ -136,6 +143,7 @@ return [
             'exchange'              => env('AMQP_LOCAL_EXCHANGE', ''),
             'vhost'                 => env('AMQP_LOCAL_VHOST', '/'),
             'qos_prefetch_count'    => 100,
+            'queue'                 => env('AMQP_LOCAL_QUEUE', ''),
         ],
     ],
 

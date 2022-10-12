@@ -14,12 +14,14 @@ use PhpAmqpLib\Message\AMQPMessage;
 
 class Consumer extends Command
 {
+    protected const CONFIG = 'amqp.properties.local';
+
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'consumer:index {queue}';
+    protected $signature = 'consumer:index {queue?}';
 
     /**
      * The console command description.
@@ -74,12 +76,12 @@ class Consumer extends Command
      */
     public function handle(): int
     {
-        $queue = $this->argument('queue');
+        $queue =  $this->argument('queue') ?? config(self::CONFIG . '.queue');
 
         $rabbitMq = new Amqp();
         $rabbitMq->consume($queue, function (AMQPMessage $message) {
             $this->indexer->handleMessage($message);
-        }, config('amqp.properties.local'));
+        }, config(self::CONFIG));
 
         return 0;
     }

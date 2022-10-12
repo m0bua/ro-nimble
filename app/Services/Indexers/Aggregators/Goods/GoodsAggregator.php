@@ -89,7 +89,6 @@ class GoodsAggregator extends AbstractAggregator
                 'rank',
                 'order',
                 DB::raw("to_json(string_to_array(trim('.' from mpath), '.')) as categories_path"),
-                DB::raw("'[]'::json as tags"),
             ])
             ->whereIn('id', $ids)
             ->whereIn('status', [Goods::STATUS_ACTIVE, Goods::STATUS_CONFIGURABLE_BY_SERVICES])
@@ -101,7 +100,6 @@ class GoodsAggregator extends AbstractAggregator
                 $item->categories_path = collect($this->decode($item->categories_path))
                     ->map(fn($i) => (int)$i)
                     ->toArray();
-                $item->tags = $this->decode($item->tags);
 
                 foreach ($aggregators as $aggregator) {
                     $item = $aggregator->decorate($item);

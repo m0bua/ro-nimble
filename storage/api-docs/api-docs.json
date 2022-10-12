@@ -1,9 +1,5 @@
 {
     "openapi": "3.0.0",
-    "info": {
-        "title": "Selection & Filter Service API",
-        "version": "1"
-    },
     "paths": {
         "/api/v1/filters": {
             "get": {
@@ -284,6 +280,38 @@
                             "items": {
                                 "type": "integer"
                             }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ"
+                    }
+                }
+            }
+        },
+        "/api/v1/search/brands": {
+            "get": {
+                "summary": "Список брендов",
+                "description": "Возвращает список брендов для товарной выдачи",
+                "operationId": "80b7e6722a362a5ae4daeaea1f842579",
+                "parameters": [
+                    {
+                        "name": "category_id",
+                        "in": "query",
+                        "description": "Текущая категория",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "description": "Часть названия бренда",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 ],

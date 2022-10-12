@@ -35,7 +35,6 @@ class Elastic
     public const FIELD_OPTION_SLIDERS_ID = 'option_sliders.id';
     public const FIELD_OPTION_SLIDERS_VALUE = 'option_sliders.value';
     public const FIELD_OPTION_CHECKED = 'option_checked';
-    public const FIELD_TAGS = 'tags';
     public const FIELD_COUNTRY_CODE = 'country_code';
     public const FIELD_GROUP_TOKEN = 'group_token';
     public const FIELD_BONUS = 'bonus_charge_pcs';

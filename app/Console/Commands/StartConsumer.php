@@ -16,7 +16,7 @@ class StartConsumer extends Command
      *
      * @var string
      */
-    protected $signature = 'consumer:start {config} {queue} {--stopWhenProcessed}';
+    protected $signature = 'consumer:start {config} {queue?} {--stopWhenProcessed}';
 
     /**
      * The console command description.
@@ -33,8 +33,9 @@ class StartConsumer extends Command
      */
     public function handle(): int
     {
-        $queue = (string)$this->argument('queue');
         $config = (string)$this->argument('config');
+
+        $queue = (string)($this->argument('queue') ?? config("amqp.properties.$config.queue"));
         $stopWhenProcessed = (bool)$this->option('stopWhenProcessed');
 
         $consumer = new Consumer($config);
