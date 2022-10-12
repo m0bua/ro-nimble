@@ -7,6 +7,7 @@ use App\Services\Google\CloudStorageService;
 use CreateFiltersAutorankingTable;
 use Google\Cloud\Storage\StorageObject;
 use Illuminate\Console\Command;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -94,6 +95,7 @@ class FetchFiltersAutoranking extends Command
             return 0;
         }
 
+
         $this->createTempTable();
 
         foreach ($this->paths as $path) {
@@ -180,6 +182,22 @@ class FetchFiltersAutoranking extends Command
             $table = FilterAutoranking::make()->getTable();
             Schema::dropIfExists($table);
             Schema::rename($this->tempTable, $table);
+            Schema::table($table, function (Blueprint $tbl) {
+                $sm = Schema::getConnection()->getDoctrineSchemaManager();
+                $indexesFound = collect($sm->listTableIndexes($tbl->getTable()));
+
+                /**
+                 * change index name with removing _tmp_
+                 * fix errors with duplicate index name
+                 * when created new temp table above
+                 */
+                foreach ($indexesFound->keys() as $index) {
+                    $newNameIndex = str_replace('_tmp_', '_', $index);
+                    if ($newNameIndex !== $index) {
+                        $tbl->renameIndex($index, $newNameIndex);
+                    }
+                }
+            });
         });
     }
 
