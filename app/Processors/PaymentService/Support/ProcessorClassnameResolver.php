@@ -9,7 +9,7 @@ class ProcessorClassnameResolver
     public const ROUTING_SEPARATOR = '.';
     public const PROCESSOR_NAMESPACE = 'PaymentService';
     public const SUFFIXES = [
-        '.all',
+        '.all', '.Catalog'
     ];
 
     /**
