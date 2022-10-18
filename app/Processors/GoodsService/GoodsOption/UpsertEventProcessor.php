@@ -43,15 +43,23 @@ class UpsertEventProcessor extends UpsertProcessor
 
         switch ($data['type']) {
             case 'bool':
-                $this->boolean->upsert(
-                    [
-                        'goods_id' => $data['goods_id'],
-                        'option_id' => $data['option_id'],
-                        'need_delete' => $data['need_delete'],
-                    ],
-                    $uniqueBy,
-                    $update
-                );
+                if (trim($data['value']) === "0") {
+                    $this->boolean->query()
+                        ->where([
+                            'goods_id' => $data['goods_id'],
+                            'option_id' => $data['option_id'],
+                        ])
+                        ->delete();
+                } else {
+                    $this->boolean->upsert(
+                        [
+                            'goods_id' => $data['goods_id'],
+                            'option_id' => $data['option_id'],
+                            'need_delete' => $data['need_delete'],],
+                        $uniqueBy,
+                        $update
+                    );
+                }
                 break;
             case 'number':
                 if (trim($data['value']) === "") {
