@@ -114,9 +114,6 @@ return [
             'status_inherited' => [
                 'type' => 'keyword'
             ],
-            'tags' => [
-                'type' => 'integer'
-            ],
             'country_code' => [
                 'type' => 'keyword'
             ],
