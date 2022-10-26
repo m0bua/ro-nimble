@@ -2,7 +2,6 @@
 
 namespace App\Models\Eloquent;
 
-use apimodule\models\store\CategoriesModel;
 use App\Casts\Translatable;
 use App\Traits\Eloquent\HasFillable;
 use App\Traits\Eloquent\HasTranslations;
@@ -11,11 +10,12 @@ use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+
+use App\Models\Eloquent\AbstractModel as Model;
 
 /**
  * App\Models\Eloquent\Category

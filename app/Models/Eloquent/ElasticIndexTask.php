@@ -6,11 +6,12 @@ use App\Http\Requests\Service\TaskRequest;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use LogicException;
 use Throwable;
+
+use App\Models\Eloquent\AbstractModel as Model;
 
 /**
  * App\Models\Eloquent\ElasticIndexTask

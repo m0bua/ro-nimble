@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Models\Elastic;
 
 use App\Models\Eloquent\Indices;
+use Log;
 use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
+use Elasticsearch\Common\Exceptions\BadRequest400Exception;
 use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -132,7 +134,22 @@ abstract class Elastic
      */
     public function search(array $params = [])
     {
-        return $this->prepareParams($params)->client->search($this->params);
+        try {
+            return $this->prepareParams($params)->client->search($this->params);
+        } catch (BadRequest400Exception $e) {
+            Log::channel('elastic_errors')->error(
+                'Elastic search query failture.',
+                ['message' => json_decode($e->getMessage(), true)]
+            );
+            return [
+                'hits' => [
+                    'hits' => [],
+                    'total' => [
+                        'value' => 0,
+                    ],
+                ],
+            ];
+        }
     }
 
     /**
