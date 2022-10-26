@@ -2,10 +2,10 @@
 
 namespace App\Models\Eloquent;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Carbon;
+use App\Models\Eloquent\AbstractModel as Model;
 
 /**
  * App\Models\Eloquent\PaymentMethodTerms

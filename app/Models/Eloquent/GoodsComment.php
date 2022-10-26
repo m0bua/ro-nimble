@@ -5,8 +5,9 @@ namespace App\Models\Eloquent;
 use App\Traits\Eloquent\HasFillable;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+
+use App\Models\Eloquent\AbstractModel as Model;
 
 /**
  * App\Models\Eloquent\Comments

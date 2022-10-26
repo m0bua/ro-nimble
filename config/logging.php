@@ -34,7 +34,21 @@ return [
             'driver' => 'daily',
             'tap' => [DefaultLogger::class],
             'path' => storage_path('logs/db-queries.log'),
-            'days' => 3
+            'days' => 3,
+        ],
+
+        'db_errors' => [
+            'driver' => 'daily',
+            'tap' => [DefaultLogger::class],
+            'path' => storage_path('logs/lumen.log'),
+            'days' => 14,
+        ],
+
+        'elastic_errors' => [
+            'driver' => 'daily',
+            'tap' => [DefaultLogger::class],
+            'path' => storage_path('logs/lumen.log'),
+            'days' => 14,
         ],
 
         'consumer_error_message' => [
