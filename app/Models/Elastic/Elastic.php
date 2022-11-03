@@ -32,6 +32,8 @@ abstract class Elastic
      */
     private Indices $indices;
 
+    private static Collection $aliases;
+
     /**
      * Parameters for query
      *
@@ -87,13 +89,14 @@ abstract class Elastic
      */
     public function getIndexWithAlias(): string
     {
-        return collect(
-            $this->client
-                ->cat()
-                ->aliases()
-        )->filter(function($item) {
-            return $item['alias'] === $this->indexPrefix();
-        })
+        if (empty($this::$aliases)) {
+            $this::$aliases = collect($this->client->cat()->aliases());
+        }
+
+        return $this::$aliases
+            ->filter(function ($item) {
+                return $item['alias'] === $this->indexPrefix();
+            })
             ->sortByDesc('index')
             ->pluck('index')
             ->first() ?? '';
@@ -133,7 +136,7 @@ abstract class Elastic
      * @param array $params
      * @return array|callable
      */
-    public function search(array $params = [])
+    public function search(array $params = []): array
     {
         try {
             return $this->prepareParams($params)->client->search($this->params);
