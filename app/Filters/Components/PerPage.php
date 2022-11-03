@@ -6,6 +6,7 @@ use App\Enums\Config;
 use App\Enums\Filters;
 use App\Http\Requests\FilterRequest;
 use Illuminate\Foundation\Http\FormRequest;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * Класс для работы с фильтром "Количество на странице"
@@ -30,6 +31,8 @@ class PerPage extends AbstractFilter
      * Дефолтное количество товаров на странице
      */
     public const DEFAULT_VALUE = [Config::CATALOG_GOODS_LIMIT];
+
+    protected const PARAM = Filters::PARAM_PER_PAGE;
 
     /**
      * @var string
@@ -56,12 +59,28 @@ class PerPage extends AbstractFilter
      */
     public static function fromRequest(FormRequest $request): PerPage
     {
-        $requestPerPage = $request->input(Filters::PARAM_PER_PAGE);
+        $requestPerPage = $request->input(self::PARAM);
         if (!\is_array($requestPerPage) || empty($requestPerPage[0])) {
             return new static(self::DEFAULT_VALUE);
         }
-        $perPage = abs((int) $requestPerPage[0]);
+        $perPage = $requestPerPage[0];
 
-        return new static($perPage <= 0 || $perPage > self::DEFAULT_VALUE[0] ? self::DEFAULT_VALUE : [$perPage]);
+        if (!is_numeric($perPage)) {
+            throw new BadRequestHttpException(
+                sprintf('\'%s\' parameter must be positive integer', self::PARAM)
+            );
+        }
+
+        $perPage = (int)$perPage;
+
+        if ($perPage <= 0 || $perPage > self::DEFAULT_VALUE[0]) {
+            throw new BadRequestHttpException(sprintf(
+                '\'%s\' parameter must be between 0 and %s',
+                self::PARAM,
+                self::DEFAULT_VALUE[0]
+            ));
+        }
+
+        return new static([$perPage]);
     }
 }

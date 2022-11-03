@@ -3,7 +3,6 @@
 namespace App\Filters\Components;
 
 use App\Enums\Filters;
-use App\Filters\Traits\PrepareParamsTrait;
 use App\Http\Requests\FilterRequest;
 use Illuminate\Foundation\Http\FormRequest;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -33,6 +32,7 @@ class States extends AbstractFilter
         Filters::STATE_USED,
         Filters::STATE_REFURBISHED,
     ];
+    protected const PARAM = Filters::PARAM_STATES;
 
     /**
      * @var string
@@ -59,16 +59,23 @@ class States extends AbstractFilter
      */
     public static function fromRequest(FormRequest $request): States
     {
-        $states = $request->input(Filters::PARAM_STATES);
+        $states = $request->input(self::PARAM);
 
-        if (!$states) {
+        if (empty($states)) {
             return new static(Filters::DEFAULT_FILTER_VALUE);
         }
 
         if (!is_array($states)) {
             throw new BadRequestHttpException(
-                sprintf('"%s" parameter must be an array', Filters::PARAM_STATES)
+                sprintf('\'%s\' parameter must be array', self::PARAM)
             );
+        }
+        if (array_intersect($states, self::$availableParams) === []) {
+            throw new BadRequestHttpException(sprintf(
+                '\'%s\' parameter must be one of: %s',
+                self::PARAM,
+                implode(', ', self::$availableParams)
+            ));
         }
 
         return new static(array_intersect($states, self::$availableParams));

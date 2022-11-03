@@ -26,6 +26,8 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
  */
 class Sellers extends AbstractFilter
 {
+    protected const PARAM = Filters::PARAM_SELLERS;
+
     /**
      * merchant_type = 1, если merchant_id равен 1,2,14,20,51,67,43,58,64,56
      * merchant_type = 2, если merchant_id не равен ˆ
@@ -67,16 +69,24 @@ class Sellers extends AbstractFilter
      */
     public static function fromRequest(FormRequest $request): Sellers
     {
-        $sellers = $request->input(Filters::PARAM_SELLERS);
+        $sellers = $request->input(self::PARAM);
 
-        if (!$sellers) {
+        if (empty($sellers)) {
             return new static(Filters::DEFAULT_FILTER_VALUE);
         }
 
         if (!is_array($sellers)) {
             throw new BadRequestHttpException(
-                sprintf('"%s" parameter must be an array', Filters::PARAM_SELLERS)
+                sprintf('\'%s\' parameter must be array', self::PARAM)
             );
+        }
+
+        if (array_intersect_key(self::$seller_params, array_flip($sellers)) === []) {
+            throw new BadRequestHttpException(sprintf(
+                '\'%s\' parameter must be one of: %s',
+                self::PARAM,
+                implode(', ', array_keys(self::$seller_params))
+            ));
         }
 
         return new static(array_values(array_intersect_key(self::$seller_params, array_flip($sellers))));

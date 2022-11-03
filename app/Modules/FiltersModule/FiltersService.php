@@ -134,11 +134,14 @@ class FiltersService
     /**
      * Возвращает набор фильтров
      * @return array
+     * @throws BadRequestHttpException
      */
     public function getFilters(): array
     {
         if ($this->filters->category->getValues()->isEmpty() && $this->filters->promotion->getValues()->isEmpty()) {
-            throw new BadRequestHttpException('Missing required parameters');
+            throw new BadRequestHttpException(
+                'Missing required parameters. At least category_id or promotion_id must be used.'
+            );
         }
 
         return [
@@ -222,13 +225,18 @@ class FiltersService
     /**
      * Возвращает найденные бренды для фильтра "Продюсер"
      * @return array
+     * @throws BadRequestHttpException
      */
     public function searchBrands(): array
     {
         if ($this->filters->category->getValues()->isEmpty()
             || $this->filters->query->getValues()->isEmpty()
         ) {
-            throw new BadRequestHttpException('Missing required parameters');
+            dd($this->filters->category->getValues());
+
+            throw new BadRequestHttpException(
+                'Missing required parameters. Please existing category and query parameter.'
+            );
         }
 
         $this->filters->category->disableAutoranking();

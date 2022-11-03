@@ -5,6 +5,7 @@ namespace App\Filters\Components;
 use App\Enums\Filters;
 use App\Http\Requests\FilterRequest;
 use Illuminate\Foundation\Http\FormRequest;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * Класс для работы с параметром для вывода сгруппированных товаров
@@ -27,6 +28,8 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class SingleGoods extends AbstractFilter
 {
+    protected const PARAM = Filters::PARAM_SINGLE_GOODS;
+
     /**
      * @var string
      */
@@ -52,13 +55,19 @@ class SingleGoods extends AbstractFilter
      */
     public static function fromRequest(FormRequest $request): SingleGoods
     {
-        $requestSingleGoods = $request->input(Filters::PARAM_SINGLE_GOODS);
+        $requestSingleGoods = $request->input(self::PARAM);
         if (!\is_array($requestSingleGoods) || empty($requestSingleGoods[0])) {
             return new static(Filters::DEFAULT_FILTER_VALUE);
         }
-        $requestSingleGoods = (int) filter_var($requestSingleGoods[0], FILTER_VALIDATE_BOOLEAN);
+        $singleGoods = filter_var($requestSingleGoods[0], FILTER_VALIDATE_BOOLEAN);
 
-        return new static($requestSingleGoods ? [$requestSingleGoods] : Filters::DEFAULT_FILTER_VALUE);
+        if (!is_bool($singleGoods)) {
+            throw new BadRequestHttpException(
+                sprintf('\'%s\' parameter must be an integer', self::PARAM)
+            );
+        }
+
+        return new static([(int) $singleGoods]);
     }
 
     /**

@@ -12,6 +12,7 @@ use Elasticsearch\Common\Exceptions\BadRequest400Exception;
 use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class Elastic
@@ -137,18 +138,12 @@ abstract class Elastic
         try {
             return $this->prepareParams($params)->client->search($this->params);
         } catch (BadRequest400Exception $e) {
+            $message = 'Elastic search query failture.';
             Log::channel('elastic_errors')->error(
-                'Elastic search query failture.',
+                $message,
                 ['message' => json_decode($e->getMessage(), true)]
             );
-            return [
-                'hits' => [
-                    'hits' => [],
-                    'total' => [
-                        'value' => 0,
-                    ],
-                ],
-            ];
+            throw new HttpException(500, $message);
         }
     }
 
