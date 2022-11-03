@@ -87,7 +87,7 @@ class Options extends AbstractFilter
         foreach ($options as $option) {
             switch (true) {
                 case $option->type === Option::TYPE_CHECKBOX:
-                    if (!is_string($dynamicOptions[$option->name])) {
+                    if (!is_string($dynamicOptions[$option->name][0])) {
                         throw new BadRequestHttpException(
                             sprintf('\'%s\' parameter must be string', $option->name)
                         );
@@ -96,7 +96,7 @@ class Options extends AbstractFilter
                     $params[Filters::OPTION_CHECKED][$option->id] = $dynamicOptions[$option->name];
                     break;
                 case in_array($option->type, Option::$sliderTypes):
-                    if (!is_string($dynamicOptions[$option->name])) {
+                    if (!is_string($dynamicOptions[$option->name][0])) {
                         throw new BadRequestHttpException(
                             sprintf('\'%s\' parameter must be string', $option->name)
                         );
