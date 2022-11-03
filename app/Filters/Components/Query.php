@@ -5,6 +5,7 @@ namespace App\Filters\Components;
 use App\Enums\Filters;
 use App\Http\Requests\FilterRequest;
 use Illuminate\Foundation\Http\FormRequest;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * Класс для работы с параметром "query" для поиска
@@ -25,6 +26,8 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class Query extends AbstractFilter
 {
+    protected const PARAM = Filters::PARAM_QUERY;
+
     /**
      * @var string
      */
@@ -50,12 +53,18 @@ class Query extends AbstractFilter
      */
     public static function fromRequest(FormRequest $request): Query
     {
-        $requestQuery = $request->input(Filters::PARAM_QUERY);
+        $requestQuery = $request->input(self::PARAM);
         if (!\is_array($requestQuery) || empty($requestQuery[0])) {
             return new static(Filters::DEFAULT_FILTER_VALUE);
         }
-        $query = (string) $requestQuery[0];
+        $query = $requestQuery[0];
 
-        return new static($query ? [mb_strtolower($query)] : Filters::DEFAULT_FILTER_VALUE);
+        if (!is_string($query)) {
+            throw new BadRequestHttpException(
+                sprintf('\'%s\' parameter must be string', self::PARAM)
+            );
+        }
+
+        return new static([mb_strtolower($query)]);
     }
 }

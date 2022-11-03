@@ -12,6 +12,7 @@ use Elasticsearch\Common\Exceptions\BadRequest400Exception;
 use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Class Elastic
@@ -30,6 +31,8 @@ abstract class Elastic
      * @var Indices
      */
     private Indices $indices;
+
+    private static Collection $aliases;
 
     /**
      * Parameters for query
@@ -86,13 +89,14 @@ abstract class Elastic
      */
     public function getIndexWithAlias(): string
     {
-        return collect(
-            $this->client
-                ->cat()
-                ->aliases()
-        )->filter(function($item) {
-            return $item['alias'] === $this->indexPrefix();
-        })
+        if (empty($this::$aliases)) {
+            $this::$aliases = collect($this->client->cat()->aliases());
+        }
+
+        return $this::$aliases
+            ->filter(function ($item) {
+                return $item['alias'] === $this->indexPrefix();
+            })
             ->sortByDesc('index')
             ->pluck('index')
             ->first() ?? '';
@@ -132,23 +136,17 @@ abstract class Elastic
      * @param array $params
      * @return array|callable
      */
-    public function search(array $params = [])
+    public function search(array $params = []): array
     {
         try {
             return $this->prepareParams($params)->client->search($this->params);
         } catch (BadRequest400Exception $e) {
+            $message = 'Elastic search query failture.';
             Log::channel('elastic_errors')->error(
-                'Elastic search query failture.',
+                $message,
                 ['message' => json_decode($e->getMessage(), true)]
             );
-            return [
-                'hits' => [
-                    'hits' => [],
-                    'total' => [
-                        'value' => 0,
-                    ],
-                ],
-            ];
+            throw new HttpException(500, $message);
         }
     }
 

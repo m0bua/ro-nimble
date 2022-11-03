@@ -27,6 +27,8 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
  */
 class Categories extends AbstractFilter
 {
+    protected const PARAM = Filters::PARAM_CATEGORIES;
+
     /**
      * @var string
      */
@@ -52,18 +54,23 @@ class Categories extends AbstractFilter
      */
     public static function fromRequest(FormRequest $request): Categories
     {
-        $categoriesNames = $request->input(Filters::PARAM_CATEGORIES);
+        $names = $request->input(self::PARAM);
+        $error = sprintf('\'%s\' parameter must be array of strings', self::PARAM);
 
-        if (!$categoriesNames) {
+        if (empty($names)) {
             return new static(Filters::DEFAULT_FILTER_VALUE);
         }
 
-        if (!is_array($categoriesNames)) {
-            throw new BadRequestHttpException(
-                sprintf('"%s" parameter must be an array', Filters::PARAM_CATEGORIES)
-            );
+        if (!is_array($names)) {
+            throw new BadRequestHttpException($error);
         }
 
-        return new static(CategoryModel::getIdsByNames($categoriesNames));
+        foreach ($names as $name) {
+            if (!is_string($name)) {
+                throw new BadRequestHttpException($error);
+            }
+        }
+
+        return new static(CategoryModel::getIdsByNames($names));
     }
 }

@@ -24,6 +24,8 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
  */
 class Payments extends AbstractFilter
 {
+    protected const PARAM = Filters::PARAM_PAYMENTS;
+
     protected string $name = Filters::PAYMENTS;
 
     protected array $values = Filters::DEFAULT_FILTER_VALUE;
@@ -41,15 +43,23 @@ class Payments extends AbstractFilter
      */
     public static function fromRequest(FormRequest $request): AbstractFilter
     {
-        $names = $request->input(Filters::PARAM_PAYMENTS, []);
-        if (!is_array($names)) {
-            throw new BadRequestHttpException(
-                sprintf('"%s" parameter must be an array', Filters::PARAM_PAYMENTS)
-            );
+        $names = $request->input(self::PARAM, Filters::DEFAULT_FILTER_VALUE);
+        $error = sprintf('\'%s\' parameter must be array of strings', self::PARAM);
+
+        if (empty($names)) {
+            return new static(Filters::DEFAULT_FILTER_VALUE);
         }
 
-        $ids = PaymentParentMethod::getIdsByNames($names)->toArray();
+        if (!is_array($names)) {
+            throw new BadRequestHttpException($error);
+        }
 
-        return new static($ids);
+        foreach ($names as $name) {
+            if (!is_string($name)) {
+                throw new BadRequestHttpException($error);
+            }
+        }
+
+        return new static(PaymentParentMethod::getIdsByNames($names)->toArray());
     }
 }

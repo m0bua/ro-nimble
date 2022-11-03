@@ -5,6 +5,7 @@ namespace App\Filters\Components;
 use App\Enums\Filters;
 use App\Http\Requests\FilterRequest;
 use Illuminate\Foundation\Http\FormRequest;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * Класс для работы с секциями фильтра "Все товары"
@@ -25,6 +26,8 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class Section extends AbstractFilter
 {
+    protected const PARAM = Filters::PARAM_SECTION;
+
     /**
      * @var string
      */
@@ -50,12 +53,23 @@ class Section extends AbstractFilter
      */
     public static function fromRequest(FormRequest $request): Section
     {
-        $requestSection = $request->input(Filters::PARAM_SECTION);
+        $requestSection = $request->input(self::PARAM);
         if (!\is_array($requestSection) || empty($requestSection[0])) {
             return new static(Filters::DEFAULT_FILTER_VALUE);
         }
-        $section = abs((int) $requestSection[0]);
+        $section = $requestSection[0];
+        $error = sprintf('\'%s\' parameter must be positive integer', self::PARAM);
 
-        return new static($section ? [$section] : Filters::DEFAULT_FILTER_VALUE);
+        if (!is_numeric($section)) {
+            throw new BadRequestHttpException($error);
+        }
+
+        $section = (int)$section;
+
+        if ($section < 1) {
+            throw new BadRequestHttpException($error);
+        }
+
+        return new static([$section]);
     }
 }

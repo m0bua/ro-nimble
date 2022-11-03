@@ -31,6 +31,7 @@ class Page extends AbstractFilter
     public const DEFAULT_PAGE_MAX = 1;
     public const PAGE_MIN_KEY = 'min';
     public const PAGE_MAX_KEY = 'max';
+    protected const PARAM = Filters::PARAM_PAGE;
 
     /**
      * @var string
@@ -64,15 +65,11 @@ class Page extends AbstractFilter
      */
     public static function fromRequest(FormRequest $request): Page
     {
-        $requestPage = $request->input(Filters::PARAM_PAGE);
-        if (!\is_array($requestPage) || empty($requestPage[0])) {
+        $requestPage = $request->input(self::PARAM);
+        if (!\is_array($requestPage) || empty($requestPage[0] || $requestPage[0] === '0')) {
             return self::getResponse();
         }
         $page = $requestPage[0];
-
-        if (empty($page) || $page === '0') {
-            return self::getResponse();
-        }
 
         if (Str::contains($page, self::PAGE_SEPARATOR)) {
             [$min, $max] = explode(self::PAGE_SEPARATOR, $page);

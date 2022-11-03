@@ -55,22 +55,21 @@ class OptionSliders extends AbstractOptionFilter
     {
         $result = Filters::DEFAULT_FILTER_VALUE;
 
-        foreach ($params as $optionId => $values) {
-            foreach ($values as $value) {
-                if (preg_match(self::SLIDER_REGEX, trim($value), $matches)) {
-                    $value = array_map('floatval', [$matches[1], $matches[2]]);
+        foreach ($params as $optionId => $value) {
+            if (preg_match(self::SLIDER_REGEX, trim($value[0]), $matches)) {
+                $value = array_map('floatval', [$matches[1], $matches[2]]);
 
-                    if (count($value) != 2
-                        || ((float)$value[0] == 0 && (float)$value[1] == 0)
-                    ) {
-                        continue;
-                    }
-
-                    $result[$optionId] = [
-                        self::MIN_KEY => round($value[0], self::PRECISION),
-                        self::MAX_KEY => round($value[1], self::PRECISION)
-                    ];
+                if (
+                    count($value) != 2
+                    || ((float)$value[0] == 0 && (float)$value[1] == 0)
+                ) {
+                    continue;
                 }
+
+                $result[$optionId] = [
+                    self::MIN_KEY => round($value[0], self::PRECISION),
+                    self::MAX_KEY => round($value[1], self::PRECISION)
+                ];
             }
         }
 

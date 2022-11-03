@@ -31,6 +31,7 @@ class GoodsWithPromotions extends AbstractFilter
         Filters::PROMOTION_GOODS_INSTALLMENT,
         Filters::PROMOTION_GOODS_PROMOTION,
     ];
+    protected const PARAM = Filters::PARAM_PROMOTION_GOODS;
 
     /**
      * @var string
@@ -57,16 +58,24 @@ class GoodsWithPromotions extends AbstractFilter
      */
     public static function fromRequest(FormRequest $request): GoodsWithPromotions
     {
-        $params = $request->input(Filters::PARAM_PROMOTION_GOODS);
+        $params = $request->input(self::PARAM);
 
-        if (!$params) {
+        if (empty($params)) {
             return new static(Filters::DEFAULT_FILTER_VALUE);
         }
 
         if (!is_array($params)) {
             throw new BadRequestHttpException(
-                sprintf('"%s" parameter must be an array', Filters::PARAM_PROMOTION_GOODS)
+                sprintf('\'%s\' parameter must be array', self::PARAM)
             );
+        }
+
+        if (array_intersect($params, self::$availableParams) === []) {
+            throw new BadRequestHttpException(sprintf(
+                '\'%s\' parameter must be one of: %s',
+                self::PARAM,
+                implode(', ', self::$availableParams)
+            ));
         }
 
         return new static(array_values(array_intersect($params, self::$availableParams)));

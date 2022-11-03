@@ -5,6 +5,7 @@ namespace App\Filters\Components;
 use App\Enums\Filters;
 use App\Http\Requests\FilterRequest;
 use Illuminate\Foundation\Http\FormRequest;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * Класс для работы с фильтром "ID Акции"
@@ -25,6 +26,8 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class Promotion extends AbstractFilter
 {
+    protected const PARAM = Filters::PARAM_PROMOTION;
+
     /**
      * @var string
      */
@@ -50,11 +53,22 @@ class Promotion extends AbstractFilter
      */
     public static function fromRequest(FormRequest $request): Promotion
     {
-        $requestPromotion = $request->input(Filters::PARAM_PROMOTION);
+        $requestPromotion = $request->input(self::PARAM);
         if (!\is_array($requestPromotion) || empty($requestPromotion[0])) {
             return new static(Filters::DEFAULT_FILTER_VALUE);
         }
-        $promotion = abs((int) $requestPromotion[0]);
+        $promotion = $requestPromotion[0];
+        $error = sprintf('\'%s\' parameter must be positive integer', self::PARAM);
+
+        if (!is_numeric($promotion)) {
+            throw new BadRequestHttpException($error);
+        }
+
+        $promotion = (int)$promotion;
+
+        if ($promotion < 1) {
+            throw new BadRequestHttpException($error);
+        }
 
         return new static($promotion ? [$promotion] : Filters::DEFAULT_FILTER_VALUE);
     }

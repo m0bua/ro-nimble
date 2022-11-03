@@ -28,6 +28,8 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
  */
 class SellStatuses extends AbstractFilter
 {
+    protected const PARAM = Filters::PARAM_SELL_STATUSES;
+
     /**
      * @var string
      */
@@ -63,16 +65,23 @@ class SellStatuses extends AbstractFilter
      */
     public static function fromRequest(FormRequest $request): SellStatuses
     {
-        $sellStatuses = $request->input(Filters::PARAM_SELL_STATUSES);
+        $sellStatuses = $request->input(self::PARAM);
 
-        if (!$sellStatuses) {
+        if (empty($sellStatuses)) {
             return new static(Filters::DEFAULT_FILTER_VALUE);
         }
 
         if (!is_array($sellStatuses)) {
             throw new BadRequestHttpException(
-                sprintf('"%s" parameter must be an array', Filters::PARAM_SELL_STATUSES)
+                sprintf('\'%s\' parameter must be array', self::PARAM)
             );
+        }
+        if (array_intersect($sellStatuses, self::$availableParams) === []) {
+            throw new BadRequestHttpException(sprintf(
+                '\'%s\' parameter must be one of: %s',
+                self::PARAM,
+                implode(', ', self::$availableParams)
+            ));
         }
 
         return new static(array_intersect($sellStatuses, self::$availableParams));

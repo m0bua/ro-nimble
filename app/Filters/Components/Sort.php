@@ -5,6 +5,7 @@ namespace App\Filters\Components;
 use App\Enums\Filters;
 use App\Http\Requests\FilterRequest;
 use Illuminate\Foundation\Http\FormRequest;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * Класс для работы с параметром сортировки
@@ -26,6 +27,8 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class Sort extends AbstractFilter
 {
+    protected const PARAM = Filters::PARAM_SORT;
+
     /**
      * Сортировка по умолчанию
      */
@@ -65,13 +68,21 @@ class Sort extends AbstractFilter
      */
     public static function fromRequest(FormRequest $request): Sort
     {
-        $requestSort = $request->input(Filters::PARAM_SORT);
+        $requestSort = $request->input(self::PARAM);
         if (!\is_array($requestSort) || empty($requestSort[0])) {
             return new static(self::DEFAULT_SORT);
         }
         $sort = $requestSort[0];
 
-        return new static(in_array($sort, self::$availableParams) ? [$sort] : self::DEFAULT_SORT);
+        if (!in_array($sort, self::$availableParams) === []) {
+            throw new BadRequestHttpException(sprintf(
+                '\'%s\' parameter must be one of: %s',
+                self::PARAM,
+                implode(', ', self::$availableParams)
+            ));
+        }
+
+        return new static([$sort]);
     }
 
     /**

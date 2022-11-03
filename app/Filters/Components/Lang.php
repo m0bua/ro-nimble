@@ -2,10 +2,10 @@
 
 namespace App\Filters\Components;
 
-use App;
 use App\Enums\Filters;
 use App\Http\Requests\FilterRequest;
 use Illuminate\Foundation\Http\FormRequest;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * Класс для работы с фильтром "Язык"
@@ -28,6 +28,10 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class Lang extends AbstractFilter
 {
+    public static $availableParams = [];
+
+    protected const PARAM = Filters::PARAM_LANG;
+
     /**
      * @var string
      */
@@ -53,6 +57,28 @@ class Lang extends AbstractFilter
      */
     public static function fromRequest(FormRequest $request): Lang
     {
-        return new static(Filters::DEFAULT_FILTER_VALUE);
+        // todo: activate param
+
+        // $params = $request->input(self::PARAM);
+
+        // if (empty($params)) {
+        //     return new static(Filters::DEFAULT_FILTER_VALUE);
+        // }
+
+        // if (!is_array($params)) {
+        //     throw new BadRequestHttpException(
+        //         sprintf('\'%s\' parameter must be array', self::PARAM)
+        //     );
+        // }
+
+        // if (array_intersect($params, self::$availableParams) === []) {
+        //     throw new BadRequestHttpException(sprintf(
+        //         '\'%s\' parameter must be one of: %s',
+        //         self::PARAM,
+        //         implode(', ', self::$availableParams)
+        //     ));
+        // }
+
+        return new static(isset($params) ? $params : Filters::DEFAULT_FILTER_VALUE);
     }
 }

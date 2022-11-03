@@ -27,6 +27,8 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
  */
 class Producers extends AbstractFilter
 {
+    protected const PARAM = Filters::PARAM_PRODUCER;
+
     /**
      * @var string
      */
@@ -52,28 +54,30 @@ class Producers extends AbstractFilter
      */
     public static function fromRequest(FormRequest $request): Producers
     {
-        $producersNames = $request->input(Filters::PARAM_PRODUCER);
+        $names = $request->input(self::PARAM);
+        $error = sprintf('\'%s\' parameter must be array of strings', self::PARAM);
 
-        if (!$producersNames) {
+        if (empty($names)) {
             return new static(Filters::DEFAULT_FILTER_VALUE);
         }
 
-        if (!is_array($producersNames)) {
-            throw new BadRequestHttpException(
-                sprintf('"%s" parameter must be an array', Filters::PARAM_PRODUCER)
-            );
+        if (!is_array($names)) {
+            throw new BadRequestHttpException($error);
         }
 
         //если значение продюсера 'v1234', проверяем по id, активен ли он
         $needCheckIds = [];
-        foreach ($producersNames as $key => $producerName) {
+        foreach ($names as $key => $producerName) {
+            if (!is_string($producerName)) {
+                throw new BadRequestHttpException($error);
+            }
             if (preg_match('/^v(\d+)$/', $producerName, $matches)) {
                 $needCheckIds[] = $matches[1];
-                unset($producersNames[$key]);
+                unset($names[$key]);
             }
         }
 
-        $producersIds = ProducerModel::getIdsByNames($producersNames);
+        $producersIds = ProducerModel::getIdsByNames($names);
 
         if ($needCheckIds) {
             $producersIds = array_merge($producersIds, ProducerModel::getActiveByIds($needCheckIds));

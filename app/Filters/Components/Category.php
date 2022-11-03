@@ -8,6 +8,7 @@ use App\Models\Eloquent\CategoryOption;
 use App\Models\Eloquent\Option;
 use Illuminate\Foundation\Http\FormRequest;
 use \App\Models\Eloquent\Category as CategoryModel;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * Класс для работы с фильтром "ID Категории"
@@ -29,6 +30,8 @@ use \App\Models\Eloquent\Category as CategoryModel;
 class Category extends AbstractFilter
 {
     public const FASHION_CATEGORY_ID = 1162030;
+
+    protected const PARAM = Filters::PARAM_CATEGORY;
 
     /**
      * Id опции для авторанжирования
@@ -71,22 +74,36 @@ class Category extends AbstractFilter
      */
     public static function fromRequest(FormRequest $request): Category
     {
-        $requestCategory = $request->input(Filters::PARAM_CATEGORY);
+        $requestCategory = $request->input(self::PARAM);
         if (!\is_array($requestCategory) || empty($requestCategory[0])) {
             return new static(Filters::DEFAULT_FILTER_VALUE);
         }
 
-        $categoryId = abs((int) $requestCategory[0]);
-        if (!$categoryId) {
-            return new static(Filters::DEFAULT_FILTER_VALUE);
+        $categoryId = $requestCategory[0];
+        $error = sprintf('\'%s\' parameter must be positive integer', self::PARAM);
+
+        if (!is_numeric($categoryId)) {
+            throw new BadRequestHttpException($error);
+        }
+
+        $categoryId = (int)$categoryId;
+
+        if ($categoryId < 1) {
+            throw new BadRequestHttpException($error);
         }
 
         /** @var CategoryModel $category */
         $category = CategoryModel::getById($categoryId);
 
-        return $category
-            ? new static([$category->id], $category)
-            : new static(Filters::DEFAULT_FILTER_VALUE);
+        if (empty($category)) {
+            if (empty($request->input(Filters::PARAM_PROMOTION))) {
+                throw new BadRequestHttpException('Caterory not found');
+            } else {
+                return new static(Filters::DEFAULT_FILTER_VALUE);
+            }
+        }
+
+        return new static([$category->id], $category);
     }
 
     /**

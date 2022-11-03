@@ -5,6 +5,7 @@ namespace App\Filters\Components;
 use App\Enums\Filters;
 use App\Http\Requests\FilterRequest;
 use Illuminate\Foundation\Http\FormRequest;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * Класс для работы с фильтром "Программа лояльности" (опция "С бонусами")
@@ -26,6 +27,8 @@ use Illuminate\Foundation\Http\FormRequest;
  */
 class Bonus extends AbstractFilter
 {
+    protected const PARAM = Filters::PARAM_BONUS;
+
     /**
      * @var string
      */
@@ -51,12 +54,18 @@ class Bonus extends AbstractFilter
      */
     public static function fromRequest(FormRequest $request): Bonus
     {
-        $requestBonus = $request->input(Filters::PARAM_BONUS);
+        $requestBonus = $request->input(self::PARAM);
         if (!\is_array($requestBonus) || empty($requestBonus[0])) {
             return new static(Filters::DEFAULT_FILTER_VALUE);
         }
         $bonus = $requestBonus[0];
 
-        return new static($bonus == Filters::PARAM_BONUS ? [$bonus] : Filters::DEFAULT_FILTER_VALUE);
+        if (!is_string($bonus)) {
+            throw new BadRequestHttpException(
+                sprintf('\'%s\' parameter must be string', self::PARAM)
+            );
+        }
+
+        return new static($bonus == self::PARAM ? [$bonus] : Filters::DEFAULT_FILTER_VALUE);
     }
 }

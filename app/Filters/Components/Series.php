@@ -27,6 +27,8 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
  */
 class Series extends AbstractFilter
 {
+    protected const PARAM = Filters::PARAM_SERIES;
+
     /**
      * @var string
      */
@@ -52,15 +54,15 @@ class Series extends AbstractFilter
      */
     public static function fromRequest(FormRequest $request): Series
     {
-        $series = $request->input(Filters::PARAM_SERIES);
+        $series = $request->input(self::PARAM);
 
-        if (!$series) {
+        if (empty($series)) {
             return new static(Filters::DEFAULT_FILTER_VALUE);
         }
 
         if (!is_array($series)) {
             throw new BadRequestHttpException(
-                sprintf('"%s" parameter must be an array', Filters::PARAM_SERIES)
+                sprintf('\'%s\' parameter must be array', self::PARAM)
             );
         }
 

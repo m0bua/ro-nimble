@@ -5,6 +5,7 @@ namespace App\Filters\Components;
 use App\Enums\Filters;
 use App\Http\Requests\FilterRequest;
 use Illuminate\Foundation\Http\FormRequest;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * Класс для работы с фильтром "Код страны"
@@ -28,6 +29,8 @@ use Illuminate\Foundation\Http\FormRequest;
 class Country extends AbstractFilter
 {
     public const DEFAULT_VALUE = [Filters::COUNTRY_UA];
+
+    protected const PARAM = Filters::PARAM_COUNTRY;
 
     /**
      * @var string
@@ -59,15 +62,28 @@ class Country extends AbstractFilter
      */
     public static function fromRequest(FormRequest $request): Country
     {
-        $requestCountry = $request->input(Filters::PARAM_COUNTRY);
-        if (!\is_array($requestCountry) || empty($requestCountry[0])) {
-            $country = self::DEFAULT_VALUE;
-        } else {
-            $country = strtolower($requestCountry[0]);
+        $requestCountry = $request->input(self::PARAM);
+        [$country] = !\is_array($requestCountry) || empty($requestCountry[0])
+            ? self::DEFAULT_VALUE : $requestCountry;
+
+        if (!is_string($country)) {
+            throw new BadRequestHttpException(
+                sprintf('\'%s\' parameter must be string', self::PARAM)
+            );
         }
 
+        $country = strtolower($country);
+
+        if (!in_array($country, self::$availableParams)) {
+            throw new BadRequestHttpException(sprintf(
+                    '\'%s\' parameter must be one of: %s',
+                    self::PARAM,
+                    implode(', ', self::$availableParams)
+                ));
+        }
         return new static(
-            $country && in_array($country, self::$availableParams) ? [$country] : self::DEFAULT_VALUE
+            $country && in_array($country, self::$availableParams)
+                ? [$country] : self::DEFAULT_VALUE
         );
     }
 }
