@@ -62,6 +62,7 @@ class ExpensiveComponent extends BaseSortComponent
             array_merge(
                 $this->getScript(),
                 $this->getPrice(),
+                $this->getPromotionOrder(),
                 $this->getOrder(),
                 $this->getRank(),
                 $this->getId()
@@ -79,6 +80,7 @@ class ExpensiveComponent extends BaseSortComponent
                 $this->getScript(),
                 $this->getPrice(),
                 $this->getIsGroupPrimary(),
+                $this->getPromotionOrder(),
                 $this->getOrder(),
                 $this->getRank(),
                 $this->getId()

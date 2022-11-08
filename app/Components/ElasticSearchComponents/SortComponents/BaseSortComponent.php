@@ -8,6 +8,7 @@
 namespace App\Components\ElasticSearchComponents\SortComponents;
 
 use App\Components\ElasticSearchComponents\BaseComponent;
+use App\Enums\Elastic;
 
 abstract class BaseSortComponent extends BaseComponent
 {
@@ -26,6 +27,27 @@ abstract class BaseSortComponent extends BaseComponent
                 'order' => 'desc'
             ]
         ];
+    }
+
+    /**
+     * @return array[]
+     */
+    protected function getPromotionOrder(): array
+    {
+        return isset($this->filters->promotion->getValues()[0])
+            ? [
+                'promotion.order' => [
+                    'order' => 'asc',
+                    'nested' => [
+                        'path' => Elastic::FIELD_PROMOTION,
+                        'filter' => $this->elasticWrapper->term(
+                            Elastic::FIELD_PROMOTION_ID,
+                            $this->filters->promotion->getValues()[0]
+                        )
+                    ]
+                ]
+            ]
+            : [];
     }
 
     /**
