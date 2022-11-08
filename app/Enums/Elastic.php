@@ -28,6 +28,8 @@ class Elastic
     public const FIELD_SELL_STATUS = 'sell_status';
     public const FIELD_CATEGORIES_PATH = 'categories_path';
     public const FIELD_CATEGORY_ID = 'category_id';
+    public const FIELD_PROMOTION = 'promotion';
+    public const FIELD_PROMOTION_ID = 'promotion.id';
     public const FIELD_PROMOTION_IDS = 'promotion_ids';
     public const FIELD_OPTIONS = 'options';
     public const FIELD_OPTION_VALUES = 'option_values';

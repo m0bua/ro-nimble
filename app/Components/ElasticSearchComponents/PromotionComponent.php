@@ -22,6 +22,13 @@ class PromotionComponent extends BaseComponent
             return $this->elasticWrapper::DEFAULT_RESULT;
         }
 
-        return $this->elasticWrapper->term(Elastic::FIELD_PROMOTION_IDS, $param);
+        return $this->elasticWrapper->nested(
+            Elastic::FIELD_PROMOTION,
+            $this->elasticWrapper->bool(
+                $this->elasticWrapper->filter([
+                    $this->elasticWrapper->term(Elastic::FIELD_PROMOTION_ID, $param)
+                ])
+            )
+        );
     }
 }

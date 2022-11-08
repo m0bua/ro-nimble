@@ -59,6 +59,7 @@ class NoveltyComponent extends BaseSortComponent
         return [
             array_merge(
                 $this->getScript(),
+                $this->getPromotionOrder(),
                 $this->getOrder(),
                 $this->getRank(),
                 $this->getId()
@@ -75,6 +76,7 @@ class NoveltyComponent extends BaseSortComponent
             array_merge(
                 $this->getScript(),
                 $this->getIsGroupPrimary(),
+                $this->getPromotionOrder(),
                 $this->getOrder(),
                 $this->getRank(),
                 $this->getId()
