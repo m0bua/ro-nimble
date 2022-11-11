@@ -508,9 +508,6 @@ class GenerateSeed extends Command
 //                    return [FilterAutoranking::query()];
 //                },
 //            ],
-            /** TODO: producer_translations (Will be removed?) */
-            /** TODO: goods_options (artifact?) */
-            /** migrations */
         ];
 
         foreach ($tables as $tableName => $options) {

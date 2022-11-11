@@ -85,32 +85,29 @@ class Options extends AbstractFilter
         $params = [];
 
         foreach ($options as $option) {
+            if (!is_array($dynamicOptions[$option->name])) {
+                throw new BadRequestHttpException(
+                    sprintf('"%s" parameter must be an array', $option->name)
+                );
+            }
+            if (
+                ($option->type === Option::TYPE_CHECKBOX
+                    || in_array($option->type, Option::$sliderTypes))
+                && (empty($dynamicOptions[$option->name][0])
+                    || !is_string($dynamicOptions[$option->name][0]))
+            ) {
+                throw new BadRequestHttpException(
+                    sprintf('"%s" parameter must be a string', $option->name)
+                );
+            }
             switch (true) {
                 case $option->type === Option::TYPE_CHECKBOX:
-                    if (!is_string($dynamicOptions[$option->name][0])) {
-                        throw new BadRequestHttpException(
-                            sprintf('\'%s\' parameter must be string', $option->name)
-                        );
-                    }
-
                     $params[Filters::OPTION_CHECKED][$option->id] = $dynamicOptions[$option->name];
                     break;
                 case in_array($option->type, Option::$sliderTypes):
-                    if (!is_string($dynamicOptions[$option->name][0])) {
-                        throw new BadRequestHttpException(
-                            sprintf('\'%s\' parameter must be string', $option->name)
-                        );
-                    }
-
                     $params[Filters::OPTION_SLIDERS][$option->id] = $dynamicOptions[$option->name];
                     break;
                 default:
-                    if (!is_array($dynamicOptions[$option->name])) {
-                        throw new BadRequestHttpException(
-                            sprintf('\'%s\' parameter must be array', $option->name)
-                        );
-                    }
-
                     $params[Filters::OPTION_VALUES][$option->id] = [
                         'option' => $option,
                         'optionValues' => $dynamicOptions[$option->name]

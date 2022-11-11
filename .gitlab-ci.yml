@@ -28,10 +28,10 @@ stages:
   - build
   - unit-tests
   - run_autotest
-  - report
   - deploy
   - rollback
   - stop-restart
+  - report
 
 build:
   image: registry.gitlab.rozetka.company/common/ci-docker-images/ci-php74:latest
@@ -186,6 +186,8 @@ allure-testops:
 
 deploy-dev:
   stage: deploy
+  needs:
+    - build
   tags:
     - rozetka-shared-standart
   script:
