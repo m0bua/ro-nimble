@@ -3,11 +3,13 @@
 namespace App\Console;
 
 use App\Console\Commands\Delete;
+use App\Console\Commands\DeleteFromDB;
 use App\Console\Commands\Dev;
 use App\Console\Commands\FetchFiltersAutoranking;
 use App\Console\Commands\FillLostTranslations;
 use App\Console\Commands\Indexing;
 use App\Console\Commands\IndexProducers;
+use App\Console\Commands\MarkForDelete;
 use App\Console\Commands\Precount\FillPrecountOptionSettings;
 use App\Console\Commands\Precount\FillPrecountOptionSliders;
 use App\Console\Commands\Seed\{
@@ -48,6 +50,8 @@ class Kernel extends ConsoleKernel
 
         GenerateSeed::class,
         Seed::class,
+        MarkForDelete::class,
+        DeleteFromDB::class,
     ];
 
     /**

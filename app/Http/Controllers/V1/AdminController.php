@@ -8,6 +8,10 @@ use App\Models\Elastic\ProducersModel;
 use App\Models\Eloquent\Indices;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Route;
 
 class AdminController extends Controller
 {
@@ -18,9 +22,29 @@ class AdminController extends Controller
      */
     private Elastic $goodsElastic;
 
+    /**
+     * @var Collection
+     */
+    public Collection $navbar;
+
+    public static $navbarTitles = [
+        'import' => 'Need Delete',
+    ];
+
     public function __construct(ResponseFactory $responseFactory, GoodsModel $goodsElastic)
     {
         $this->goodsElastic = $goodsElastic;
+
+        $this->navbar = collect(Route::getRoutes()->getRoutes())->filter(function($item) {
+            return !empty($item->action['as']) && false !== \strpos($item->action['as'], 'admin.navbar');
+        })->map(function ($item) {
+            $action = \explode('@', $item->action['controller'])[1];
+            return [
+                'uri'    => "/$item->uri",
+                'active' => $item->action['as'] === \Request::route()->getName(),
+                'title'  => self::$navbarTitles[$action] ?? \ucfirst($action)
+            ];
+        });
 
         parent::__construct($responseFactory);
     }
@@ -41,8 +65,67 @@ class AdminController extends Controller
             ->view('admin.index', [
                 'goodsIndices' => $goodsIndices,
                 'refillActive' => $refillActive,
+                'navbar'       => $this->navbar,
             ], 200)
             ->header('Content-Type', 'text/html');
+    }
+
+    public function import()
+    {
+        $tables = DB::query()
+            ->select(['t.table_name'])
+            ->from('information_schema.tables', 't')
+            ->rightJoin('information_schema.columns as s', function ($join) {
+                $join->on('s.table_name', '=', 't.table_name')
+                    ->where('s.column_name', '=', 'need_delete');
+            })
+            ->whereNotIn('t.table_schema', ['information_schema', 'pg_catalog'])
+            ->where('t.table_type', '=', 'BASE TABLE')
+            ->get()
+            ->map(function ($item) {
+                $item->count = DB::query()
+                    ->select(DB::raw('count(1) as count'))
+                    ->from($item->table_name)
+                    ->where('need_delete', '=', 1)
+                    ->pluck('count')
+                    ->first();
+                return (array) $item;
+            });
+
+        return response()
+            ->view('admin.import', [
+                'tables' => $tables,
+                'navbar' => $this->navbar,
+                'mark4DeleteActive' => str_contains(
+                    shell_exec("ps aux | grep 'artisan db:mark-for-delete'"), 'php artisan db:mark-for-delete'
+                ),
+                'deleteFromDBActive' => str_contains(
+                    shell_exec("ps aux | grep 'artisan db:delete-from-db'"), 'php artisan db:delete-from-db'
+                )
+            ], 200)
+            ->header('Content-Type', 'text/html');
+    }
+
+    public function markDelete()
+    {
+        $basePath = base_path();
+        $params = '';
+        foreach (Request::post('tables_select') as $table) {
+            $params .= " --tables=$table";
+        }
+        exec("cd $basePath && php artisan db:mark-for-delete $params > /dev/null &");
+        return redirect('/api/v1/admin/import');
+    }
+
+    public function deleteFromDb()
+    {
+        $basePath = base_path();
+        $params = '';
+        foreach (Request::post('tables_select') as $table) {
+            $params .= " --tables=$table";
+        }
+        exec("cd $basePath && php artisan db:delete-from-db $params > /dev/null &");
+        return redirect('/api/v1/admin/import');
     }
 
     public function switch()
