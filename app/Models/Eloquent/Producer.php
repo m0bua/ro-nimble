@@ -24,7 +24,6 @@ use App\Models\Eloquent\AbstractModel as Model;
  * @property int|null $producer_rank
  * @property string|null $name
  * @property string $title
- * @property string|null $title_rus
  * @property string|null $ext_id
  * @property string|null $text
  * @property string|null $status

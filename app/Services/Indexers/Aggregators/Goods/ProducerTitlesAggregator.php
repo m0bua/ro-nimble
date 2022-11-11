@@ -41,12 +41,11 @@ class ProducerTitlesAggregator extends AbstractAggregator
             ->query()
             ->select([
                 'g.id',
-                DB::raw("coalesce(pt.value, '') as producer_title"),
+                DB::raw("p.title as producer_title"),
             ])
             ->from($this->model->getTable(), 'g')
-            ->join('producer_translations as pt', 'g.producer_id', 'pt.producer_id')
+            ->join('producers as p', 'g.producer_id', 'p.id')
             ->whereIn('g.id', $ids)
-            ->where('pt.lang', 'ru')
             ->toBase()
             ->get()
             ->keyBy('id')
