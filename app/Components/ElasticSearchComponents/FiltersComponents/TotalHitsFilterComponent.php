@@ -20,4 +20,12 @@ class TotalHitsFilterComponent extends BaseComponent
     {
         return [Elastic::PARAM_TRACK_TOTAL_HITS => false];
     }
+
+    /**
+     * @return false[]
+     */
+    public function getTrueValue(): array
+    {
+        return [Elastic::PARAM_TRACK_TOTAL_HITS => true];
+    }
 }

@@ -43,4 +43,6 @@ class Elastic
     public const FIELD_PRODUCER_TITLE_KEYWORD = 'producer_title.keyword';
     public const FIELD_PRODUCER_TITLE_TEXT = 'producer_title.text';
     public const FIELD_GOODS_LABELS_IDS = 'goods_labels_ids';
+    public const FIELD_ORDER = 'order';
+    public const FIELD_RANK = 'rank';
 }

@@ -41,22 +41,24 @@ class CollapseComponent extends BaseComponent
     }
 
     /**
-     * Return condition for collapse
-     *
      * @param array $sort
-     * @return float[]|int[]
+     * @param bool $withInnerHits
+     *
+     * @return array[]
      */
-    public function getCollapseForGoods(array $sort): array
+    public function getCollapseForGoods(array $sort = [], bool $withInnerHits = false): array
     {
         $params = ['field' => Elastic::FIELD_GROUP_TOKEN];
 
-        $params['inner_hits'] = [
-            'name' => 'group',
-            '_source' => 'id',
-            'size' => 1
-        ];
+        if ($withInnerHits) {
+            $params['inner_hits'] = [
+                'name' => 'group',
+                '_source' => 'id',
+                'size' => 1
+            ];
 
-        $params['inner_hits'] = array_merge($params['inner_hits'], $sort);
+            $params['inner_hits'] = array_merge($params['inner_hits'], $sort);
+        }
 
         return [self::PARAM_NAME => $params];
     }

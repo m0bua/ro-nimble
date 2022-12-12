@@ -7,8 +7,8 @@ namespace App\Modules\GoodsModule;
 
 use App\Components\ElasticSearchComponents\CategoryComponent;
 use App\Components\ElasticSearchComponents\CollapseComponent;
+use App\Components\ElasticSearchComponents\FiltersComponents\TotalHitsFilterComponent;
 use App\Components\ElasticSearchComponents\FromComponent;
-use App\Components\ElasticSearchComponents\SingleGoodsComponent;
 use App\Components\ElasticSearchComponents\SizeComponent;
 use App\Components\ElasticSearchComponents\SortComponent;
 use App\Components\ElasticSearchComponents\SourceComponent;
@@ -17,7 +17,10 @@ use App\Filters\Filters;
 use App\Helpers\ElasticWrapper;
 use App\Models\Elastic\GoodsModel;
 use App\Modules\ElasticModule\ElasticService;
+use Exception;
+use Log;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class GoodsService
 {
@@ -62,6 +65,21 @@ class GoodsService
      */
     private CollapseComponent $collapseComponent;
 
+    /**
+     * @var TotalHitsFilterComponent
+     */
+    private TotalHitsFilterComponent $totalHitsComponent;
+
+    /**
+     * @var int
+     */
+    private int $countIn = 0;
+
+    /**
+     * @var bool
+     */
+    private bool $isPromotion = false;
+
     public function __construct(
         ElasticService $elasticService,
         GoodsModel $goodsModel,
@@ -73,7 +91,8 @@ class GoodsService
         SizeComponent $sizeComponent,
         SortComponent $sortComponent,
         SourceComponent $sourceComponent,
-        CollapseComponent $collapseComponent
+        CollapseComponent $collapseComponent,
+        TotalHitsFilterComponent $totalHitsComponent
     ) {
         $this->elasticService = $elasticService;
         $this->goodsModel = $goodsModel;
@@ -86,6 +105,8 @@ class GoodsService
         $this->sortComponent = $sortComponent;
         $this->sourceComponent = $sourceComponent->setFields($this->selectFields);
         $this->collapseComponent = $collapseComponent;
+        $this->totalHitsComponent = $totalHitsComponent;
+        $this->isPromotion = $this->filters->promotion->getValues()->isNotEmpty() && $this->filters->category->getValues()->isEmpty();
     }
 
     /**
@@ -95,85 +116,62 @@ class GoodsService
         'id',
     ];
 
+    /**
+     * @return array
+     * @throws Exception
+     */
     public function getGoods(): array
     {
-        if (!$this->filters->category->getValues() && !$this->filters->promotion->getValues()) {
-            throw new BadRequestHttpException('Missing required parameters');
-        }
+        try {
+            if (!$this->filters->category->getValues() && !$this->filters->promotion->getValues()) {
+                throw new BadRequestHttpException('Missing required parameters');
+            }
 
-        if (!$this->filters->singleGoods->isCheck()) {
-            $queryBody = $this->elasticWrapper->bool([
-                    $this->elasticWrapper->filter(
-                        [
-                            $this->elasticWrapper->bool(
-                                $this->elasticWrapper->should(
-                                    array_merge(
-                                        [$this->elasticWrapper->bool(
-                                            $this->elasticWrapper->filter(
-                                                array_merge(
-                                                    $this->elasticService->getDefaultFiltersConditions(),
-                                                    [["term" => ["group_id" => 0]]]
-                                                )
-                                            )
-                                        )],
-                                        [$this->elasticWrapper->terms(Elastic::FIELD_ID, $this->getFilteredGoods())]
-                                    )
-                                )
-                            )
-                        ]
-                    ),
-                    $this->elasticWrapper->mustNotSingle($this->elasticService->getExcludedCategories())
-            ]);
-        } else {
-            $queryBody = $this->elasticWrapper->bool(
-                [
-                    $this->elasticWrapper->filter(
-                        $this->elasticService->getDefaultFiltersConditions()
-                    ),
-                    $this->elasticWrapper->mustNotSingle($this->elasticService->getExcludedCategories())
-                ]
+            $singleGoods = $this->filters->singleGoods->isCheck();
+            if (!$singleGoods) {
+                $data = $this->getFilteredGroupedGoods();
+                $data = $this->sortComponent->currentSortComponent->sortResultArray($data, $this->isPromotion);
+            } else {
+                $data = $this->getFilteredSingleGoods();
+            }
+
+
+            if(!$singleGoods) {
+                $idsCount = count($data);
+
+                $data = array_column($data, 'id');
+
+                $chunkedArray = array_chunk(
+                    $data,
+                    $this->filters->perPage->getValues()->first()
+                );
+                if (!empty($chunkedArray)) {
+                    $ids = $chunkedArray[$this->filters->page->getValues()->first() - 1];
+                } else {
+                    $ids = [];
+                }
+
+            } else {
+                $idsCount = $data['hits']['total']['value'];
+                $ids = $this->getIds($data['hits']['hits']);
+            }
+
+            return [
+                'ids' => $ids,
+                'ids_count' => $idsCount,
+                'goods_in_category' => $this->countIn,
+                'shown_page' => $this->filters->page->getValues()['min'],
+                'goods_limit' => $this->filters->perPage->getValues()[0],
+                'total_pages' => ceil($idsCount / $this->filters->perPage->getValues()[0]),
+            ];
+        } catch (Exception $e) {
+            $message = 'Something goes wrong.';
+            Log::channel('elastic_errors')->error(
+                $message,
+                ['message' => json_decode($e->getMessage(), true)]
             );
+            throw new HttpException(500, $message);
         }
-
-        if (!empty($queryBody)) {
-            $data = $this->goodsModel->search(
-                $this->elasticWrapper->body([
-                    $this->fromComponent->getValue(),
-                    $this->sizeComponent->getValue(),
-                    $this->sortComponent->getValue(),
-                    $this->sourceComponent->setFields($this->selectFields)->getValue(),
-                    $this->elasticWrapper->query(
-                        $queryBody
-                    )
-                ])
-            );
-        } else {
-            $data = $this->elasticWrapper::EMPTY_SEARCH_RESULT;
-        }
-
-        if ($this->filters->promotion->getValues()->isNotEmpty()
-                && $this->filters->category->getValues()->isEmpty()) {
-            $goodsInCategory = $data['hits']['total']['value'];
-        } else {
-            $goodsInCategory = $this->goodsModel->search(
-                $this->elasticWrapper->body(
-                    $this->elasticWrapper->query(
-                        $this->categoryComponent->getValue()
-                    )
-                )
-            )['hits']['total']['value'];
-        }
-
-        $idsCount = $data['hits']['total']['value'];
-
-        return [
-            'ids' => $this->getIds($data['hits']['hits']),
-            'ids_count' => $idsCount,
-            'goods_in_category' => $goodsInCategory,
-            'shown_page' => $this->filters->page->getValues()['min'],
-            'goods_limit' => $this->filters->perPage->getValues()[0],
-            'total_pages' => ceil($idsCount / $this->filters->perPage->getValues()[0]),
-        ];
     }
 
     /**
@@ -193,34 +191,239 @@ class GoodsService
 
     /**
      * Отфильтровывает результаты,
-     * Соединяет в группы и внутри груп проводит сортировку
-     * Отдает id товаров из поля inner_hits
+     * Внутри груп проводит сортировку и выбирает главного
+     * Отдает массив товаров вида [0 => ['id'=>1, 'order' => 1, 'rank' => 'price', 'weight_sort'=> 1]]
      *
      * @return int[]
      */
-    public function getFilteredGoods (): array
+    public function getFilteredGroupedGoods (): array
     {
-        $data = $this->goodsModel->search(
-            $this->elasticWrapper->body([
-                $this->sizeComponent->getDefaultElasticSize(),
-                $this->sourceComponent->setFields([Elastic::FIELD_GROUP_TOKEN])->getValue(),
+        $first = $this->elasticWrapper->prepareMultiParams([
+            $this->sizeComponent->getDefaultElasticSize(),
+            $this->sourceComponent->setFields([
+                Elastic::FIELD_ID,
+                Elastic::FIELD_GROUP_TOKEN,
+                Elastic::FIELD_ORDER,
+                Elastic::FIELD_RANK,
+                Elastic::FIELD_PRICE
+            ])->getValue(),
+            $this->sortComponent->getValue(),
+            $this->elasticWrapper->query(
+                $this->elasticWrapper->bool(
+                    [
+                        $this->elasticWrapper->filter(
+                            array_merge(
+                                $this->elasticService->getDefaultFiltersConditions(),
+                                [["term" => ["is_group_primary" => 1]]]
+                            )
+                        ),
+                        $this->elasticWrapper->mustNotSingle($this->elasticService->getExcludedCategories())
+                    ]
+                )
+            ),
+            $this->collapseComponent->getCollapseForGoods()
+        ]);
+
+        $second = $this->elasticWrapper->prepareMultiParams([
+            $this->sizeComponent->getDefaultElasticSize(),
+            $this->sourceComponent->setFields([
+                Elastic::FIELD_ID,
+                Elastic::FIELD_GROUP_TOKEN,
+                Elastic::FIELD_ORDER,
+                Elastic::FIELD_RANK,
+                Elastic::FIELD_PRICE
+            ])->getValue(),
+            $this->sortComponent->getValue(),
+            $this->elasticWrapper->query(
+                $this->elasticWrapper->bool(
+                    [
+                        $this->elasticWrapper->filter(
+                            array_merge(
+                                $this->elasticService->getDefaultFiltersConditions(),
+                                [["term" => ["is_group_primary" => 0]]]
+                            )
+                        ),
+                        $this->elasticWrapper->mustNotSingle($this->elasticService->getExcludedCategories())
+                    ]
+                )
+            ),
+            $this->collapseComponent->getCollapseForGoods()
+        ]);
+
+        $index = ['index' => $this->goodsModel->getIndexName()];
+
+        $params = [
+            'body' => [
+                $index,
+                $first,
+                $index,
+                $second
+            ]
+        ];
+
+        $third = $this->getCount();
+        if (!empty($third)) {
+            $params['body'][] = $index;
+            $params['body'][] = $third;
+        }
+
+        $data = $this->sendMultiSearchRequest($params);
+
+        // $data['response'][2] содержит общее кол-во товаров в категории
+        if (isset($data['responses'][2]['hits']['total']['value'])) {
+            $this->countIn = $data['responses'][2]['hits']['total']['value'];
+        }
+
+        $responsePrimary = [];
+        $responseNotPrimary = [];
+
+        // $data['response'][0] содержит товары в категории у которых is_primary_group = 1
+        if (!empty($data['responses'][0]['hits']['hits'])){
+            $responsePrimary = $this->createGoodsArray($data['responses'][0]['hits']['hits'], $this->isPromotion);
+        }
+
+        // $data['response'][1] содержит товары в категории у которых is_primary_group = 0
+        if(!empty($data['responses'][1]['hits']['hits'])) {
+            $responseNotPrimary = $this->createGoodsArray($data['responses'][1]['hits']['hits'], $this->isPromotion);
+        }
+
+        $resultArray = [];
+
+        if (!empty($responseNotPrimary)) {
+            foreach ($responseNotPrimary as $key => $item) {
+                if (isset($responsePrimary[$key])) {
+                    $resultArray[] = $this->sortComponent->currentSortComponent->getMainProductBySort($responsePrimary[$key], $item);
+                    unset($responsePrimary[$key]);
+                } else {
+                    $resultArray[] = $item;
+                }
+            }
+        } else {
+            $resultArray = $responsePrimary;
+        }
+
+        if (!empty($responsePrimary)) {
+            $resultArray = array_merge($resultArray, $responsePrimary);
+        }
+
+        return $resultArray;
+    }
+
+    private function createGoodsArray(array $data, bool $isPromotion = false): array
+    {
+        $result = [];
+
+        foreach ($data as $item) {
+            $result[$item['_source']['group_token']] = [
+                'id' => $item['_source']['id'],
+                'order' => $item['_source']['order'],
+                'rank' => $item['_source']['rank'],
+                'price' => $item['_source']['price'],
+                'weight_sort' => $item['sort'][0],
+                'promotion_order' => $isPromotion ? $item['sort'][2] : 0
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Отфильтровывает результаты,
+     * Внутри груп проводит сортировку и выбирает главного
+     * Отдает массив id товаров вида [0 => '1', 1 => '3123', 2 => '321344'....]
+     *
+     *
+     * @return array
+     */
+    public function getFilteredSingleGoods(): array
+    {
+        $resultArray = [];
+        $index = ['index' => $this->goodsModel->getIndexName()];
+
+        $first = $this->elasticWrapper->prepareMultiParams([
+            $this->fromComponent->getValue(),
+            $this->sizeComponent->getValue(),
+            $this->sortComponent->getValue(),
+            $this->totalHitsComponent->getTrueValue(),
+            $this->sourceComponent->setFields($this->selectFields)->getValue(),
+            $this->elasticWrapper->query(
+                $this->elasticWrapper->bool(
+                    [
+                        $this->elasticWrapper->filter(
+                            $this->elasticService->getDefaultFiltersConditions()
+                        ),
+                        $this->elasticWrapper->mustNotSingle($this->elasticService->getExcludedCategories())
+                    ]
+                )
+            )
+        ]);
+
+        $params['body'][] = $index;
+        $params['body'][] = $first;
+
+        $second = $this->getCount();
+        if (!empty($second)) {
+            $params['body'][] = $index;
+            $params['body'][] = $second;
+        }
+
+        $data = $this->sendMultiSearchRequest($params);
+
+        if (isset($data['responses'][1]['hits']['total']['value'])) {
+            $this->countIn = $data['responses'][1]['hits']['total']['value'];
+        }
+
+        if (!empty($data['responses'][0]['hits']['hits'])) {
+            $resultArray = $data['responses'][0];
+        }
+
+        return $resultArray;
+    }
+
+    /**
+     * @param $params
+     * @return array
+     */
+    private function sendMultiSearchRequest($params): array
+    {
+        $client = $this->goodsModel->getClient();
+
+        return $client->msearch($params);
+    }
+
+    /**
+     * Проверяет источник
+     * Для каждого источника создает свой запрос для вычесления общего кол-ва
+     *
+     * @return array
+     */
+    private function getCount(): array
+    {
+        if ($this->filters->promotion->getValues()->isEmpty() && $this->filters->category->getValues()->isNotEmpty()) {
+            $data = $this->elasticWrapper->prepareMultiParams([
+                $this->sizeComponent->getZeroElasticSize(),
+                $this->totalHitsComponent->getTrueValue(),
+                $this->elasticWrapper->query(
+                    $this->categoryComponent->getValue()
+                )
+            ]);
+        } else {
+            $data = $this->elasticWrapper->prepareMultiParams([
+                $this->sizeComponent->getZeroElasticSize(),
+                $this->totalHitsComponent->getTrueValue(),
                 $this->elasticWrapper->query(
                     $this->elasticWrapper->bool(
                         [
                             $this->elasticWrapper->filter(
-                                array_merge(
-                                    $this->elasticService->getDefaultFiltersConditions(),
-                                    [["range" => ["group_id" => ["gt" => 0]]]]
-                                )
+                                $this->elasticService->getDefaultFiltersConditions(),
                             ),
                             $this->elasticWrapper->mustNotSingle($this->elasticService->getExcludedCategories())
                         ]
                     )
-                ),
-                $this->collapseComponent->getCollapseForGoods($this->sortComponent->getValueForCollapse())
-            ])
-        );
+                )
+            ]);
+        }
 
-        return $this->getIds($data['hits']['hits']);
+        return $data;
     }
 }

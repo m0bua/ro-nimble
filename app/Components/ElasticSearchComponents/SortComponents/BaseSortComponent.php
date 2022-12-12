@@ -90,4 +90,18 @@ abstract class BaseSortComponent extends BaseComponent
      * @return array
      */
     abstract public function getValueForCollapse(): array;
+
+    /**
+     * @param array $primary
+     * @param array $secondary
+     * @return array
+     */
+    abstract public function getMainProductBySort(array $primary, array $secondary): array;
+
+    /**
+     * @param array $data
+     * @param bool $isPromotion
+     * @return array
+     */
+    abstract public function sortResultArray(array $data, bool $isPromotion): array;
 }
