@@ -7,6 +7,8 @@
 
 namespace App\Components\ElasticSearchComponents\SortComponents;
 
+use Illuminate\Support\Collection;
+
 class RankComponent extends BaseSortComponent
 {
     /**
@@ -61,6 +63,41 @@ class RankComponent extends BaseSortComponent
         ];
     }
 
+    protected static function getScriptOrder(\stdClass $product): int
+    {
+        if (0 == $product->price) {
+            return 99999;
+        }
+
+        $sellStatus = $state = $seller = 1;
+        switch ($product->sell_status) {
+            case 'waiting_for_supply':
+                $sellStatus = 15;
+                break;
+            case 'out_of_stock':
+                $sellStatus = 16;
+                break;
+            case 'unavailable':
+                $sellStatus = 17;
+                break;
+        }
+
+        switch ($product->state) {
+            case 'used':
+                $state = 7;
+                break;
+            case 'refurbished':
+                $state = 3;
+                break;
+        }
+
+        if ($product->is_rozetka_top && $product->seller_id !== 5) {
+            $seller = 2;
+        }
+
+        return $sellStatus * $state * $seller;
+    }
+
     /**
      * @return array
      */
@@ -92,5 +129,21 @@ class RankComponent extends BaseSortComponent
                 $this->getId()
             )
         ];
+    }
+
+    /**
+     * @inerhitDoc
+     * @param Collection $data
+     * @return Collection
+     */
+    public static function getOrderInGroup(Collection $data): Collection
+    {
+        return self::calcOrderInGroup($data, [
+            ['script', 'asc'],
+            ['is_group_primary', 'desc'],
+            ['order', 'asc'],
+            ['rank', 'desc'],
+            ['id', 'desc'],
+        ]);
     }
 }

@@ -177,6 +177,7 @@ return [
         App\Providers\FilterServiceProvider::class,
         App\Providers\GoogleCloudStorageServiceProvider::class,
         App\Providers\GoodsBufferProvider::class,
+        App\Providers\GroupsBufferProvider::class,
     ],
 
     /*
