@@ -25,10 +25,18 @@ class UpsertEventProcessor extends UpsertProcessor
      */
     protected function afterProcess(): void
     {
-        $this->goodsBuffer->radd(
-            Goods::getAllGroupGoods($this->data['id'])
-                ->pluck('id')
-                ->toArray()
-        );
+        if ($this->data['group_id'] > 0) {
+            $this->goodsBuffer->radd(
+                Goods::getAllGroupGoods($this->data['id'])
+                    ->pluck('id')
+                    ->toArray()
+            );
+        } else {
+            $this->goodsBuffer->radd(
+                Goods::where('id', $this->data['id'])
+                    ->pluck('id')
+                    ->toArray()
+            );
+        }
     }
 }
