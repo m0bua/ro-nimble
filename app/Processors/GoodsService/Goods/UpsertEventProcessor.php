@@ -25,6 +25,10 @@ class UpsertEventProcessor extends UpsertProcessor
      */
     protected function afterProcess(): void
     {
-        $this->goodsBuffer->add($this->data['id']);
+        $this->goodsBuffer->radd(
+            Goods::getAllGroupGoods($this->data['id'])
+                ->pluck('id')
+                ->toArray()
+        );
     }
 }

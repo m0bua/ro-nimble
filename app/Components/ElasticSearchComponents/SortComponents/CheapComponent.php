@@ -7,6 +7,8 @@
 
 namespace App\Components\ElasticSearchComponents\SortComponents;
 
+use Illuminate\Support\Collection;
+
 class CheapComponent extends BaseSortComponent
 {
     /**
@@ -39,6 +41,23 @@ class CheapComponent extends BaseSortComponent
                 'order' => 'asc'
             ]
         ];
+    }
+
+    /**
+     * @inerhitDoc
+     * @param \stdClass $product
+     * @return int
+     */
+    protected static function getScriptOrder(\stdClass $product): int
+    {
+        if (0 == $product->price) {
+            return 99999;
+        }
+        if (\in_array($product->sell_status, ['waiting_for_supply', 'out_of_stock', 'unavailable'])) {
+            return 2;
+        }
+
+        return 1;
     }
 
     /**
@@ -86,5 +105,22 @@ class CheapComponent extends BaseSortComponent
                 $this->getId()
             )
         ];
+    }
+
+    /**
+     * @inerhitDoc
+     * @param Collection $data
+     * @return int
+     */
+    public static function getOrderInGroup(Collection $data): Collection
+    {
+        return self::calcOrderInGroup($data, [
+            ['script', 'asc'],
+            ['price', 'asc'],
+            ['is_group_primary', 'desc'],
+            ['order', 'asc'],
+            ['rank', 'desc'],
+            ['id', 'desc'],
+        ]);
     }
 }
