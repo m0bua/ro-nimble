@@ -46,7 +46,6 @@ class GoodsAggregator extends AbstractAggregator
             CommentsAggregator::class,
             LabelsAggregator::class,
             PromotionConstructorsAggregator::class,
-            GroupOrderAggregator::class,
         ])->mapWithKeys(fn(string $class) => [$class => App::make($class)]);
     }
 
@@ -55,13 +54,8 @@ class GoodsAggregator extends AbstractAggregator
      */
     protected function prepare(Collection $ids): Collection
     {
-
         $aggregators = $this->getOtherAggregators()
-            ->transform(function(Aggregator $aggregator) use ($ids) {
-                $aggregator->setIsPartial($this->isPartial);
-
-                return $aggregator->aggregate($ids);
-            });
+            ->transform(fn(Aggregator $aggregator) => $aggregator->aggregate($ids));
 
         return $this->model
             ->query()

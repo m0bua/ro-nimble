@@ -15,13 +15,6 @@ abstract class AbstractAggregator implements Aggregator
     protected Collection $data;
 
     /**
-     * Flag indicates whether there is partial indexing
-     *
-     * @var bool
-     */
-    protected bool $isPartial;
-
-    /**
      * @inheritDoc
      */
     public function aggregate(Collection $ids): Aggregator
@@ -79,16 +72,5 @@ abstract class AbstractAggregator implements Aggregator
     protected function decode(string $string)
     {
         return json_decode($string, true);
-    }
-
-    /**
-     * Setter for flag which indicates whether there is partial indexing
-     *
-     * @param bool $isPartial
-     * @return void
-     */
-    public function setIsPartial(bool $isPartial)
-    {
-        $this->isPartial = $isPartial;
     }
 }

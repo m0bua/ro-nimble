@@ -40,11 +40,6 @@ class GoodsIndexer implements Indexer
     private Collection $ids;
 
     /**
-     * @var bool
-     */
-    private bool $isPartial;
-
-    /**
      * @param GoodsModel $elastic
      * @param GoodsAggregator $goods
      */
@@ -77,7 +72,6 @@ class GoodsIndexer implements Indexer
     private function preparePayload(Collection $ids): array
     {
         $data = [];
-        $this->goods->setIsPartial($this->isPartial);
         $goods = $this->goods->aggregate($ids);
         $indexIds = [];
 
@@ -112,7 +106,6 @@ class GoodsIndexer implements Indexer
     {
         $body = json_decode($message->getBody(), true, 512, JSON_THROW_ON_ERROR);
         $this->index = $body['index_name'];
-        $this->isPartial = $body['is_partial'];
         $this->ids = collect($body['ids']);
     }
 }

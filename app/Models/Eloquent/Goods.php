@@ -195,21 +195,6 @@ class Goods extends Model
     public function label(): BelongsToMany
     {
         return $this->belongsToMany(Label::class);
-    }
 
-    /**
-     * Returns all goods with same group_id
-     *
-     * @param int $productId
-     * @return Collection
-     */
-    public static function getAllGroupGoods(int $productId): Collection
-    {
-        return static::query()
-            ->from('goods as g')
-            ->select(['gg.id'])
-            ->join('goods as gg', 'gg.group_id', 'g.group_id')
-            ->where('g.id', $productId)
-            ->get('gg.id');
     }
 }

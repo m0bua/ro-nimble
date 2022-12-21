@@ -158,17 +158,6 @@ return [
                     ]
                 ]
             ],
-            'group_order' => [
-                'type' => 'nested',
-                'properties' => [
-                    'sort' => [
-                        'type' => 'keyword',
-                    ],
-                    'order' => [
-                        'type' => 'integer',
-                    ]
-                ]
-            ],
         ]
     ],
 ];

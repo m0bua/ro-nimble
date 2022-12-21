@@ -3,8 +3,6 @@
 namespace App\Console\Commands\Indexing;
 
 use App\Console\Commands\Command;
-use App\Interfaces\GoodsBuffer;
-use App\Interfaces\GroupsBuffer;
 use App\Models\Elastic\Elastic;
 use App\Models\Elastic\GoodsModel;
 use App\Models\Eloquent\Goods;
@@ -22,7 +20,7 @@ class Publish extends Command
      *
      * @var string
      */
-    protected $signature = 'index:refill {--goods-ids=*} {--same} {--is_partial}';
+    protected $signature = 'index:refill {--goods-ids=*} {--same}';
 
     /**
      * The console command description.
@@ -57,21 +55,18 @@ class Publish extends Command
      */
     private Indices $indices;
 
-    private GroupsBuffer $redisGroupsBuffer;
-
     /**
      * Create a new command instance.
      *
      * @return void
      * @noinspection LaravelFunctionsInspection
      */
-    public function __construct(Goods $goods, GoodsModel $elastic, Indices $indices, GroupsBuffer $redisGroupsBuffer)
+    public function __construct(Goods $goods, GoodsModel $elastic, Indices $indices)
     {
         parent::__construct();
         $this->goods = $goods;
         $this->indices = $indices;
         $this->elastic = $elastic;
-        $this->redisGroupsBuffer = $redisGroupsBuffer;
         $this->maxBatch = env("MAX_INDEXING_BATCH", 100);
     }
 
@@ -102,16 +97,11 @@ class Publish extends Command
 
         $rabbitMq = new Amqp();
 
-        if (!$this->option('is_partial')) {
-            $this->redisGroupsBuffer->deleteGroups();
-        }
-
         /** @var Collection|Goods[] $goods */
         foreach ($query->trueCursor($this->maxBatch) as $goods) {
             $data = [
                 'index_name' => $indexName,
-                'ids'        => $goods->pluck('id'),
-                'is_partial' => $this->option('is_partial'),
+                'ids' => $goods->pluck('id'),
             ];
 
             $rabbitMq->publish(

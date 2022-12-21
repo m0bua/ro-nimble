@@ -7,8 +7,6 @@
 
 namespace App\Components\ElasticSearchComponents\SortComponents;
 
-use Illuminate\Support\Collection;
-
 class NoveltyComponent extends BaseSortComponent
 {
     /**
@@ -53,11 +51,6 @@ class NoveltyComponent extends BaseSortComponent
         ];
     }
 
-    protected static function getScriptOrder(\stdClass $product): int
-    {
-        return 0;
-    }
-
     /**
      * @return array
      */
@@ -89,15 +82,5 @@ class NoveltyComponent extends BaseSortComponent
                 $this->getId()
             )
         ];
-    }
-
-    /**
-     * @inerhitDoc
-     * @param Collection $data
-     * @return Collection
-     */
-    public static function getOrderInGroup(Collection $data): Collection
-    {
-        return collect([]);
     }
 }
