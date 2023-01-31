@@ -83,4 +83,14 @@ class NoveltyComponent extends BaseSortComponent
             )
         ];
     }
+
+    public function getMainProductBySort(array $primary, array $secondary): array
+    {
+        // TODO: Implement getMainProductBySort() method.
+    }
+
+    public function sortResultArray(array $data, bool $isPromotion): array
+    {
+        // TODO: Implement sortResultArray() method.
+    }
 }
