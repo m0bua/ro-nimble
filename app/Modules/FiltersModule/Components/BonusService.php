@@ -29,13 +29,25 @@ class BonusService extends BaseComponent
     }
 
     /**
+     * @inerhitDoc
      * @return array
      */
-    public function getValue(): array
+    public function getQuery(): array
     {
         $this->filters->bonus->hideValues();
-        $data = $this->elasticWrapper->prepareCountAggrData($this->getData());
+        $query = $this->getDataQuery();
         $this->filters->bonus->showValues();
+
+        return ['types_count' => $query];
+    }
+
+    /**
+     * @param array $response
+     * @return array
+     */
+    public function getValueFromMSearch(array $response): array
+    {
+        $data = $this->elasticWrapper->prepareCountAggrData($response);
 
         if (!$data) {
             return [];
@@ -72,6 +84,7 @@ class BonusService extends BaseComponent
                 'hide_block' => false,
                 'total_found' => 1,
                 'option_values' => [$with_bonus]
-        ]];
+            ]
+        ];
     }
 }

@@ -9,6 +9,7 @@ namespace App\Modules\FiltersModule;
 use App\Enums\Filters as EnumsFilters;
 use App\Enums\Resources;
 use App\Filters\Filters;
+use App\Models\Elastic\GoodsModel;
 use App\Modules\FiltersModule\Components\BonusService;
 use App\Modules\FiltersModule\Components\CategoriesService;
 use App\Modules\FiltersModule\Components\GoodsWithPromotionsService;
@@ -96,6 +97,11 @@ class FiltersService
      */
     private PaymentService $payments;
 
+    /**
+     * @var GoodsModel
+     */
+    protected GoodsModel $goodsModel;
+
     public function __construct(
         Filters                    $filters,
         OrderService               $orderService,
@@ -111,7 +117,8 @@ class FiltersService
         StateService               $stateService,
         SellStatusService          $sellStatusService,
         OptionsService             $optionsService,
-        PaymentService             $paymentsService
+        PaymentService             $paymentsService,
+        GoodsModel                 $goodsModel
     )
     {
         $this->filters = $filters;
@@ -129,6 +136,7 @@ class FiltersService
         $this->sellStatusService = $sellStatusService;
         $this->optionsService = $optionsService;
         $this->payments = $paymentsService;
+        $this->goodsModel = $goodsModel;
     }
 
     /**
@@ -185,20 +193,44 @@ class FiltersService
      */
     public function getOptions(): Collection
     {
-        return collect(array_merge(
-                $this->sectionService->getValue(),
-                $this->categoriesService->getValue(),
-                $this->sellerService->getValue(),
-                $this->producerService->getValue(),
-                $this->seriesService->getValue(),
-                $this->priceService->getValue(),
-                $this->goodsWithPromotionsService->getValue(),
-                $this->bonusService->getValue(),
-                $this->stateService->getValue(),
-                $this->sellStatusService->getValue(),
-                $this->payments->getValue()
-            ) + $this->optionsService->getValue()
-        )->values()->recursive();
+        $params = ['body' => []];
+        $index = ['index' => $this->goodsModel->getIndexName()];
+        $aggIndex = [];
+        $models = [
+            $this->sectionService,
+            $this->categoriesService,
+            $this->sellerService,
+            $this->producerService,
+            $this->seriesService,
+            $this->priceService,
+            $this->goodsWithPromotionsService,
+            $this->bonusService,
+            $this->stateService,
+            $this->sellStatusService,
+            $this->payments,
+            $this->optionsService
+        ];
+
+        foreach ($models as $model) {
+            $queries = $model->getQuery();
+            if (empty($queries)) {
+                continue;
+            }
+            foreach ($queries as $query) {
+                $params['body'][] = $index;
+                $params['body'][] = $query;
+                $aggIndex[] = $model;
+            }
+        }
+
+        unset($models);
+        $rawData = $this->goodsModel->getClient()->msearch($params);
+        $data = [];
+        foreach ($rawData['responses'] as $index => $response) {
+            $data = \array_merge($data, $aggIndex[$index]->getValueFromMSearch($response));
+        }
+
+        return collect($data)->values()->recursive();
     }
 
     /**
@@ -232,8 +264,6 @@ class FiltersService
         if ($this->filters->category->getValues()->isEmpty()
             || $this->filters->query->getValues()->isEmpty()
         ) {
-            dd($this->filters->category->getValues());
-
             throw new BadRequestHttpException(
                 'Missing required parameters. Please existing category and query parameter.'
             );

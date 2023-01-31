@@ -218,6 +218,32 @@ abstract class BaseComponent
     }
 
     /**
+     * Returns query for multisearch
+     * @return array
+     */
+    public function getDataQuery(): array
+    {
+        return $this->elasticWrapper->prepareMultiParams([
+            $this->sizeFilterComponent->getValue(),
+            $this->totalHitsFilterComponent->getValue(),
+            $this->getFilterQuery(),
+            $this->elasticWrapper->query(
+                $this->elasticWrapper->bool(
+                    [
+                        $this->elasticWrapper->filter(
+                            array_merge(
+                                [$this->getCustomFiltersConditions()],
+                                $this->elasticService->getDefaultFiltersConditions()
+                            )
+                        ),
+                        $this->elasticWrapper->mustNotSingle($this->elasticService->getExcludedCategories())
+                    ]
+                )
+            )
+        ]);
+    }
+
+    /**
      * Возвращает дополнительные условия для запроса
      * @return array
      */
@@ -228,9 +254,23 @@ abstract class BaseComponent
 
     /**
      * Возвращает значение фильтра
+     * @param array $aggData
      * @return array
      */
-    abstract public function getValue(): array;
+//    abstract public function getValue(): array;
+
+    /**
+     * Повертає значення фільтра з мультипошуку
+     * @param array $aggData
+     * @return array
+     */
+    abstract public function getValueFromMSearch(array $aggData): array;
+
+    /**
+     * Повертає запит для мультипошуку
+     * @return array
+     */
+    abstract public function getQuery(): array;
 
     /**
      * Возвращает основные параметры для запроса

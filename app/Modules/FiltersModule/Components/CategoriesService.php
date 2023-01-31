@@ -22,9 +22,27 @@ class CategoriesService extends BaseComponent
     }
 
     /**
+     * @inerhitDoc
      * @return array
      */
-    public function getValue(): array
+    public function getQuery(): array
+    {
+        if (!$this->filters->category->isFashion()) {
+            return [];
+        }
+        $this->filters->categories->hideValues();
+        $query = $this->getDataQuery();
+
+        $this->filters->categories->showValues();
+        return [$this->categoriesFilterComponent::AGGR_CATEGORIES => $query];
+    }
+
+    /**
+     * @inerhitDoc
+     * @param array $response
+     * @return array
+     */
+    public function getValueFromMSearch(array $response): array
     {
         if (!$this->filters->category->isFashion()) {
             return [];
@@ -32,9 +50,10 @@ class CategoriesService extends BaseComponent
 
         $this->filters->categories->hideValues();
 
-        $childCategories = $this->getCategoryWithChildren();
+        $childCategories = $this->getCategoryWithChildren($response);
 
         $this->filters->categories->showValues();
+
 
         if (!$childCategories['children']) {
             return [];
@@ -84,7 +103,8 @@ class CategoriesService extends BaseComponent
                 'hide_block' => false,
                 'total_found' => count($categories),
                 'option_values' => $categories
-        ]];
+            ]
+        ];
     }
 
     /**
@@ -103,15 +123,16 @@ class CategoriesService extends BaseComponent
 
     /**
      * Возвращает список дочерних категорий
+     * @param array $response
      * @return array
      */
-    public function getCategoryWithChildren(): array
+    public function getCategoryWithChildren(array $response): array
     {
         /** @var Category $category */
         $category = $this->filters->category->getCategory();
 
         $countCategories = $this->elasticWrapper->prepareAggrData(
-            $this->getData(),
+            $response,
             $this->categoriesFilterComponent::AGGR_CATEGORIES
         );
 

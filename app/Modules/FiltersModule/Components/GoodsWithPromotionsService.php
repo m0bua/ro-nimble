@@ -17,6 +17,19 @@ class GoodsWithPromotionsService extends BaseComponent
     private array $currentCustomFiltersConditions;
 
     /**
+     * @var string
+     */
+    private string $typeCount = 'installment';
+
+    /**
+     * @var array
+     */
+    private $aggData = [
+        Filters::PROMOTION_GOODS_INSTALLMENT => null,
+        Filters::PROMOTION_GOODS_PROMOTION => null
+    ];
+
+    /**
      * @param array $filterComponent
      * @return void
      */
@@ -30,7 +43,15 @@ class GoodsWithPromotionsService extends BaseComponent
      */
     public function getFilterQuery(): array
     {
-        return $this->countFilterComponent->getValue();
+        return $this->elasticWrapper->aggs(
+            [
+                $this->typeCount . '_types_count' => [
+                    'value_count' => [
+                        'field' => 'id'
+                    ]
+                ]
+            ]
+        );
     }
 
     /**
@@ -58,32 +79,68 @@ class GoodsWithPromotionsService extends BaseComponent
     }
 
     /**
+     * @inerhitDoc
      * @return array
      */
-    public function getValue(): array
+    public function getQuery(): array
     {
+        $queries = [];
         $this->filters->goodsWithPromotions->hideValues();
+        $this->typeCount = 'installment';
         $this->setCurrentFilterQuery($this->installmentsCustomFiltersConditions());
-        $installments = $this->elasticWrapper->prepareCountAggrData($this->getData());
+        $queries[Filters::PROMOTION_GOODS_INSTALLMENT] = $this->getDataQuery();
 
         $this->setCurrentFilterQuery($this->promotionsCustomFiltersConditions());
-        $promotions = $this->elasticWrapper->prepareCountAggrData($this->getData());
-
+        $this->typeCount = 'promotion';
+        $queries[Filters::PROMOTION_GOODS_PROMOTION] = $this->getDataQuery();
         $this->filters->goodsWithPromotions->showValues();
 
-        if (!$installments && !$promotions) {
-            return [];
+        return $queries;
+    }
+
+    /**
+     * @param array $response
+     * @return void
+     */
+    private function prepareAggData(array $response): void
+    {
+        if (\array_keys($response['aggregations'])[0] === 'installment_types_count') {
+            $this->aggData[Filters::PROMOTION_GOODS_INSTALLMENT] = $this->elasticWrapper->prepareCountAggrData(
+                $response,
+                'installment_types_count'
+            );
         }
 
-        $data = [
-            Filters::PROMOTION_GOODS_INSTALLMENT => $installments,
-            Filters::PROMOTION_GOODS_PROMOTION => $promotions
-        ];
+        if (\array_keys($response['aggregations'])[0] === 'promotion_types_count') {
+            $this->aggData[Filters::PROMOTION_GOODS_PROMOTION] = $this->elasticWrapper->prepareCountAggrData(
+                $response,
+                'promotion_types_count'
+            );
+        }
+    }
+
+    /**
+     * @inerhitDoc
+     * @param array $response
+     * @return array
+     */
+    public function getValueFromMSearch(array $response): array
+    {
+        $this->prepareAggData($response);
+
+        if (
+            ($this->aggData[Filters::PROMOTION_GOODS_INSTALLMENT] === null
+                || $this->aggData[Filters::PROMOTION_GOODS_PROMOTION] === null)
+            || (!$this->aggData[Filters::PROMOTION_GOODS_INSTALLMENT]
+                && !$this->aggData[Filters::PROMOTION_GOODS_PROMOTION])
+        ) {
+            return [];
+        }
 
         $goodsWithPromotions = [];
         $order = 0;
 
-        foreach ($data as $filter => $count) {
+        foreach ($this->aggData as $filter => $count) {
             if (!$count) {
                 continue;
             }
@@ -126,6 +183,7 @@ class GoodsWithPromotionsService extends BaseComponent
                 'hide_block' => false,
                 'total_found' => count($goodsWithPromotions),
                 'option_values' => $goodsWithPromotions
-        ]];
+            ]
+        ];
     }
 }

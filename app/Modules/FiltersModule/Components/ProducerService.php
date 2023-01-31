@@ -53,14 +53,21 @@ class ProducerService extends BaseComponent
     /**
      * @return array
      */
-    public function getValue(): array
+    public function getValue(array $response = []): array
     {
-        $this->filters->producers->hideValues();
-        $foundProducers = $this->elasticWrapper->prepareAggrData(
-            $this->getData(),
-            $this->producerFilterComponent::AGGR_PRODUCERS
-        );
-        $this->filters->producers->showValues();
+        if (empty($response)) {
+            $this->filters->producers->hideValues();
+            $foundProducers = $this->elasticWrapper->prepareAggrData(
+                $this->getData(),
+                $this->producerFilterComponent::AGGR_PRODUCERS
+            );
+            $this->filters->producers->showValues();
+        } else {
+            $foundProducers = $this->elasticWrapper->prepareAggrData(
+                $response,
+                $this->producerFilterComponent::AGGR_PRODUCERS
+            );
+        }
 
         if (!$foundProducers) {
             return [];
@@ -137,6 +144,28 @@ class ProducerService extends BaseComponent
                 'short_list' => []
             ])
         ];
+    }
+
+    /**
+     * @inerhitDoc
+     * @return array
+     */
+    public function getQuery(): array
+    {
+        $this->filters->producers->hideValues();
+        $query = $this->getDataQuery();
+        $this->filters->producers->showValues();
+        return [$this->producerFilterComponent::AGGR_PRODUCERS => $query];
+    }
+
+    /**
+     * @inerhitDoc
+     * @param $response
+     * @return array
+     */
+    public function getValueFromMSearch($response): array
+    {
+        return $this->getValue($response);
     }
 
     /**

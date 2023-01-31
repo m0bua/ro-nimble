@@ -30,13 +30,25 @@ class PriceService extends BaseComponent
     }
 
     /**
+     * @inerhitDoc
      * @return array
      */
-    public function getValue(): array
+    public function getQuery(): array
     {
         $this->filters->price->hideValues();
-        $data = $this->prepareData($this->getData());
+        $query = $this->getDataQuery();
         $this->filters->price->showValues();
+        return [$query];
+    }
+
+    /**
+     * @inerhitDoc
+     * @param array $response
+     * @return array
+     */
+    public function getValueFromMSearch(array $response): array
+    {
+        $data = $this->prepareData($response);
 
         if (!$data[$this->priceFilterComponent::AGGR_KEY_MIN_PRICE] && !$data[$this->priceFilterComponent::AGGR_KEY_MAX_PRICE]) {
             return [];

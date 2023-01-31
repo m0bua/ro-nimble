@@ -24,22 +24,33 @@ class SectionService extends BaseComponent
     }
 
     /**
+     * @inerhitDoc
      * @return array
      */
-    public function getValue(): array
+    public function getQuery(): array
     {
         if ($this->filters->promotion->getValues()->isEmpty()) {
             return [];
         }
 
         $this->filters->section->hideValues();
+        $query = $this->getDataQuery();
+        $this->filters->section->showValues();
+        return [\get_class($this) => $query];
+    }
 
+    /**
+     * @inerhitDoc
+     * @param $response
+     * @return array
+     */
+    public function getValueFromMSearch($response): array
+    {
         $aggregateCategories = $this->elasticWrapper->prepareAggrCompositeData(
-            $this->getData(),
+            $response,
             Elastic::FIELD_CATEGORIES_PATH
         );
 
-        $this->filters->section->showValues();
 
         if (!$aggregateCategories) {
             return [];
@@ -93,7 +104,8 @@ class SectionService extends BaseComponent
                 'total_quantity' => array_sum(array_column($visibleCategories, 'count')),
                 'special_combobox_view' => Filters::SPECIAL_COMBOBOX_VIEW_TREE,
                 'comparable' => Filters::COMPARABLE_MAIN
-        ]];
+            ]
+        ];
     }
 
     /**

@@ -20,13 +20,29 @@ class StateService extends BaseComponent
     }
 
     /**
+     * @inerhitDoc
      * @return array
      */
-    public function getValue(): array
+    public function getQuery(): array
     {
         $this->filters->states->hideValues();
-        $data = $this->elasticWrapper->prepareAggrData($this->getData(), $this->stateFilterComponent::AGGR_STATE);
+        $query = $this->getDataQuery();
         $this->filters->states->showValues();
+
+        return [$this->stateFilterComponent::AGGR_STATE => $query];
+    }
+
+    /**
+     * @inerhitDoc
+     * @param array $response
+     * @return array
+     */
+    public function getValueFromMSearch(array $response): array
+    {
+        $data = $this->elasticWrapper->prepareAggrData(
+            $response,
+            $this->stateFilterComponent::AGGR_STATE
+        );
 
         if (!$data) {
             return [];
@@ -67,7 +83,7 @@ class StateService extends BaseComponent
                 'hide_block' => false,
                 'total_found' => count($states),
                 'option_values' => $states
-        ]];
+            ]];
     }
 
     /**
