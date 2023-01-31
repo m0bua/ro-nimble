@@ -4,6 +4,7 @@ namespace App\Filters\Components\Options;
 
 use App\Filters\Contracts\Filterable;
 use App\Models\Eloquent\Option;
+use App\Models\Eloquent\OptionSetting;
 use Illuminate\Support\Collection;
 
 abstract class AbstractOptionFilter implements Filterable
@@ -111,4 +112,31 @@ abstract class AbstractOptionFilter implements Filterable
      * @return static
      */
     abstract public static function fromRequest(array $params): self;
+
+    /**
+     * Удаляет из списка фильтров опции, которые заблокированы в `option_settings`
+     *
+     * @param array $categoryIds
+     * @return void
+     */
+    public final function removeBlockedBySettings(array $categoryIds): void {
+        $settings = OptionSetting::from(OptionSetting::getModel()->getTable(), 'os')
+            ->select('os.option_id', 'os.category_id', 'os.status')
+            ->whereIn('os.option_id', \array_keys($this->getValues()->toArray()))
+            ->whereIn('os.category_id', $categoryIds)
+            ->orderBy('os.category_id', 'desc')
+            ->groupBy('os.option_id', 'os.category_id', 'os.status')
+            ->get()
+            ->keyBy('option_id')
+            ->toArray();
+
+        foreach (\array_keys($this->getValues()->toArray()) as $optionId) {
+            if (!isset($settings[$optionId])) {
+                continue;
+            }
+            if (!\in_array($settings[$optionId]['status'], OptionSetting::$availableStatuses)) {
+                $this->forgetValueItem($optionId);
+            }
+        }
+    }
 }
