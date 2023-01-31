@@ -7,6 +7,7 @@
 
 namespace App\Modules\FiltersModule\Components;
 
+use App\Components\ElasticSearchComponents\FiltersComponents\SellerFilterComponent;
 use App\Enums\Filters;
 
 class SellerService extends BaseComponent
@@ -20,13 +21,38 @@ class SellerService extends BaseComponent
     }
 
     /**
+     * @return string
+     */
+    public static function getAggKey(): string
+    {
+        return SellerFilterComponent::AGGR_SELLERS;
+    }
+
+    /**
+     * @inerhitDoc
      * @return array
      */
-    public function getValue(): array
+    public function getQuery(): array
     {
+        $queries = [];
         $this->filters->sellers->hideValues();
-        $data = $this->elasticWrapper->prepareAggrData($this->getData(), $this->sellerFilterComponent::AGGR_SELLERS);
+        $queries[] = $this->getDataQuery();
         $this->filters->sellers->showValues();
+
+        return $queries;
+    }
+
+    /**
+     * @inerhitDoc
+     * @param $response
+     * @return array
+     */
+    public function getValueFromMSearch($response): array
+    {
+        $data = $this->elasticWrapper->prepareAggrData(
+            $response,
+            $this->sellerFilterComponent::AGGR_SELLERS
+        );
 
         if (!$data) {
             return [];
@@ -69,7 +95,8 @@ class SellerService extends BaseComponent
                 'hide_block' => false,
                 'total_found' => count($sellers),
                 'option_values' => $sellers
-        ]];
+            ]
+        ];
     }
 
     /**

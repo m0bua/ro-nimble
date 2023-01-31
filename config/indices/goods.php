@@ -158,6 +158,17 @@ return [
                     ]
                 ]
             ],
+            'estimated_weight' => [
+                'type' => 'nested',
+                'properties' => [
+                    'sort' => [
+                        'type' => 'keyword',
+                    ],
+                    'value' => [
+                        'type' => 'integer',
+                    ]
+                ]
+            ],
         ]
     ],
 ];

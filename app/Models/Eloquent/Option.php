@@ -83,8 +83,10 @@ class Option extends Model
     public const TYPE_INTEGER = 'Integer';
     public const TYPE_DECIMAL = 'Decimal';
     public const TYPE_CHECKBOX = 'CheckBox';
+    public const TYPES_OTHER = 'plural';
 
     public const STATE_ACTIVE = 'active';
+    public const STATE_LOCKED = 'locked';
 
     public $incrementing = false;
 

@@ -81,6 +81,7 @@ class OptionValue extends Model
 
     public $incrementing = false;
 
+    public const STATUS_LOCKED = 'locked';
     public const STATUS_NOT_USE = 'not-use';
     public const STATUS_ACTIVE = 'active';
 
@@ -137,6 +138,7 @@ class OptionValue extends Model
             ->leftJoin('option_values as ov2r', 'ov2r.id',  'ovr.value_id')
             ->where('ov.option_id', $optionId)
             ->whereIn('ov.name', $names)
+            ->where('ov.status', '=', self::STATUS_ACTIVE)
             ->whereNested(function($query) use ($allOptionValueNames) {
                 $query->whereNull('ovr.id')
                     ->orWhereIn('ov2r.name', $allOptionValueNames);

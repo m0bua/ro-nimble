@@ -100,6 +100,8 @@ class Goods extends Model
     public const STATUS_ACTIVE = 'active';
     public const STATUS_CONFIGURABLE_BY_SERVICES = 'configurable_by_services';
 
+    public const STATUS_INHERITED_ACTIVE = 'active';
+
     public $incrementing = false;
 
     protected $fillable = [

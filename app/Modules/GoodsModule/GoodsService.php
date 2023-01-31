@@ -13,9 +13,11 @@ use App\Components\ElasticSearchComponents\SizeComponent;
 use App\Components\ElasticSearchComponents\SortComponent;
 use App\Components\ElasticSearchComponents\SourceComponent;
 use App\Enums\Elastic;
+use App\Filters\Components\Options\AbstractOptionFilter;
 use App\Filters\Filters;
 use App\Helpers\ElasticWrapper;
 use App\Models\Elastic\GoodsModel;
+use App\Models\Eloquent\OptionSetting;
 use App\Modules\ElasticModule\ElasticService;
 use Exception;
 use Log;
@@ -125,6 +127,11 @@ class GoodsService
         try {
             if (!$this->filters->category->getValues() && !$this->filters->promotion->getValues()) {
                 throw new BadRequestHttpException('Missing required parameters');
+            }
+
+            foreach ($this->filters->options as $item) {
+                /** @var $item AbstractOptionFilter */
+                $item->removeBlockedBySettings(\array_merge([0], $this->filters->category->getValues()->toArray()));
             }
 
             $singleGoods = $this->filters->singleGoods->isCheck();

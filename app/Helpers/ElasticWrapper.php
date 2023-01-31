@@ -262,6 +262,10 @@ class ElasticWrapper
     {
         $result = [];
 
+        if (empty($data)) {
+            return $result;
+        }
+
         $data = $data['aggregations'][$aggrKey];
 
         if (empty($data['buckets']) || !is_array($data['buckets'])) {
@@ -284,6 +288,10 @@ class ElasticWrapper
     {
         $result = [];
 
+        if (empty($data)) {
+            return $result;
+        }
+
         $data = $data['aggregations'][$aggrKey];
 
         if (empty($data['buckets']) || !is_array($data['buckets'])) {
@@ -299,10 +307,11 @@ class ElasticWrapper
 
     /**
      * @param array $data
+     * @param string $key
      * @return int
      */
-    public function prepareCountAggrData(array $data): int
+    public function prepareCountAggrData(array $data, string $key = 'types_count'): int
     {
-        return $data['aggregations']['types_count']['value'] ?? 0;
+        return $data['aggregations'][$key]['value'] ?? 0;
     }
 }

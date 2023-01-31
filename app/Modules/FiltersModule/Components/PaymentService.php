@@ -8,16 +8,29 @@ use App\Models\Eloquent\PaymentParentMethod;
 class PaymentService extends BaseComponent
 {
     /**
-     * @inheritDoc
+     * @inerhitDoc
+     * @return array
      */
-    public function getValue(): array
+    public function getQuery(): array
     {
         $this->filters->payments->hideValues();
+        $query = $this->getDataQuery();
+        $this->filters->payments->showValues();
+
+        return [$this->paymentsFilterComponent::AGGR_PAYMENT_IDS => $query];
+    }
+
+    /**
+     * @inerhitDoc
+     * @param array $response
+     * @return array
+     */
+    public function getValueFromMSearch(array $response): array
+    {
         $aggregatedPaymentMethods = $this->elasticWrapper->prepareAggrData(
-            $this->getData(),
+            $response,
             $this->paymentsFilterComponent::AGGR_PAYMENT_IDS
         );
-        $this->filters->payments->showValues();
 
         if (!$aggregatedPaymentMethods) {
             return [];

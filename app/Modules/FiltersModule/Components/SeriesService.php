@@ -31,19 +31,32 @@ class SeriesService extends BaseComponent
     }
 
     /**
+     * @inerhitDoc
      * @return array
      */
-    public function getValue(): array
+    public function getQuery(): array
     {
         if (!$this->filters->producers->isViewSeries()) {
             return [];
         }
 
         $this->filters->series->hideValues();
-        $foundSeries = $this->elasticWrapper->prepareAggrData(
-            $this->getData(),
-            $this->seriesFilterComponent::AGGR_SERIES);
+        $query = $this->getDataQuery();
         $this->filters->series->showValues();
+        return [$this->seriesFilterComponent::AGGR_SERIES => $query];
+    }
+
+    /**
+     * @inerhitDoc
+     * @param array $response
+     * @return array
+     */
+    public function getValueFromMSearch(array $response): array
+    {
+        $foundSeries = $this->elasticWrapper->prepareAggrData(
+            $response,
+            $this->seriesFilterComponent::AGGR_SERIES
+        );
 
         if (!$foundSeries) {
             return [];

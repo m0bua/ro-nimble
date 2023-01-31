@@ -20,16 +20,30 @@ class SellStatusService extends BaseComponent
     }
 
     /**
+     * @inerhitDoc
      * @return array
      */
-    public function getValue(): array
+    public function getQuery(): array
     {
         $this->filters->sellStatuses->hideValues();
+        $query = $this->getDataQuery();
+        $this->filters->sellStatuses->showValues();
+
+        return [$this->sellStatusFilterComponent::AGGR_SELL_STATUS => $query];
+
+    }
+
+    /**
+     * @inerhitDoc
+     * @param array $response
+     * @return array
+     */
+    public function getValueFromMSearch(array $response): array
+    {
         $data = $this->elasticWrapper->prepareAggrData(
-            $this->getData(),
+            $response,
             $this->sellStatusFilterComponent::AGGR_SELL_STATUS
         );
-        $this->filters->sellStatuses->showValues();
 
         if (!$data) {
             return [];
@@ -77,6 +91,6 @@ class SellStatusService extends BaseComponent
                 'hide_block' => false,
                 'total_found' => count($sellStatuses),
                 'option_values' => $sellStatuses
-        ]];
+            ]];
     }
 }

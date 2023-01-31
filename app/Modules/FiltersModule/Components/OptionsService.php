@@ -90,11 +90,48 @@ class OptionsService extends BaseComponent
     }
 
     /**
+     * @inerhitDoc
      * @return array
      */
-    public function getValue(): array
+    public function getQuery(): array
     {
-        $this->aggrAllFiltersCount();
+        $this->filters->hideFilters();
+
+        $this->setCurrentFilterComponent(array_merge(
+            $this->optionsFilterComponent->getValue(),
+            $this->optionValuesFilterComponent->getValue(),
+            $this->optionCheckedFilterComponent->getValue(),
+            $this->optionSlidersFilterComponent->getValue(),
+        ));
+
+        $query = $this->getDataQuery();
+        $this->filters->showFilters();
+
+        return [$query];
+    }
+
+    /**
+     * @param array $response
+     * @return array
+     */
+    public function getValueFromMSearch(array $response): array
+    {
+        $this->filters->hideFilters();
+
+        $this->optionsCount = collect($this->elasticWrapper->prepareAggrCompositeData(
+            $response, Elastic::FIELD_OPTIONS
+        ))->recursive();
+        $this->optionValuesCount = collect($this->elasticWrapper->prepareAggrCompositeData(
+            $response, Elastic::FIELD_OPTION_VALUES
+        ))->recursive();
+        $this->optionCheckedCount = collect($this->elasticWrapper->prepareAggrCompositeData(
+            $response, Elastic::FIELD_OPTION_CHECKED
+        ))->recursive();
+        $this->optionSlidersCount = collect($this->prepareAggrSlidersData(
+            $response
+        ))->recursive();
+
+        $this->filters->showFilters();
 
         $this->isFilterAutoranking = $this->filters->category->isFilterAutoranking();
 
@@ -236,39 +273,6 @@ class OptionsService extends BaseComponent
                 }
             }
         });
-    }
-
-    /**
-     * Возвращает агрегированные данные по всем фильтрам без учета выбранных
-     * @return void
-     */
-    public function aggrAllFiltersCount()
-    {
-        $this->filters->hideFilters();
-
-        $this->setCurrentFilterComponent(array_merge(
-            $this->optionsFilterComponent->getValue(),
-            $this->optionValuesFilterComponent->getValue(),
-            $this->optionCheckedFilterComponent->getValue(),
-            $this->optionSlidersFilterComponent->getValue(),
-        ));
-
-        $data = $this->getData();
-
-        $this->optionsCount = collect($this->elasticWrapper->prepareAggrCompositeData(
-            $data, Elastic::FIELD_OPTIONS
-        ))->recursive();
-        $this->optionValuesCount = collect($this->elasticWrapper->prepareAggrCompositeData(
-            $data, Elastic::FIELD_OPTION_VALUES
-        ))->recursive();
-        $this->optionCheckedCount = collect($this->elasticWrapper->prepareAggrCompositeData(
-            $data, Elastic::FIELD_OPTION_CHECKED
-        ))->recursive();
-        $this->optionSlidersCount = collect($this->prepareAggrSlidersData(
-            $data
-        ))->recursive();
-
-        $this->filters->showFilters();
     }
 
     /**

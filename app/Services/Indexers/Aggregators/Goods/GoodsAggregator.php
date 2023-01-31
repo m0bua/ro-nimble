@@ -46,6 +46,7 @@ class GoodsAggregator extends AbstractAggregator
             CommentsAggregator::class,
             LabelsAggregator::class,
             PromotionConstructorsAggregator::class,
+            WeightAggregator::class,
         ])->mapWithKeys(fn(string $class) => [$class => App::make($class)]);
     }
 
