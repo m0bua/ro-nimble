@@ -68,7 +68,7 @@ class UpsertEventProcessor extends UpsertProcessor
         // saving translations after creating record if we can do that
         $this->saveTranslations();
 
-        if ($oldData['state'] === Option::STATE_LOCKED) {
+        if (empty($oldData) || $oldData['state'] === Option::STATE_LOCKED) {
             return true;
         }
 
