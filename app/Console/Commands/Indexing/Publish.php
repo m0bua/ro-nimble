@@ -20,7 +20,7 @@ class Publish extends Command
      *
      * @var string
      */
-    protected $signature = 'index:refill {--goods-ids=*} {--same}';
+    protected $signature = 'index:refill {--goods-ids=*} {--same} {--is_partial}';
 
     /**
      * The console command description.
@@ -82,7 +82,9 @@ class Publish extends Command
         if ($goodsIds->isEmpty() && !$this->option('same')) {
             $this->createIndex();
         }
-        $indexName = $this->elastic->getIndexName();
+        $indexNames = $this->option('is_partial')
+            ? $this->elastic->getIndexNames()
+            : [$this->elastic->getIndexName()];
 
         $query = $this->goods->query()
             ->select('id')
@@ -100,8 +102,8 @@ class Publish extends Command
         /** @var Collection|Goods[] $goods */
         foreach ($query->trueCursor($this->maxBatch) as $goods) {
             $data = [
-                'index_name' => $indexName,
-                'ids' => $goods->pluck('id'),
+                'index_names' => $indexNames,
+                'ids'         => $goods->pluck('id')
             ];
 
             $rabbitMq->publish(

@@ -26,11 +26,11 @@ class GoodsIndexer implements Indexer
     private Aggregator $goods;
 
     /**
-     * Elasticsearch destination index name
+     * Elasticsearch destination index names
      *
-     * @var string
+     * @var array
      */
-    private string $index;
+    private array $indexes;
 
     /**
      * Goods IDs collection
@@ -76,20 +76,24 @@ class GoodsIndexer implements Indexer
         $indexIds = [];
 
         foreach ($goods->all() as $item) {
-            $indexIds[] = $item->id;
-            $data[] = ['index' => [
-                '_index' => $this->index,
-                '_id' => $item->id,
-            ]];
-            $data[] = $item;
+            foreach ($this->indexes as $index) {
+                $indexIds[] = $item->id;
+                $data[] = ['index' => [
+                    '_index' => $index,
+                    '_id' => $item->id,
+                ]];
+                $data[] = $item;
+            }
         }
 
         $deleteIds = \array_diff($ids->toArray(), $indexIds);
         foreach ($deleteIds as $id) {
-            $data[] = ['delete' => [
-                '_index' => $this->index,
-                '_id' => $id,
-            ]];
+            foreach ($this->indexes as $index) {
+                $data[] = ['delete' => [
+                    '_index' => $index,
+                    '_id' => $id,
+                ]];
+            }
         }
 
         return ['body' => $data];
@@ -105,7 +109,7 @@ class GoodsIndexer implements Indexer
     private function setup(AMQPMessage $message): void
     {
         $body = json_decode($message->getBody(), true, 512, JSON_THROW_ON_ERROR);
-        $this->index = $body['index_name'];
+        $this->indexes = $body['index_names'];
         $this->ids = collect($body['ids']);
     }
 }

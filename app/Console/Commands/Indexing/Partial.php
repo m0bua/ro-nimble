@@ -45,7 +45,7 @@ class Partial extends Command
     {
         foreach ($this->goodsBuffer->scan() as $goodsIds) {
             if (!empty($goodsIds)) {
-                $this->call(Publish::class, ['--goods-ids' => $goodsIds]);
+                $this->call(Publish::class, ['--goods-ids' => $goodsIds, '--is_partial' => true]);
             }
         }
     }
