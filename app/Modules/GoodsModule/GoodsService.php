@@ -142,25 +142,28 @@ class GoodsService
                 $data = $this->getFilteredSingleGoods();
             }
 
+            $ids = [];
+            $idsCount = 0;
+            if (!empty($data)) {
+                if(!$singleGoods) {
+                    $idsCount = count($data);
 
-            if(!$singleGoods) {
-                $idsCount = count($data);
+                    $data = array_column($data, 'id');
 
-                $data = array_column($data, 'id');
+                    $chunkedArray = array_chunk(
+                        $data,
+                        $this->filters->perPage->getValues()->first()
+                    );
+                    if (!empty($chunkedArray)) {
+                        $ids = $chunkedArray[$this->filters->page->getValues()->first() - 1];
+                    } else {
+                        $ids = [];
+                    }
 
-                $chunkedArray = array_chunk(
-                    $data,
-                    $this->filters->perPage->getValues()->first()
-                );
-                if (!empty($chunkedArray)) {
-                    $ids = $chunkedArray[$this->filters->page->getValues()->first() - 1];
                 } else {
-                    $ids = [];
+                    $idsCount = $data['hits']['total']['value'];
+                    $ids = $this->getIds($data['hits']['hits']);
                 }
-
-            } else {
-                $idsCount = $data['hits']['total']['value'];
-                $ids = $this->getIds($data['hits']['hits']);
             }
 
             return [
