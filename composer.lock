@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3c0d1b2d36132a991b1467dfcb6761b6",
+    "content-hash": "6105010b6afce8ce094341afebe923db",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -10006,11 +10006,11 @@
         },
         {
             "name": "ivv/nimble-test",
-            "version": "dev-SELFI-305",
+            "version": "1.0.62",
             "source": {
                 "type": "git",
                 "url": "git@gitlab.rozetka.company:ivv/nimble-test.git",
-                "reference": "676f54ebb2027f0d52741e496cfef89512d170d3"
+                "reference": "04a81ed07bc0527deab5773133e766a981cf2726"
             },
             "require": {
                 "automation-testing-tools/allure-codeception": "*",
@@ -10025,7 +10025,7 @@
                 "Open Source"
             ],
             "description": "API tests for nimble",
-            "time": "2023-02-13T11:34:38+00:00"
+            "time": "2023-02-13T14:15:52+00:00"
         },
         {
             "name": "jms/metadata",
@@ -12887,9 +12887,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "ivv/nimble-test": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
@@ -12901,5 +12899,5 @@
     "platform-overrides": {
         "php": "7.4.7"
     },
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }
