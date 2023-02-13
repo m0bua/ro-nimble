@@ -83,6 +83,16 @@ abstract class Elastic
     }
 
     /**
+     * Повертає імена індексів
+     *
+     * @return array
+     */
+    public function getIndexNames(): array
+    {
+        return $this->indexInfo()->pluck('index')->all() ?? [];
+    }
+
+    /**
      * Возвращает имя индекса у которого есть алиас
      *
      * @return string
