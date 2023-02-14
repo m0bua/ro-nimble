@@ -76,7 +76,7 @@ class PrecountOptionSetting extends Model
                     JOIN "$optTable" o ON
                         os.option_id = o.id
                  JOIN "$categoryTable" os_category ON
-                      (os.category_id = 0 AND 1 = os_category.level) OR
+                      (os.category_id = 0 AND o.category_id = os_category.id) OR
                       (os.category_id != 0 AND os.category_id = os_category.id)
                   JOIN "$categoryTable" childs ON
                       os_category.left_key <= childs.left_key AND childs.right_key <= os_category.right_key AND childs.level > 0
