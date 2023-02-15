@@ -1,7 +1,5 @@
 <?php
-/**
- * @OA\Info(title="Selection & Filter Service API", version="1")
- */
+
 namespace App\Http\Controllers;
 
 use Illuminate\Contracts\Routing\ResponseFactory;
@@ -11,6 +9,9 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller as BaseController;
 
+/**
+ * @OA\Info(title="Selection & Filter Service API", version="1")
+ */
 class Controller extends BaseController
 {
     use AuthorizesRequests;
