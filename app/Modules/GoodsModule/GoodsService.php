@@ -17,7 +17,6 @@ use App\Filters\Components\Options\AbstractOptionFilter;
 use App\Filters\Filters;
 use App\Helpers\ElasticWrapper;
 use App\Models\Elastic\GoodsModel;
-use App\Models\Eloquent\OptionSetting;
 use App\Modules\ElasticModule\ElasticService;
 use Exception;
 use Log;
@@ -176,9 +175,9 @@ class GoodsService
             ];
         } catch (Exception $e) {
             $message = 'Something goes wrong.';
-            Log::channel('elastic_errors')->error(
+            Log::channel('api_errors')->error(
                 $message,
-                ['message' => json_decode($e->getMessage(), true)]
+                ['message' => $e->getMessage(), "class" => self::class .':'. $e->getLine()]
             );
             throw new HttpException(500, $message);
         }
