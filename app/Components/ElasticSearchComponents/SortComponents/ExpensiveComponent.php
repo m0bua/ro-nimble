@@ -15,28 +15,16 @@ class ExpensiveComponent extends BaseSortComponent
     protected function getScript(): array
     {
         return [
-            '_script' => [
-                'type' => 'number',
-                'script' => [
-                    'lang' => 'painless',
-                    'source' => <<< EOF
-                        if (doc['price'].value == 0) {
-                            return 99999;
-                        }
-
-                        int sell_status = 1;
-
-                        if (doc['sell_status'].value == 'waiting_for_supply'
-                            || doc['sell_status'].value == 'out_of_stock'
-                            || doc['sell_status'].value == 'unavailable'
-                        ) {
-                            sell_status = 2;
-                        }
-
-                        return sell_status;
-                    EOF
-                ],
-                'order' => 'asc'
+            'estimated_weight.value' => [
+                'order' => 'asc',
+                'nested' => [
+                    'path' => 'estimated_weight',
+                    'filter' => [
+                        'term' => [
+                            'estimated_weight.sort' => 'price'
+                        ]
+                    ]
+                ]
             ]
         ];
     }

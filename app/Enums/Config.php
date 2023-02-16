@@ -7,7 +7,7 @@ class Config
     /**
      * К-во товаров при выборке
      */
-    public const ELASTIC_DEFAULT_SIZE = 4000;
+    public const ELASTIC_DEFAULT_SIZE = 3000;
 
     /**
      * К-во товаров н астранице

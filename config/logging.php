@@ -51,6 +51,13 @@ return [
             'days' => 14,
         ],
 
+        'api_errors' => [
+            'driver' => 'daily',
+            'tap' => [DefaultLogger::class],
+            'path' => storage_path('logs/lumen.log'),
+            'days' => 7,
+        ],
+
         'consumer_error_message' => [
             'driver' => 'daily',
             'tap' => [ConsumerErrorLogger::class],

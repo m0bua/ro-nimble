@@ -75,6 +75,7 @@ class Consumer
                 $resolver->reject($amqpMessage);
                 $errorMessage = $t->getMessage();
                 $data = [
+                    'message' => $errorMessage,
                     'file' => $t->getFile(),
                     'line' => $t->getLine(),
                     'hash' => $iterationHash,

@@ -23,7 +23,10 @@ use App\Modules\FiltersModule\Components\SellStatusService;
 use App\Modules\FiltersModule\Components\SeriesService;
 use App\Modules\FiltersModule\Components\StateService;
 use Illuminate\Support\Collection;
+use Log;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Throwable;
 
 class FiltersService
 {
@@ -152,10 +155,19 @@ class FiltersService
             );
         }
 
-        return [
-            Resources::OPTIONS => $this->prepareOptions($this->orderService->orderOptions($this->getOptions())),
-            Resources::CHOSEN => $this->getChosenFilters()
-        ];
+        try {
+            return [
+                Resources::OPTIONS => $this->prepareOptions($this->orderService->orderOptions($this->getOptions())),
+                Resources::CHOSEN => $this->getChosenFilters()
+            ];
+        } catch (Throwable $e) {
+            $message = 'Something goes wrong.';
+            Log::channel('api_errors')->error(
+                $message,
+                ['message' => $e->getMessage(), "class" => self::class .':'. $e->getLine()]
+            );
+            throw new HttpException(500, $message);
+        }
     }
 
     /**
