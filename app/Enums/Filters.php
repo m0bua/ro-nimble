@@ -242,6 +242,7 @@ class Filters
      */
     public const COUNTRY_UA = 'ua';
     public const COUNTRY_UZ = 'uz';
+    public const COUNTRY_PL = 'pl';
 
     /**
      * Параметры фильтра "Статус товара"
