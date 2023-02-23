@@ -17,7 +17,6 @@ class GoodsController extends Controller
      *     deprecated=false,
      *
      *     @OA\Parameter(ref="#/components/parameters/country"),
-     *     @OA\Parameter(ref="#/components/parameters/lang"),
      *     @OA\Parameter(ref="#/components/parameters/category_id"),
      *     @OA\Parameter(ref="#/components/parameters/promotion_id"),
      *     @OA\Parameter(ref="#/components/parameters/section_id"),

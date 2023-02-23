@@ -20,7 +20,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
  *         type="array",
  *         default="[ua]",
  *         @OA\Items (
- *             enum={"ua","uz"},
+ *             enum={"ua","uz","pl"},
  *             type="string"
  *         )
  *     )
@@ -45,6 +45,7 @@ class Country extends AbstractFilter
     public static $availableParams = [
         Filters::COUNTRY_UA,
         Filters::COUNTRY_UZ,
+        Filters::COUNTRY_PL,
     ];
 
     /**
