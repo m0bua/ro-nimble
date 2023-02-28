@@ -19,9 +19,9 @@ class OptionCheckedComponent extends BaseComponent
         $params = $this->filters->options->optionChecked->getValues();
 
         if ($params->count() > 1) {
-            return $this->elasticWrapper->terms(Elastic::FIELD_OPTION_CHECKED, $params->toArray());
+            return $this->elasticWrapper->terms(Elastic::FIELD_OPTION_CHECKED, $params->keys()->toArray());
         } else {
-            return $this->elasticWrapper->term(Elastic::FIELD_OPTION_CHECKED, $params->first());
+            return $this->elasticWrapper->term(Elastic::FIELD_OPTION_CHECKED, $params->keys()->first());
         }
     }
 }

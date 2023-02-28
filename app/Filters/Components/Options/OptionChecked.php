@@ -40,11 +40,11 @@ class OptionChecked extends AbstractOptionFilter
     public static function fromRequest(array $params): OptionChecked
     {
         foreach ($params as $optionId => $value) {
-            if ($value != self::FILTER_CHECKBOX_VALUE) {
+            if (!$value[0]) {
                 unset($params[$optionId]);
             }
         }
 
-        return new static($params ? array_values(array_flip($params)) : Filters::DEFAULT_FILTER_VALUE);
+        return new static($params ?? Filters::DEFAULT_FILTER_VALUE);
     }
 }

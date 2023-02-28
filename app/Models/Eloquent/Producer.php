@@ -145,6 +145,7 @@ class Producer extends Model
     public function getProducersForFilters(array $ids, SupportCollection $category): SupportCollection
     {
         $producerTable = $this->getTable();
+        $producerAttachmentTable = ProducersAttachment::make()->getTable();
         $filterAutorankingTable = FilterAutoranking::make()->getTable();
 
         $query = static::query()
@@ -152,7 +153,13 @@ class Producer extends Model
                 'p.id as id',
                 'p.name',
                 'p.title',
+                'pa.url as image',
             ])
+            ->leftJoin("{$producerAttachmentTable} as pa", function (JoinClause $join) {
+                $join->on('pa.producer_id', 'p.id')
+                ->where('pa.variant', 'original')
+                ->where('pa.group_name', 'images');
+            })
             ->from($producerTable, 'p')
             ->whereIn('p.id', $ids)
             ->active();
@@ -179,5 +186,13 @@ class Producer extends Model
         }
 
         return $query->get()->recursive();
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function attachments(): HasMany
+    {
+        return $this->hasMany(ProducersAttachments::class);
     }
 }

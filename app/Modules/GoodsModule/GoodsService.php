@@ -128,9 +128,10 @@ class GoodsService
                 throw new BadRequestHttpException('Missing required parameters');
             }
 
+            $categoryIds = array_merge([0], $this->filters->category->getValues()->toArray(), $this->filters->section->getValues()->toArray());
             foreach ($this->filters->options as $item) {
                 /** @var $item AbstractOptionFilter */
-                $item->removeBlockedBySettings(\array_merge([0], $this->filters->category->getValues()->toArray()));
+                $item->removeBlockedBySettings($categoryIds);
             }
 
             $singleGoods = $this->filters->singleGoods->isCheck();

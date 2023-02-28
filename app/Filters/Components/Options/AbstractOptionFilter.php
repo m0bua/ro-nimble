@@ -119,23 +119,27 @@ abstract class AbstractOptionFilter implements Filterable
      * @param array $categoryIds
      * @return void
      */
-    public final function removeBlockedBySettings(array $categoryIds): void {
-        $settings = OptionSetting::from(OptionSetting::getModel()->getTable(), 'os')
-            ->select('os.option_id', 'os.category_id', 'os.status')
-            ->whereIn('os.option_id', \array_keys($this->getValues()->toArray()))
-            ->whereIn('os.category_id', $categoryIds)
-            ->orderBy('os.category_id', 'desc')
-            ->groupBy('os.option_id', 'os.category_id', 'os.status')
-            ->get()
-            ->keyBy('option_id')
-            ->toArray();
+    public final function removeBlockedBySettings(array $categoryIds): void
+    {
+        if ($this->getValues()->count() > 0) {
+            $settings = OptionSetting::from(OptionSetting::getModel()->getTable(), 'os')
+                ->select('os.option_id', 'os.category_id', 'os.status')
+                ->whereIn('os.option_id', array_keys($this->getValues()->toArray()))
+                ->whereIn('os.category_id', $categoryIds)
+                ->orderBy('os.category_id', 'ASC')
+                ->groupBy('os.option_id', 'os.category_id', 'os.status')
+                ->get()
+                ->keyBy('option_id')
+                ->toArray();
 
-        foreach (\array_keys($this->getValues()->toArray()) as $optionId) {
-            if (!isset($settings[$optionId])) {
-                continue;
-            }
-            if (!\in_array($settings[$optionId]['status'], OptionSetting::$availableStatuses)) {
-                $this->forgetValueItem($optionId);
+            foreach (array_keys($this->getValues()->toArray()) as $optionId) {
+                if (!isset($settings[$optionId])) {
+                    continue;
+                }
+
+                if (!in_array($settings[$optionId]['status'], OptionSetting::$availableStatuses)) {
+                    $this->forgetValueItem($optionId);
+                }
             }
         }
     }

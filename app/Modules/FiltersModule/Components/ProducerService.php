@@ -109,6 +109,7 @@ class ProducerService extends BaseComponent
                 'option_value_id' => $id,
                 'option_value_name' => $producer['name'],
                 'option_value_title' => $producer['title'] ?? '',
+                'option_value_image' => $producer['image'] ?? null,
                 'is_chosen' => false,
                 'products_quantity' => $foundProducersWithChosen[$id] ?? 0,
                 'is_value_show' => !!$producer['is_value_show'],
@@ -125,6 +126,7 @@ class ProducerService extends BaseComponent
                     'name' => $producers[$producerId]['option_value_name'],
                     'option_title' => __('filters.' . Filters::PARAM_PRODUCER),
                     'option_value_title' => $producers[$producerId]['option_value_title'],
+                    'option_value_image' => $producers[$producerId]['option_value_image'],
                     'comparable' => Filters::COMPARABLE_MAIN,
                 ];
             }
