@@ -15,6 +15,7 @@ class ProducerOptionValuesResource extends BaseResource
             'option_value_id',
             'option_value_name',
             'option_value_title',
+            'option_value_image',
             'is_chosen',
             'products_quantity',
             'order',
