@@ -94,9 +94,10 @@ abstract class BaseSortComponent extends BaseComponent
     /**
      * @param array $primary
      * @param array $secondary
+     * @param bool $isPromotion
      * @return array
      */
-    abstract public function getMainProductBySort(array $primary, array $secondary): array;
+    abstract public function getMainProductBySort(array $primary, array $secondary, bool $isPromotion): array;
 
     /**
      * @param array $data
