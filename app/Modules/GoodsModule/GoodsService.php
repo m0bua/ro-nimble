@@ -302,7 +302,7 @@ class GoodsService
         if (!empty($responseNotPrimary)) {
             foreach ($responseNotPrimary as $key => $item) {
                 if (isset($responsePrimary[$key])) {
-                    $resultArray[] = $this->sortComponent->currentSortComponent->getMainProductBySort($responsePrimary[$key], $item);
+                    $resultArray[] = $this->sortComponent->currentSortComponent->getMainProductBySort($responsePrimary[$key], $item, $this->isPromotion);
                     unset($responsePrimary[$key]);
                 } else {
                     $resultArray[] = $item;
@@ -319,18 +319,24 @@ class GoodsService
         return $resultArray;
     }
 
-    private function createGoodsArray(array $data, bool $isPromotion = false): array
+    private function createGoodsArray(array $data, bool $isPromotion): array
     {
         $result = [];
 
+        $promotionOrder = 0;
+
         foreach ($data as $item) {
+            if ($isPromotion) {
+                // TODO: хардкод кол-ва элементов в сортировке, для того, чтобы не нагружать ELS дополнительным inner_hits для nested поля promotion
+                $promotionOrder = count($item['sort']) > 5 ? $item['sort'][2] : $item['sort'][1];
+            }
             $result[$item['_source']['group_token']] = [
                 'id' => $item['_source']['id'],
                 'order' => $item['_source']['order'],
                 'rank' => $item['_source']['rank'],
                 'price' => $item['_source']['price'],
                 'weight_sort' => $item['sort'][0],
-                'promotion_order' => $isPromotion ? $item['sort'][2] : 0
+                'promotion_order' => $promotionOrder
             ];
         }
 

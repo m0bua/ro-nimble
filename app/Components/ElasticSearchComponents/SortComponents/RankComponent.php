@@ -68,20 +68,31 @@ class RankComponent extends BaseSortComponent
      * @param array $secondary
      * @return array
      */
-    public function getMainProductBySort(array $primary, array $secondary): array
+    public function getMainProductBySort(array $primary, array $secondary, bool $isPromotion): array
     {
         $primary['primary'] = 1;
         $secondary['primary'] = 0;
         $mergedArray[] = $primary;
         $mergedArray[] = $secondary;
 
-        usort($mergedArray, fn (array $prime, array $second): int =>
-            ($prime['weight_sort'] <=> $second['weight_sort']) * 10000 + // scripted field ASC
-            ($second['primary'] <=> $prime['primary']) * 1000 + // primary DESC
-            ($prime['order'] <=> $second['order']) * 100 + // order ASC
-            ($second['rank'] <=> $prime['rank']) * 10 + // rank DESC
-            ($second['id'] <=> $prime['id']) // id DESC
-        );
+        if ($isPromotion) {
+            usort($mergedArray, fn (array $prime, array $second): int =>
+                ($prime['weight_sort'] <=> $second['weight_sort']) * 100000 + // scripted field ASC
+                ($second['primary'] <=> $prime['primary']) * 10000 + // primary DESC
+                ($prime['promotion_order'] <=> $second['promotion_order']) * 1000 + // promotion order ASC
+                ($prime['order'] <=> $second['order']) * 100 + // order ASC
+                ($second['rank'] <=> $prime['rank']) * 10 + // rank DESC
+                ($second['id'] <=> $prime['id']) // id DESC
+            );
+        } else {
+            usort($mergedArray, fn (array $prime, array $second): int =>
+                ($prime['weight_sort'] <=> $second['weight_sort']) * 10000 + // scripted field ASC
+                ($second['primary'] <=> $prime['primary']) * 1000 + // primary DESC
+                ($prime['order'] <=> $second['order']) * 100 + // order ASC
+                ($second['rank'] <=> $prime['rank']) * 10 + // rank DESC
+                ($second['id'] <=> $prime['id']) // id DESC
+            );
+        }
 
         return $mergedArray[0];
     }
