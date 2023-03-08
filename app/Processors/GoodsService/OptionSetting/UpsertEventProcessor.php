@@ -43,10 +43,9 @@ class UpsertEventProcessor extends UpsertProcessor
     {
         $data = $this->prepareData();
 
-        $oldData = OptionSetting::select(['os.status', 'os.comparable', 'o.type', 'op.state as parent_state'])
+        $oldData = OptionSetting::select(['os.status', 'os.comparable', 'o.type', 'o.state'])
             ->from(OptionSetting::getModel()->getTable(), 'os')
             ->join(Option::getModel()->getTable() . ' as o', 'o.id', 'os.option_id')
-            ->leftJoin(Option::getModel()->getTable() . ' as op', 'o.parent_id', 'op.id')
             ->where('os.option_id', '=', $data['option_id'])
             ->where('os.category_id', '=', $data['category_id'])
             ->first();
@@ -87,16 +86,32 @@ class UpsertEventProcessor extends UpsertProcessor
         $opStatus = 0b0000;
         if (\in_array($data['status'], OptionSetting::$availableStatuses)) $opStatus |= 0b1000;
         if (\in_array($data['comparable'], ['bottom', 'main'])) $opStatus |= 0b0100;
-        if (\in_array($oldData['status'], OptionSetting::$availableStatuses)) $opStatus |= 0b0010;
-        if (\in_array($oldData['comparable'], ['bottom', 'main'])) $opStatus |= 0b0001;
-        if (Option::STATE_LOCKED === $oldData['parent_state']) {
-            return true;
+
+        if(!empty($oldData)) {
+            if (Option::STATE_LOCKED === $oldData['state']) {
+                return true;
+            }
+
+            if (\in_array($oldData['status'], OptionSetting::$availableStatuses)) $opStatus |= 0b0010;
+            if (\in_array($oldData['comparable'], ['bottom', 'main'])) $opStatus |= 0b0001;
+
+            $type = $oldData['type'];
+        } else {
+            $option = Option::select(['o.type', 'o.state'])
+                ->from(Option::getModel()->getTable(), 'o')
+                ->where('o.id', '=', $data['option_id'])
+                ->first();
+
+            if (empty($option) || Option::STATE_LOCKED === $option['state']) {
+                return true;
+            }
+
+            $type = $option['type'];
         }
-        if (
-            \in_array($opStatus, $statusVariants[1])
-        ) {
+
+        if (\in_array($opStatus, $statusVariants[1])) {
             $query = $this->model->query();
-            switch ($oldData['type']) {
+            switch ($type) {
                 case Option::TYPE_CHECKBOX:
                     $query = $query->from('goods_option_booleans as mt');
                     break;

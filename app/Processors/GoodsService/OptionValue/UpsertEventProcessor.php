@@ -56,10 +56,9 @@ class UpsertEventProcessor extends UpsertProcessor
     {
         $data = $this->prepareData();
 
-        $oldData = OptionValue::select(['op.state', 'ov.status'])
+        $oldData = OptionValue::select(['o.state', 'ov.status'])
             ->from(OptionValue::getModel()->getTable() . ' as ov')
             ->join('options as o', 'o.id', 'ov.option_id')
-            ->leftJoin('options as op', 'op.id', 'o.parent_id')
             ->where('ov.id', '=', $data['id'])
             ->first();
 
@@ -68,13 +67,21 @@ class UpsertEventProcessor extends UpsertProcessor
         // saving translations after creating record if we can do that
         $this->saveTranslations();
 
-        if (empty($oldData) || $oldData['state'] === Option::STATE_LOCKED) {
-            return true;
+        if (empty($oldData)) {
+            $option = Option::select(['o.state'])
+                ->from(Option::getModel()->getTable(), 'o')
+                ->where('o.id', '=', $data['option_id'])
+                ->first();
+
+            if(empty($option) || $option['state'] === Option::STATE_LOCKED) {
+                return true;
+            }
         }
 
         if (
+            is_null($oldData)
             /** Додавання значення опції в індекс */
-            (\in_array($oldData['status'], [OptionValue::STATUS_LOCKED, OptionValue::STATUS_NOT_USE])
+            || (\in_array($oldData['status'], [OptionValue::STATUS_LOCKED, OptionValue::STATUS_NOT_USE])
                 && OptionValue::STATUS_ACTIVE === $data['status'])
             /** Видалення значення опції з індексу */
             || (OptionValue::STATUS_ACTIVE === $oldData['status']
