@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Processors\GoodsService\Translations;
+namespace App\Processors;
 
 use App\Cores\ConsumerCore\Interfaces\MessageInterface;
 use App\Cores\ConsumerCore\Interfaces\ProcessorInterface;
@@ -13,8 +13,11 @@ use Illuminate\Support\Str;
 use LogicException;
 use RuntimeException;
 
-abstract class TranslationProcessor implements ProcessorInterface
+abstract class FillableProcessor implements ProcessorInterface
 {
+
+    // protected string $getRelation = '';
+
     /**
      * Root key in data array, if null data doesn't be wrapped
      *
@@ -23,12 +26,9 @@ abstract class TranslationProcessor implements ProcessorInterface
     protected string $dataRoot = 'data';
 
     /**
-     * Translations will be saved with this language
-     * By default it is resolved from routing key
-     *
      * @var string
      */
-    protected string $language;
+    protected string $fillableField;
 
     /**
      * If entity does not have own key, it will be resolved from enumerated columns
@@ -58,8 +58,8 @@ abstract class TranslationProcessor implements ProcessorInterface
     public function processMessage(MessageInterface $message): int
     {
         $this->setDataFromMessage($message);
-        $this->language = $this->parseLanguage($message->getRoutingKey());
-        $this->saveTranslations();
+        $this->fillableField = $this->parseFillable($message->getRoutingKey());
+        $this->saveFillable();
 
         return Codes::SUCCESS;
     }
@@ -102,12 +102,12 @@ abstract class TranslationProcessor implements ProcessorInterface
     }
 
     /**
-     * Get targeted language from routing key
+     * Get targeted fillable from routing key
      *
      * @param string $routingKey
      * @return string
      */
-    protected function parseLanguage(string $routingKey): string
+    protected function parseFillable(string $routingKey): string
     {
         $keywords = explode('.', ucwords($routingKey, '.'));
         $thirdPart = str_replace('_', '', ucwords($keywords[2], '_'));
@@ -116,77 +116,65 @@ abstract class TranslationProcessor implements ProcessorInterface
     }
 
     /**
-     * Save translations to DB
+     * Save fillable to DB
      *
      * @return bool
      */
-    protected function saveTranslations(): bool
+    protected function saveFillable(): bool
     {
         // resolve entity from payload
         $entity = $this->findEntity();
 
-        // Throw exception if entity translations not supported
-        if (!method_exists($entity, 'getTranslatableProperties') || !method_exists($entity, 'setTranslation')) {
-            throw new LogicException('Model [' . get_class($this->model) . '] not translatable.');
-        }
-
         // if entity doesn't exist and doesn't have own external ID
         if (!empty($this->compoundKey)) {
-            return $this->saveTranslationsDirectlyFromRelated($entity);
+            return $this->saveFillableDirectlyFromRelated($entity);
         }
 
-        return $this->saveTranslationsForEntity($entity);
+        return $this->saveFillableForEntity($entity);
     }
 
     /**
-     * Save translations for entity with own ID
+     * Save fillable for entity with own ID
      *
      * @param Model $entity
      * @return bool
      * @noinspection PhpUndefinedMethodInspection
      */
-    protected function saveTranslationsForEntity(Model $entity): bool
+    protected function saveFillableForEntity(Model $entity): bool
     {
-        $this->checkModel($entity);
+        foreach ($this->execModelMethod($entity, 'getFillableProperties') as $column) {
+            $value = $this->data[$column] ?? null;
 
-        foreach ($entity->getTranslatableProperties() as $column) {
-            $translation = $this->data[$column] ?? null;
-
-            if (!isset($translation)) {
+            if (!isset($value)) {
                 continue;
             }
 
-            $entity->setTranslation($this->language, $column, $translation);
+            $this->execModelMethod($entity, 'setFillable', $this->fillableField, $column, $value);
         }
 
         return true;
     }
 
     /**
-     * Save translations via translations model
+     * Save fillable via fillable model
      *
      * @param Model $entity
      * @return bool
      * @noinspection PhpUndefinedMethodInspection
      */
-    protected function saveTranslationsDirectlyFromRelated(Model $entity): bool
+    protected function saveFillableDirectlyFromRelated(Model $entity): bool
     {
-        $this->checkModel($entity);
-
-        /** @var Model|Builder $translationModel */
-        $translationModel = $entity->translations()->getRelated();
         $compoundKey = Arr::only($this->data, $this->compoundKey);
-
-        foreach ($entity->getTranslatableProperties() as $column) {
-            $translation = $this->data[$column];
-            if (!isset($translation)) {
+        foreach ($this->execModelMethod($entity, 'getFillableProperties') as $column) {
+            $fillable = $this->data[$column];
+            if (!isset($fillable)) {
                 continue;
             }
 
-            $translationModel->create([
-                'lang' => $this->language,
+            $this->execModelMethod($entity, 'fillableModelCreate', $column, [
+                $entity->getFieldByColumn($column) => $this->fillableField,
                 'column' => $column,
-                'value' => $translation,
+                'value' => $fillable,
                 'compound_key' => $compoundKey,
             ]);
         }
@@ -195,15 +183,23 @@ abstract class TranslationProcessor implements ProcessorInterface
     }
 
     /**
-     * Throw exception if model doesn't support translations
+     * Throw exception if model doesn't support method
      *
      * @param Model $model
-     * @return void
+     * @param string $method
+     * @param mixed $args
+     * @return mixed
      */
-    protected function checkModel(Model $model): void
+    protected function execModelMethod(Model $model, string $method, ...$args)
     {
-        if (!method_exists($model, 'translations') || !method_exists($model, 'getTranslatableProperties')) {
-            throw new RuntimeException('Model [' . get_class($model) . '] does not support translations');
+        if (empty($method)) {
+            return;
         }
+
+        if (!method_exists($model, $method)) {
+            throw new RuntimeException('Model [' . get_class($model) . '] does not support ' . $method . '() method');
+        }
+
+        return $model->$method(...$args);
     }
 }

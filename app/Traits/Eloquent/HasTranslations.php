@@ -62,6 +62,14 @@ trait HasTranslations
     public static string $translatableCast = Translatable::class;
 
     /**
+     * @return array<string>
+     */
+    public function getTranslatableProperties(): array
+    {
+        return $this->getFillableProperties(self::$translatableCast);
+    }
+
+    /**
      * Defines base relationship with translations
      * You can define custom related model namespace by setting $translationModelNamespace property
      *
@@ -95,7 +103,7 @@ trait HasTranslations
                     DB::query()
                         ->select(DB::raw('distinct on ("column") *'))
                         ->from($tableName)
-                        ->whereIn('lang', [$lang, $defaultLang])
+                    ->whereIn(Translatable::FIELD, [$lang, $defaultLang])
                         ->orderByRaw('"column", (lang = ?)::INT desc', [$lang]),
                     $tableName
                 )
@@ -162,14 +170,14 @@ trait HasTranslations
         if ($this->relationLoaded('translations')) {
             $value = $this->translations
                     ->where('column', $column)
-                    ->where('lang', $lang)
+                ->where(Translatable::FIELD, $lang)
                     ->first()->value ?? null;
         }
 
         return $value ?? $this
                 ->translations()
                 ->where('column', $column)
-                ->whereIn('lang', [$lang, config('translatable.default_language')])
+            ->whereIn(Translatable::FIELD, [$lang, config('translatable.default_language')])
                 ->orderByRaw('(lang = ?)::INT desc', [$lang])
                 ->value('value');
     }
@@ -186,7 +194,7 @@ trait HasTranslations
         return $this
             ->translations()
             ->where('column', $column)
-            ->when($languages, fn($q) => $q->whereIn('lang', $languages))
+            ->when($languages, fn ($q) => $q->whereIn(Translatable::FIELD, $languages))
             ->get()
             ->mapWithKeys(fn($t) => [$t->lang => $t->value])
             ->toArray();
@@ -204,7 +212,7 @@ trait HasTranslations
         return $this
             ->translations()
             ->where('column', $column)
-            ->where('lang', $lang)
+            ->where(Translatable::FIELD, $lang)
             ->exists();
     }
 
@@ -227,7 +235,7 @@ trait HasTranslations
     {
         return [
             $this->getTranslationForeignKey(),
-            'lang',
+            Translatable::FIELD,
             'column'
         ];
     }
@@ -256,7 +264,7 @@ trait HasTranslations
     {
         return [
             $this->getTranslationForeignKey() => $this->id,
-            'lang' => $lang,
+            Translatable::FIELD => $lang,
             'column' => $column,
             'value' => $value,
             'need_delete' => 0,

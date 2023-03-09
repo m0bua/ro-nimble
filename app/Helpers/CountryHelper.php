@@ -10,6 +10,13 @@ class CountryHelper
 {
     public const COUNTRY_UA = 'ua';
     public const COUNTRY_UZ = 'uz';
+    public const COUNTRY_PL = 'pl';
+
+    public const AVAILABLE_COUNTRIES = [
+        self::COUNTRY_UA,
+        self::COUNTRY_UZ,
+        self::COUNTRY_PL,
+    ];
 
     /**
      * Возвращает соответсвие стран и локалей
@@ -31,7 +38,7 @@ class CountryHelper
     {
         return [
             self::COUNTRY_UA => 'rozetka.com.ua',
-            self::COUNTRY_UZ => 'rozetka.uz'
+            self::COUNTRY_UZ => 'rozetka.uz',
         ];
     }
 

@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Processors\GoodsService\Translations\OptionValue;
+namespace App\Processors\GoodsService\Fillables\OptionValue;
 
 use App\Models\Eloquent\OptionValue;
-use App\Processors\GoodsService\Translations\TranslationProcessor;
+use App\Processors\FillableProcessor;
 
-class UpsertEventProcessor extends TranslationProcessor
+class UpsertEventProcessor extends FillableProcessor
 {
     /**
      * @param OptionValue $model

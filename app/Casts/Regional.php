@@ -2,13 +2,13 @@
 
 namespace App\Casts;
 
+use App\Helpers\CountryHelper;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\App;
 
-class Translatable implements CastsAttributes
+class Regional implements CastsAttributes
 {
-    const FIELD = 'lang';
+    const FIELD = 'country';
 
     /**
      * Cast the given value.
@@ -21,9 +21,9 @@ class Translatable implements CastsAttributes
      */
     public function get($model, string $key, $value, array $attributes): ?string
     {
-        return $value ?? (method_exists($model, 'getTranslation')
-                ? $model->getTranslation($key, App::getLocale())
-                : $value);
+        return $value ?? (method_exists($model, 'getRegional')
+            ? $model->getRegional($key, CountryHelper::getRequestCountry())
+            : $value);
     }
 
     /**
@@ -38,13 +38,13 @@ class Translatable implements CastsAttributes
      */
     public function set($model, string $key, $value, array $attributes)
     {
-        if (is_array($value) && method_exists($model, 'setTranslations')) {
-            $model->setTranslations($key, $value);
+        if (is_array($value) && method_exists($model, 'setRegionals')) {
+            $model->setRegionals($key, $value);
             return;
         }
 
-        if (method_exists($model, 'setTranslation')) {
-            $model->setTranslation(App::getLocale(), $key, $value);
+        if (method_exists($model, 'setRegional')) {
+            $model->setRegional(CountryHelper::getRequestCountry(), $key, $value);
         }
     }
 }

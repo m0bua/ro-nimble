@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Processors\GoodsService\Translations\Category;
+namespace App\Processors\GoodsService\Fillables\Category;
 
 use App\Models\Eloquent\Category;
-use App\Processors\GoodsService\Translations\TranslationProcessor;
+use App\Processors\FillableProcessor;
 
-class UpsertEventProcessor extends TranslationProcessor
+class UpsertEventProcessor extends FillableProcessor
 {
     /**
      * @param Category $model

@@ -50,7 +50,10 @@ trait ValuesAndCheckedTrait
 
         return collect([
             'option_id' => $option['option_id'],
-            'option_name' => $option['option_name'],
+            'option_name' =>
+            // TODO: use as example in future (task: SELFI-294)
+            // $this->optionRegionals[$option['option_id']]['name'] ??
+            $option['option_name'],
             'option_title' => $this->optionSettingTranslations[$optionSettingId]['option_title']
                 ?? $this->optionTranslations[$option['option_id']]['title'] ?? '',
             'option_type' => $option['type'],

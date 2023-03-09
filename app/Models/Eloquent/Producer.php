@@ -2,6 +2,7 @@
 
 namespace App\Models\Eloquent;
 
+use App\Casts\Regional;
 use App\Traits\Eloquent\HasFillable;
 use Database\Factories\Eloquent\ProducerFactory;
 use Eloquent;
@@ -15,6 +16,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 use App\Models\Eloquent\AbstractModel as Model;
+use App\Traits\Eloquent\HasRegionals;
 
 /**
  * App\Models\Eloquent\Producer
@@ -67,6 +69,7 @@ class Producer extends Model
 {
     use HasFactory;
     use HasFillable;
+    use HasRegionals;
 
     public $incrementing = false;
 
@@ -85,6 +88,10 @@ class Producer extends Model
         'disable_filter_series',
         'is_deleted',
         'needs_index',
+    ];
+
+    protected $casts = [
+        'name' => Regional::class,
     ];
 
     /**

@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Processors\GoodsService\Translations\CategoryOption;
+namespace App\Processors\GoodsService\Fillables\CategoryOption;
 
 use App\Models\Eloquent\CategoryOption;
-use App\Processors\GoodsService\Translations\TranslationProcessor;
+use App\Processors\FillableProcessor;
 
-class UpsertEventProcessor extends TranslationProcessor
+class UpsertEventProcessor extends FillableProcessor
 {
     protected array $compoundKey = [
         'category_id',

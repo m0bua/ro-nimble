@@ -11,8 +11,10 @@ use App\Enums\Elastic;
 use App\Enums\Filters;
 use App\Filters\Components\Options\OptionValues;
 use App\Helpers\CountryHelper;
+use App\Helpers\RegionalHelper;
 use App\Helpers\TranslateHelper;
 use App\Models\Eloquent\Option;
+use App\Models\Eloquent\OptionRegional;
 use App\Models\Eloquent\OptionSettingTranslation;
 use App\Models\Eloquent\OptionTranslation;
 use App\Models\Eloquent\OptionValueTranslation;
@@ -59,6 +61,11 @@ class OptionsService extends BaseComponent
      * @var Collection
      */
     private Collection $optionTranslations;
+    // TODO: use as example in future (task: SELFI-294)
+    // /**
+    //  * @var Collection
+    //  */
+    // private Collection $optionRegionals;
     /**
      * @var Collection
      */
@@ -364,6 +371,11 @@ class OptionsService extends BaseComponent
             OptionTranslation::getByOptionIds($options->pluck('option_id')->toArray()),
             'option_id'
         );
+        // TODO: use as example in future (task: SELFI-294)
+        // $this->optionRegionals = RegionalHelper::getRegionalFields(
+        //     OptionRegional::getByOptionIds($options->pluck('option_id')->toArray()),
+        //     'option_id'
+        // );
         $this->optionValueTranslations = TranslateHelper::getTranslationFields(
             OptionValueTranslation::getByOptionValueIds($options->pluck('option_value_id')->filter()->toArray()),
             'option_value_id'

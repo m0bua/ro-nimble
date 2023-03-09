@@ -12,4 +12,5 @@ class Language
     public const EN = 'en';
     public const RO = 'ro';
     public const UZ = 'uz';
+    public const PL = 'pl';
 }

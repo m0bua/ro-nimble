@@ -2,12 +2,13 @@
 
 namespace App\Models\Eloquent;
 
+use App\Casts\Regional;
 use App\Casts\Translatable;
 use App\Enums\Filters;
 use App\Traits\Eloquent\HasFillable;
+use App\Traits\Eloquent\HasRegionals;
 use App\Traits\Eloquent\HasTranslations;
 use App\ValueObjects\Options;
-use Database\Factories\Eloquent\OptionFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -79,6 +80,7 @@ class Option extends Model
     use HasFactory;
     use HasFillable;
     use HasTranslations;
+    use HasRegionals;
 
     public const TYPE_INTEGER = 'Integer';
     public const TYPE_DECIMAL = 'Decimal';
@@ -117,6 +119,7 @@ class Option extends Model
 
     protected $casts = [
         'title' => Translatable::class,
+        'name' => Regional::class,
     ];
 
     public function category(): BelongsTo
