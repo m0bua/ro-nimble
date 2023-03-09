@@ -3,6 +3,7 @@
 namespace App\Filters\Components;
 
 use App\Enums\Filters;
+use App\Helpers\CountryHelper;
 use App\Http\Requests\FilterRequest;
 use Illuminate\Foundation\Http\FormRequest;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -28,7 +29,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
  */
 class Country extends AbstractFilter
 {
-    public const DEFAULT_VALUE = [Filters::COUNTRY_UA];
+    public const DEFAULT_VALUE = [CountryHelper::COUNTRY_UA];
 
     protected const PARAM = Filters::PARAM_COUNTRY;
 
@@ -42,11 +43,7 @@ class Country extends AbstractFilter
      */
     protected array $values = self::DEFAULT_VALUE;
 
-    public static $availableParams = [
-        Filters::COUNTRY_UA,
-        Filters::COUNTRY_UZ,
-        Filters::COUNTRY_PL,
-    ];
+    public static $availableParams = CountryHelper::AVAILABLE_COUNTRIES;
 
     /**
      * CountryCode constructor.

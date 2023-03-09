@@ -62,6 +62,14 @@ trait HasTranslations
     public static string $translatableCast = Translatable::class;
 
     /**
+     * @return array<string>
+     */
+    public function getTranslatableProperties(): array
+    {
+        return $this->getFillableProperties(self::$translatableCast);
+    }
+
+    /**
      * Defines base relationship with translations
      * You can define custom related model namespace by setting $translationModelNamespace property
      *

@@ -2,10 +2,11 @@
 
 namespace App\Models\Eloquent;
 
+use App\Casts\Regional;
 use App\Casts\Translatable;
 use App\Traits\Eloquent\HasFillable;
+use App\Traits\Eloquent\HasRegionals;
 use App\Traits\Eloquent\HasTranslations;
-use Database\Factories\Eloquent\CategoryFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -91,6 +92,7 @@ class Category extends Model
     use HasFactory;
     use HasFillable;
     use HasTranslations;
+    use HasRegionals;
 
     public $incrementing = false;
 
@@ -125,6 +127,8 @@ class Category extends Model
 
     protected $casts = [
         'title' => Translatable::class,
+        'name' => Regional::class,
+        'href' => Regional::class,
     ];
 
     public function parent(): BelongsTo

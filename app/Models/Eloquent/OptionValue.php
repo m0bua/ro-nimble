@@ -2,14 +2,13 @@
 
 namespace App\Models\Eloquent;
 
+use App\Casts\Regional;
 use App\Casts\Translatable;
 use App\Traits\Eloquent\HasDynamicBinds;
 use App\Traits\Eloquent\HasFillable;
 use App\Traits\Eloquent\HasTranslations;
-use Database\Factories\Eloquent\OptionValueFactory;
 use DB;
 use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,6 +16,7 @@ use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Carbon;
 
 use App\Models\Eloquent\AbstractModel as Model;
+use App\Traits\Eloquent\HasRegionals;
 
 /**
  * App\Models\Eloquent\OptionValue
@@ -77,6 +77,7 @@ class OptionValue extends Model
     use HasFactory;
     use HasFillable;
     use HasTranslations;
+    use HasRegionals;
     use HasDynamicBinds;
 
     public $incrementing = false;
@@ -108,6 +109,7 @@ class OptionValue extends Model
         'title' => Translatable::class,
         'description' => Translatable::class,
         'shortening' => Translatable::class,
+        'name' => Regional::class,
     ];
 
     public function option(): BelongsTo

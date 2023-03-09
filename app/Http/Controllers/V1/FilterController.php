@@ -4,6 +4,7 @@ namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\FilterResource\FilterResource;
+use App\Models\Eloquent\Goods;
 use App\Modules\FiltersModule\FiltersService;
 
 class FilterController extends Controller
